@@ -1,0 +1,7 @@
+# Artifact definitions for testing
+
+name: Test1
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: FILE
+  attributes: {paths: ['/foo.txt']}

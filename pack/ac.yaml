@@ -1,0 +1,2 @@
+artifacts: ["TestArtifacts"]   # entrypoint artifact definition, leave empty to collect all artifacts
+user: false                    # enforce admin rights, terminates, if user has to admin rights

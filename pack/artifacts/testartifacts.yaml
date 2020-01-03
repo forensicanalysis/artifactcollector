@@ -1,0 +1,110 @@
+# Artifacts for testing
+
+name: TestArtifacts
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - Hostname
+      - Hello
+      - WindowsUserDownloadsDirectory
+      - WindowsRecycleBin
+      - NTFSMetaFiles
+      - WindowsEnvironmentVariableProgramFilesX86
+      - WindowsAvailableTimeZones
+      - WindowsComputerName
+      - WMIAccountUsersDomain
+      - AllLogFiles
+      - WindowsFileTypeAutorunAssociations
+---
+name: Hostname
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname
+---
+name: Hello
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hello.exe
+supported_os: [Windows]
+---
+name: WindowsUserDownloadsDirectory
+sources:
+- type: DIRECTORY
+  attributes:
+    paths: ['%%users.userprofile%%\Downloads\*']
+    separator: '\'
+supported_os: [Windows]
+---
+name: WindowsRecycleBin
+sources:
+- type: FILE
+  attributes:
+    paths:
+        - '\$Recycle.Bin\**'
+        - '\Recycler\**'
+    separator: '\'
+supported_os: [Windows]
+---
+name: NTFSMetaFiles
+sources:
+- type: FILE
+  attributes:
+      paths:
+          - '%%environ_systemdrive%%\$MFT'
+          - '%%environ_systemdrive%%\$MFTMirr'
+      separator: '\'
+supported_os: [Windows]
+---
+name: WindowsEnvironmentVariableProgramFilesX86
+sources:
+- type: PATH
+  attributes:
+    paths: ['\Program Files (x86)']
+    separator: '\'
+- type: REGISTRY_VALUE
+  attributes:
+    key_value_pairs:
+    - {key: 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion', value: 'ProgramFilesDir (x86)'}
+supported_os: [Windows]
+---
+name: WindowsAvailableTimeZones
+sources:
+- type: REGISTRY_KEY
+  attributes: {keys: ['HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Time Zones\*\*']}
+supported_os: [Windows]
+---
+name: WindowsComputerName
+sources:
+- type: REGISTRY_VALUE
+  attributes:
+    key_value_pairs:
+      - {key: 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\ComputerName\ComputerName', value: 'ComputerName'}
+supported_os: [Windows]
+---
+name: WMIAccountUsersDomain
+sources:
+- type: WMI
+  attributes: {query: SELECT * FROM Win32_UserAccount WHERE name='%%users.username%%'}
+supported_os: [Windows]
+---
+name: AllLogFiles
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/**10/*.log'
+---
+name: WindowsFileTypeAutorunAssociations
+sources:
+  - type: REGISTRY_VALUE
+    attributes:
+      key_value_pairs:
+        - key: HKEY_LOCAL_MACHINE\Software\Classes\.*
+        - key: HKEY_LOCAL_MACHINE\Software\Classes\Wow6432Node\.*
+        - key: HKEY_USERS\%%users.sid%%\Software\Classes\.*
+        - key: HKEY_USERS\%%users.sid%%\Software\Classes\Wow6432Node\.*
+supported_os:
+  - Windows

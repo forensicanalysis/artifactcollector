@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+<assemblyIdentity
+    version="0.0.0.1"
+    processorArchitecture="amd64"
+    name="artifactcollector.exe"
+    type="amd64"
+/>
+<description>The artifactcollector is a tool to collect forensic artifacts on a system.</description>
+</assembly>

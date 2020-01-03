@@ -1,0 +1,7 @@
+# Artifact definitions for testing
+
+name: Test3
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes: {cmd: 'go', args: ['version']}

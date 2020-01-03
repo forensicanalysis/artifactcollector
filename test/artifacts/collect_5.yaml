@@ -1,0 +1,7 @@
+# Artifact definitions for testing
+
+name: Test5
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: REGISTRY_VALUE
+  attributes: {key_value_pairs: [{'key': '/foo', 'value':'bar'}]}

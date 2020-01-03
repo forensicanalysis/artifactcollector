@@ -1,0 +1,79 @@
+
+name: MacOSTest
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+    - MacOSAuditLogFiles
+    - MacOSBashHistory
+    - MacOSBashSessions
+    - MacOSLocalTime
+    - MacOSLoadedKexts
+    - MacOSUserDownloadsDirectory
+supported_os: [Darwin]
+---
+name: MacOSAuditLogFiles
+doc: Audit log files
+sources:
+- type: FILE
+  attributes: {paths: ['/var/audit/*']}
+labels: [System, Logs]
+supported_os: [Darwin]
+urls:
+- 'http://forensicswiki.org/wiki/Mac_OS_X'
+- 'http://forensicswiki.org/wiki/Mac_OS_X_10.9_-_Artifacts_Location#System_Logs'
+---
+name: MacOSBashHistory
+doc: Terminal Commands History
+sources:
+- type: FILE
+  attributes: {paths: ['%%users.homedir%%/.bash_history']}
+labels: [Users, Logs]
+supported_os: [Darwin]
+urls:
+- 'http://forensicswiki.org/wiki/Mac_OS_X'
+- 'http://forensicswiki.org/wiki/Mac_OS_X_10.9_-_Artifacts_Location#Logs'
+---
+name: MacOSBashSessions
+doc: Terminal Commands Sessions
+sources:
+- type: FILE
+  attributes: {paths: ['%%users.homedir%%/.bash_sessions/*']}
+labels: [Users, Logs]
+supported_os: [Darwin]
+urls: ['https://www.swiftforensics.com/2018/05/bash-sessions-in-macos.html']
+---
+name: MacOSLocalTime
+doc: Local time zone configuation
+sources:
+- type: FILE
+  attributes:
+    paths:
+      - '/etc/localtime'
+      - '/private/etc/localtime'
+labels: [System]
+supported_os: [Darwin]
+urls:
+- 'http://forensicswiki.org/wiki/Mac_OS_X'
+- 'http://forensicswiki.org/wiki/Mac_OS_X_10.9_-_Artifacts_Location#System_Info_Misc.'
+---
+name: MacOSLoadedKexts
+doc: MacOS Loaded Kernel Extensions.
+sources:
+- type: COMMAND
+  attributes:
+    args: []
+    cmd: /usr/sbin/kextstat
+labels: [System]
+supported_os: [Darwin]
+---
+name: MacOSUserDownloadsDirectory
+doc: User downloads directory
+sources:
+- type: DIRECTORY
+  attributes: {paths: ['%%users.homedir%%/Downloads/**']}
+labels: [Users]
+supported_os: [Darwin]
+urls:
+- 'http://forensicswiki.org/wiki/Mac_OS_X'
+- 'http://forensicswiki.org/wiki/Mac_OS_X_10.9_-_Artifacts_Location#User_Directories'

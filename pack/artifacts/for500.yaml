@@ -1,0 +1,119 @@
+
+
+name: FOR500
+doc: Windows Forensic Analysis
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - WindowsBrowserArtifacts
+      - WindowsProgramExecution
+      - WindowsDeletedFiles
+      - WindowsNetworkActivity
+      - WindowFileOpening
+labels: [System]
+supported_os: [Windows]
+urls: ['https://www.sans.org/security-resources/posters/windows-forensic-analysis/170/download']
+---
+name: WindowsBrowserArtifacts
+doc: WindowsBrowserArtifacts
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - WindowsOpenSaveMRU
+      # EmailAttachments
+      - SkypeMainDirectory
+      - BrowserCache
+      - BrowserHistory
+      # AdsZoneIdentifier
+supported_os: [Windows]
+---
+name: WindowsProgramExecution
+doc: Program Execution
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      # UserAssist
+      - WindowsActivitiesCache
+      - WindowsMostRecentApplication
+      - WindowsAppCompatCache # Shimcache
+      # JumpLists
+      - WindowsAMCacheHveFile
+      - WindowsSystemResourceUsageMonitorDatabaseFile
+      # BAM/DAM
+      # LastVisitedMRU
+      - WindowsPrefetchFiles
+supported_os: [Windows]
+---
+name: WindowsDeletedFiles
+doc: Deleted Files
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      # ACMRU
+      # Thumbcache
+      # Thumbs.db
+      # IEEdgeFile -> WindowsBrowserArtifacts
+      # WordWheelQuery
+      - WindowsRecycleBin
+      # LastVisitedMRU -> WindowsProgramExecution
+supported_os: [Windows]
+---
+name: WindowsNetworkActivity
+doc: Network Activity
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - WindowsTimezone
+      - InternetExplorerCookies
+      # NetworkHistory
+      # WLANEventLog
+      # BrowserSearchTerms -> WindowsBrowserArtifacts
+      # WindowsSystemResourceUsageMonitorDatabaseFile -> WindowsProgramExecution
+supported_os: [Windows]
+---
+name: WindowFileOpening
+doc: File Opening
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      # WindowsOpenSaveMRU -> WindowsBrowserArtifacts
+      # RecentFiles
+      # JumpLists -> WindowsProgramExecution
+      # ShellBags
+      # LNKFiles
+      # WindowsPrefetchFiles -> WindowsProgramExecution
+      # LastVisitedMRU -> WindowsProgramExecution
+      # IEEdgeFile -> WindowsBrowserArtifacts
+      # OfficeRecentFiles
+supported_os: [Windows]
+---
+name: AccountUsage
+doc: Account Usage
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - WindowsSystemRegistryFiles
+      - WindowsXMLEventLogSecurity
+supported_os: [Windows]
+---
+name: ExternalDevice
+doc: External Device
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      # KeyIdentification
+      - WindowsSetupApiLogs
+      # User
+      # PnPEvents
+      # VolumeSerialNumber
+      # DriverLetter
+      # LNKFiles -> WindowFileOpening
+supported_os: [Windows]
