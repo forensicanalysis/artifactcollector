@@ -3,8 +3,8 @@ on: [push]
 
 jobs:
 
-  forensicartifacts:
-    name: forensicartifacts
+  artifactcollector:
+    name: artifactcollector
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -12,25 +12,9 @@ jobs:
     steps:
       - name: Setup go 1.13
         uses: actions/setup-go@v1
-        with: {go-version: 1.13}
+        with: {go-version: '1.13'}
       - name: Checkout code
         uses: actions/checkout@v1
-        with:
-          path: forensicstore
-      - name: Checkout fslib
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/fslib
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: fslib
-      - name: Checkout forensicstore
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/forensicstore
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: forensicstore
       - name: Set system path
         run: echo "##[add-path]$(go env GOPATH)/bin"
         shell: bash
@@ -50,44 +34,12 @@ jobs:
         run: go-acc ./...
         shell: bash
       - name: Upload coverage
-        run: |
-          curl -s https://codecov.io/bash > codecov.sh
-          chmod +x codecov.sh
-          CODECOV_TOKEN=$(CODECOV_TOKEN) ./codecov.sh
+        env:
+          CI: "true"
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: bash <(curl -s https://codecov.io/bash)
         if: matrix.os == 'windows-latest'
         shell: bash
-
-  artifactcollector:
-    name: artifactcollector
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-    steps:
-      - name: Setup go 1.13
-        uses: actions/setup-go@v1
-        with: {go-version: '1.13'}
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Checkout fslib
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/fslib
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: fslib
-      - name: Checkout forensicstore
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/forensicstore
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: forensicstore
-      - name: Set system path
-        run: echo "##[add-path]$(go env GOPATH)/bin"
-        shell: bash
-      - name: Download dependencies
-        run: go mod download
 
       - name: Setup node
         uses: actions/setup-node@v1
@@ -111,7 +63,6 @@ jobs:
           go install .
           mkdir bin
           mv artifactcollector* bin
-        working-directory: ./artifactcollector/cmd/artifactcollector
         shell: bash
       - name: Bats test
         run: bats test/bats/artifactcollector.bats
@@ -119,124 +70,5 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@master
         with:
-          name: fs ${{ matrix.os }}
-          path: artifactcollector/cmd/artifactcollector/bin
-
-  acpack:
-    name: acpack
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-    steps:
-      - name: Setup go 1.13
-        uses: actions/setup-go@v1
-        with: {go-version: '1.13'}
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Checkout fslib
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/fslib
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: fslib
-      - name: Checkout forensicstore
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/forensicstore
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: forensicstore
-      - name: Set system path
-        run: echo "##[add-path]$(go env GOPATH)/bin"
-        shell: bash
-      - name: Download dependencies
-        run: go mod download
-
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with: {node-version: '10.x'}
-      - name: Install bats
-        run: npm install -g bats
-
-      - name: Build UI
-        run: |
-          yarn install
-          yarn build
-        working-directory: ./acpack/ui
-        shell: bash
-
-      - name: Build
-        run: |
-          go build .
-          go install .
-          mkdir bin
-          mv acpack* bin
-        working-directory: ./acpack
-        shell: bash
-
-      - name: Bats test
-        run: bats test/bats/acpack.bats
-        shell: bash
-
-      - name: Upload
-        uses: actions/upload-artifact@master
-        with:
-          name: fs ${{ matrix.os }}
-          path: artifactcollector/cmd/artifactcollector/bin
-
-  artifactvalidator:
-    name: artifactvalidator
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
-    steps:
-      - name: Setup go 1.13
-        uses: actions/setup-go@v1
-        with: {go-version: '1.13'}
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Checkout fslib
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/fslib
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: fslib
-      - name: Checkout forensicstore
-        uses: actions/checkout@v1
-        with:
-          repository: forensicanalysis/forensicstore
-          ref: master
-          token: ${{ secrets.GITHUB_PAT }}
-          path: forensicstore
-      - name: Set system path
-        run: echo "##[add-path]$(go env GOPATH)/bin"
-        shell: bash
-      - name: Download dependencies
-        run: go mod download
-
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with: {node-version: '10.x'}
-      - name: Install bats
-        run: npm install -g bats
-
-      - name: Build
-        run: |
-          go build .
-          go install .
-          mkdir bin
-          mv artifactvalidator* bin
-        working-directory: ./forensicartifacts/cmd/artifactvalidator
-        shell: bash
-      - name: Bats test
-        run: bats test/bats/artifactvalidator.bats
-        shell: bash
-      - name: Upload
-        uses: actions/upload-artifact@master
-        with:
-          name: fs ${{ matrix.os }}
-          path: forensicartifacts/cmd/artifactvalidator/bin
+          name: artifactcollector ${{ matrix.os }}
+          path: bin
