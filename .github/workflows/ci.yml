@@ -27,9 +27,9 @@ jobs:
           go get -u github.com/ory/go-acc
         shell: bash
 
-      # - name: Lint
-      #   run: golangci-lint run --verbose --config test/.golangci.yml
-      #   shell: bash
+      - name: Lint
+        run: golangci-lint run --verbose --config test/.golangci.yml
+        shell: bash
       - name: Test
         run: go-acc ./...
         shell: bash
@@ -54,11 +54,17 @@ jobs:
           mv artifacts-master/* pack/artifacts/
         shell: bash
 
-      - name: Build
+      - name: Setup Build
         run: |
           go get github.com/cugu/go-resources/cmd/resources
           go get github.com/akavel/rsrc
           go generate
+      - name: Add Windows syso File
+        run: mv resources/artifactcollector.syso artifactcollector.syso
+        if: matrix.os == 'windows-latest'
+        shell: bash
+      - name: Build
+        run: |
           go build .
           go install .
           mkdir bin
