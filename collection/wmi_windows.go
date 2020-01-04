@@ -21,7 +21,6 @@
 // This code was adapted from
 // https://github.com/StackExchange/wmi/blob/master/swbemservices.go
 
-
 package collection
 
 import (
@@ -35,7 +34,10 @@ import (
 // WMIQuery runs a WMI query and returns the result as a map.
 func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	// init COM, oh yeah
-	ole.CoInitialize(0)
+	err = ole.CoInitialize(0)
+	if err != nil {
+		return wmiResult, err
+	}
 	defer ole.CoUninitialize()
 
 	unknown, err := oleutil.CreateObject("WbemScripting.SWbemLocator")
@@ -71,7 +73,7 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	if err != nil {
 		return wmiResult, err
 	}
-	defer enumProperty.Clear()
+	defer enumProperty.Clear() //nolint:errcheck
 
 	enum, err := enumProperty.ToIUnknown().IEnumVARIANT(ole.IID_IEnumVariant)
 	if err != nil {
