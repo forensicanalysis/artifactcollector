@@ -9,8 +9,7 @@ var FS *FileSystem
 
 func init() {
 	FS = &FileSystem{
-		Files: map[string][]byte{
-			
+		Files: map[string][]byte{ 
 		},
 	}
 }

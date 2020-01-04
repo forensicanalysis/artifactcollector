@@ -12,6 +12,7 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 )
 
@@ -32,7 +33,7 @@ func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefin
 				break
 			}
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, fmt.Sprintf("decode of %s failed", artifactDefinitionFile))
 			}
 
 			artifactDefinitions = append(artifactDefinitions, artifactDefinition)
