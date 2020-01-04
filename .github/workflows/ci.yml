@@ -41,11 +41,11 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
 
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with: {node-version: '10.x'}
-      - name: Install bats
-        run: npm install -g bats
+      # - name: Setup node
+      #   uses: actions/setup-node@v1
+      #   with: {node-version: '10.x'}
+      # - name: Install bats
+      #   run: npm install -g bats
 
       - name: Download artifacts
         run: |
@@ -64,9 +64,9 @@ jobs:
           mkdir bin
           mv artifactcollector* bin
         shell: bash
-      - name: Bats test
-        run: bats test/bats/artifactcollector.bats
-        shell: bash
+      # - name: Bats test
+      #   run: bats test/bats/artifactcollector.bats
+      #   shell: bash
       - name: Upload
         uses: actions/upload-artifact@master
         with:
