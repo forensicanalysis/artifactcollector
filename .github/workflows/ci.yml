@@ -51,7 +51,7 @@ jobs:
         run: |
           wget -O fa.zip https://github.com/forensicanalysis/artifacts/archive/master.zip
           unzip fa.zip
-          mv artifacts-master/data/* artifactcollector/cmd/artifactcollector/pack/artifacts/
+          mv artifacts-master/* artifactcollector/cmd/artifactcollector/pack/artifacts/
         shell: bash
 
       - name: Build
