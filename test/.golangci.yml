@@ -1,4 +1,15 @@
 run:
+  deadline: 3m
+
+  # exclude test files
+  tests: false
+
+  # assume downloaded modules
   modules-download-mode: readonly
+
+  # skip generated code
+  skip-dirs:
+    - assets
+
   skip-files:
-    - assets.go
+    - ".*assets.go"

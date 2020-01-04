@@ -25,4 +25,4 @@ yarn-error.log*
 *.sw?
 
 cmd/artifactcollector/*.syso
-!cmd/artifactcollector/pack/bin/hello.exe
+*.idea

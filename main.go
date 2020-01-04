@@ -45,7 +45,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/forensicanalysis/artifactcollector/assets"
@@ -55,10 +54,11 @@ import (
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 	"github.com/mholt/archiver"
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v2"
 )
 
-//go:generate resources -declare -var=FS -package assets -output assets/assets.go pack/ac.yaml pack/artifacts/* pack/bin/*
+//go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources github.com/akavel/rsrc
+//go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
+//go:generate resources -declare -var=FS -package assets -output assets/assets.go pack/bin/*
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.syso
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.syso
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.user.syso
@@ -103,7 +103,7 @@ func main() {
 	notify(event{Type: beforeStart, Data: map[string]interface{}{}})
 
 	// unpack internal files
-	tempDir, artifactFiles, err := unpack()
+	tempDir, err := unpack()
 	if err != nil {
 		logPrint(err)
 		return
@@ -123,14 +123,14 @@ func main() {
 	}
 
 	// decode artifact definitions
-	sourceChannel, sourceCount, err := goartifacts.ParallelProcessFiles(config.Artifacts, sourceFS, true, artifactFiles)
+	sourceChannel, sourceCount, err := goartifacts.ParallelProcessArtifacts(config.Artifacts, sourceFS, true, assets.Artifacts)
 	if err != nil {
 		logPrint(errors.Wrap(err, "Decode failed"))
 		return
 	}
 
 	// create store
-	storeName, store, err := createStore(collectionName, config, artifactFiles)
+	storeName, store, err := createStore(collectionName, config)
 	if err != nil {
 		logPrint(err)
 		return
@@ -179,22 +179,8 @@ func main() {
 func parseCmdline() (conf collection.Configuration, err error) {
 	var unpackFlag bool
 	// default configuration
-	conf = collection.Configuration{
-		Type:      "_config",
-		Artifacts: nil,
-		User:      false,
-		Case:      "",
-	}
-
-	// read from packed ac.yaml
-	confContent, ok := assets.FS.Files["/pack/ac.yaml"]
-	if ok {
-		err = yaml.UnmarshalStrict(confContent, &conf)
-		if err != nil {
-			err = errors.Wrap(err, "could not unmarshal ac.yaml")
-			return conf, err
-		}
-	}
+	conf = *assets.Config
+	conf.Type = "_config"
 
 	// read from commandline
 	flag.BoolVar(&unpackFlag, "unpack", unpackFlag, "unpack files")
@@ -202,7 +188,7 @@ func parseCmdline() (conf collection.Configuration, err error) {
 	flag.Parse()
 
 	if unpackFlag {
-		_, tempDir, err := unpack()
+		tempDir, err := unpack()
 		fmt.Println(tempDir)
 		if err != nil {
 			os.Exit(1)
@@ -216,30 +202,23 @@ func parseCmdline() (conf collection.Configuration, err error) {
 	return conf, nil
 }
 
-func unpack() (tempDir string, artifactFiles []string, err error) {
+func unpack() (tempDir string, err error) {
 	tempDir, err = ioutil.TempDir("", "ac")
 	if err != nil {
-		return tempDir, nil, err
+		return tempDir, err
 	}
 
 	for path, content := range assets.FS.Files {
 		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0700); err != nil {
-			return tempDir, nil, err
+			return tempDir, err
 		}
 		if err := ioutil.WriteFile(filepath.Join(tempDir, path), content, 0644); err != nil {
-			return tempDir, nil, err
+			return tempDir, err
 		}
 		log.Printf("Unpacking %s", path)
-		if strings.HasPrefix(path, "/pack/artifacts/") {
-			artifactFiles = append(artifactFiles, filepath.Join(tempDir, path))
-		}
 	}
 
-	if len(artifactFiles) == 0 {
-		return tempDir, artifactFiles, errors.New("No artifact files given")
-	}
-
-	return tempDir, artifactFiles, nil
+	return tempDir, nil
 }
 
 func enforceAdmin(forceAdmin bool) error {
@@ -259,7 +238,7 @@ func enforceAdmin(forceAdmin bool) error {
 	}
 }
 
-func createStore(collectionName string, c collection.Configuration, artifactFiles []string) (string, *goforensicstore.ForensicStore, error) {
+func createStore(collectionName string, c collection.Configuration) (string, *goforensicstore.ForensicStore, error) {
 	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
 	store, err := goforensicstore.NewJSONLite(storeName)
 	if err != nil {
@@ -273,18 +252,13 @@ func createStore(collectionName string, c collection.Configuration, artifactFile
 	}
 
 	// insert artifact definitions into store
-	for _, artifactFile := range artifactFiles {
-		data, err := ioutil.ReadFile(artifactFile)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
+	for _, artifact := range assets.Artifacts {
 		_, err = store.InsertStruct(
 			struct {
 				Data string `yaml:"artifacts"`
 				Type string `yaml:"type,omitempty"`
 			}{
-				string(data),
+				fmt.Sprintf("%#v", artifact),
 				"_artifact-definition",
 			},
 		)
