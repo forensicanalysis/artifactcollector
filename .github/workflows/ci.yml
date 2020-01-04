@@ -49,7 +49,7 @@ jobs:
 
       - name: Download artifacts
         run: |
-          wget -O fa.zip https://github.com/forensicanalysis/artifacts/archive/master.zip
+          curl https://github.com/forensicanalysis/artifacts/archive/master.zip > fa.zip
           unzip fa.zip
           mv artifacts-master/* pack/artifacts/
         shell: bash
