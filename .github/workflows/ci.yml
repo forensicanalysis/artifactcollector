@@ -64,6 +64,12 @@ jobs:
         run: |
           go build .
           go install .
+      - name: Remove Windows syso File
+        run: rm artifactcollector.syso
+        if: matrix.os == 'windows-latest'
+        shell: bash
+      - name: Move Binary
+        run: |
           mkdir bin
           mv artifactcollector* bin
         shell: bash
