@@ -55,10 +55,7 @@ jobs:
         shell: bash
 
       - name: Setup Build
-        run: |
-          go get github.com/cugu/go-resources/cmd/resources
-          go get github.com/akavel/rsrc
-          go generate
+        run: go generate
       - name: Add Windows syso File
         run: mv resources/artifactcollector.syso artifactcollector.syso
         if: matrix.os == 'windows-latest'

@@ -56,6 +56,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+//go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources github.com/akavel/rsrc
 //go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
 //go:generate resources -declare -var=FS -package assets -output assets/assets.go pack/bin/*
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.syso
