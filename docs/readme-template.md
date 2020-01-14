@@ -26,3 +26,12 @@ go get -u {{.ModulePath}}
 {{ $value }}
 ```
 {{end}}{{end}}
+
+## Contact
+
+For feedback, questions and discussions you can use the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
+
+## Acknowledgment
+
+The development of this software was partially sponsored by Siemens CERT, but
+is not an official Siemens product.
