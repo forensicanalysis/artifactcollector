@@ -49,9 +49,9 @@ jobs:
 
       - name: Download artifacts
         run: |
-          curl -sfL https://github.com/forensicanalysis/artifacts/archive/master.zip > fa.zip
+          curl -sfL https://github.com/forensicanalysis/artifacts/archive/v0.6.0.zip > fa.zip
           unzip fa.zip
-          mv artifacts-master/*.yaml pack/artifacts/
+          mv artifacts-0.6.0/*.yaml pack/artifacts/
         shell: bash
 
       - name: Setup Build
