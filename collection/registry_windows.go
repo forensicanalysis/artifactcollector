@@ -31,7 +31,7 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func (c *collector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
+func (c *Collector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -43,7 +43,7 @@ func (c *collector) createRegistryKey(definitionName, key string) *goforensicsto
 	return &rk
 }
 
-func (c *collector) createRegistryValue(definitionName, key, valueName string) *goforensicstore.RegistryKey {
+func (c *Collector) createRegistryValue(definitionName, key, valueName string) *goforensicstore.RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -76,7 +76,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 	return key, &k, errors.Wrap(err, "Could not open key")
 }
 
-func (c *collector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, goforensicstore.RegistryKey) {
+func (c *Collector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, goforensicstore.RegistryKey) {
 	rk := goforensicstore.RegistryKey{Artifact: name, Type: "windows-registry-key", Values: []goforensicstore.RegistryValue{}}
 	// get registry key
 	cleankey, k, err := getRegistryKey(fskey)
@@ -95,7 +95,7 @@ func (c *collector) createEmptyRegistryKey(name string, fskey string) (*registry
 	return k, rk
 }
 
-func (c *collector) getValues(k *registry.Key) (values []goforensicstore.RegistryValue, valueErrors []error) {
+func (c *Collector) getValues(k *registry.Key) (values []goforensicstore.RegistryValue, valueErrors []error) {
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
@@ -121,7 +121,7 @@ func (c *collector) getValues(k *registry.Key) (values []goforensicstore.Registr
 	return values, valueErrors
 }
 
-func (c *collector) getValue(k *registry.Key, valueName string) (value goforensicstore.RegistryValue, err error) {
+func (c *Collector) getValue(k *registry.Key, valueName string) (value goforensicstore.RegistryValue, err error) {
 	dataType, _, _, stringData, err := valueData(k, valueName)
 	if err != nil {
 		return value, errors.Wrap(err, "could not parse registry data")

@@ -146,8 +146,10 @@ func TestCollect(t *testing.T) {
 				t.Skip("Test disabled on windows")
 			}
 
+			resolver := &EmptyResolver{}
+
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
-			artifactDefinitions, err := goartifacts.ProcessFiles(nil, sourceFS, false, testFiles)
+			artifactDefinitions, err := goartifacts.ProcessFiles(nil, sourceFS, false, testFiles, resolver)
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return
@@ -177,7 +179,12 @@ func TestCollect(t *testing.T) {
 				close(artifactChannel)
 			}()
 
-			Collect("", tt.args.infs, store, artifactChannel, sourceCount)
+			collector := Collector{
+				SourceFS: tt.args.infs,
+				Store:    store,
+				TempDir:  "",
+			}
+			collector.Collect(artifactChannel, sourceCount)
 
 			got, err := store.All()
 			if err != nil {
@@ -239,4 +246,10 @@ func TestCollect(t *testing.T) {
 
 		})
 	}
+}
+
+type EmptyResolver struct{}
+
+func (r *EmptyResolver) Resolve(s string) ([]string, error) {
+	return []string{s}, nil
 }

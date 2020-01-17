@@ -25,10 +25,10 @@ package collection
 
 import "github.com/forensicanalysis/forensicstore/goforensicstore"
 
-func (c *collector) createRegistryValue(definitionName, key, value string) *goforensicstore.RegistryKey {
+func (c *Collector) createRegistryValue(definitionName, key, value string) *goforensicstore.RegistryKey {
 	return &goforensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
 }
 
-func (c *collector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
+func (c *Collector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
 	return &goforensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
 }

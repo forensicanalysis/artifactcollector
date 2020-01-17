@@ -122,13 +122,6 @@ func main() {
 		return
 	}
 
-	// decode artifact definitions
-	sourceChannel, sourceCount, err := goartifacts.ParallelProcessArtifacts(config.Artifacts, sourceFS, true, assets.Artifacts)
-	if err != nil {
-		logPrint(errors.Wrap(err, "Decode failed"))
-		return
-	}
-
 	// create store
 	storeName, store, err := createStore(collectionName, config)
 	if err != nil {
@@ -143,8 +136,18 @@ func main() {
 		log.SetOutput(io.MultiWriter(&storeLogger{store}))
 	}
 
+	collector := collection.Collector{SourceFS: sourceFS, Store: store, TempDir: tempDir}
+	resolver := collection.NewResolver(assets.Artifacts, collector)
+
+	// decode artifact definitions
+	sourceChannel, sourceCount, err := goartifacts.ParallelProcessArtifacts(config.Artifacts, sourceFS, true, assets.Artifacts, resolver)
+	if err != nil {
+		logPrint(errors.Wrap(err, "Decode failed"))
+		return
+	}
+
 	// collect artifacts
-	collection.Collect(tempDir, sourceFS, store, sourceChannel, sourceCount)
+	collector.Collect(sourceChannel, sourceCount)
 
 	err = store.Close()
 	if err != nil {

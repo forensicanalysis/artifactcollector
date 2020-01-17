@@ -25,8 +25,6 @@ import (
 	"crypto/md5"
 	"crypto/sha1"
 	"fmt"
-	"github.com/forensicanalysis/fslib"
-	"github.com/spf13/afero"
 	"io"
 	"os"
 	"path"
@@ -34,10 +32,12 @@ import (
 	"strings"
 
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/fslib"
 	"github.com/pkg/errors"
+	"github.com/spf13/afero"
 )
 
-func (c *collector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
+func (c *Collector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
 	file := &goforensicstore.File{}
 	file.Artifact = definitionName
 	file.Type = "file"

@@ -33,7 +33,7 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
-func (c *collector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
+func (c *Collector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
 	process := &goforensicstore.Process{}
 	process.Artifact = definitionName
 	process.Type = "process"
@@ -57,8 +57,8 @@ func (c *collector) createProcess(definitionName, cmd string, args []string) *go
 	process.StderrPath = filepath.ToSlash(stderrpath)
 
 	// run command
-	execution := exec.Command(filepath.Join(c.tempDir, "pack", "bin", cmd), args...) // #nosec
-	if _, err := os.Stat(filepath.Join(c.tempDir, "pack", "bin", cmd)); os.IsNotExist(err) {
+	execution := exec.Command(filepath.Join(c.TempDir, "pack", "bin", cmd), args...) // #nosec
+	if _, err := os.Stat(filepath.Join(c.TempDir, "pack", "bin", cmd)); os.IsNotExist(err) {
 		process.AddError(fmt.Sprintf("%s is not bundled into artifactcollector, try execution from path", cmd))
 		execution = exec.Command(cmd, args...) // #nosec
 	}

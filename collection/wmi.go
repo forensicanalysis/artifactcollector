@@ -27,7 +27,7 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
-func (c *collector) createWMI(definitonName, query string) *goforensicstore.Process {
+func (c *Collector) createWMI(definitonName, query string) *goforensicstore.Process {
 	process := &goforensicstore.Process{}
 	process.Artifact = definitonName
 	process.Type = "process"

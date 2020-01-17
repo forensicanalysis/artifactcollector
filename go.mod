@@ -6,7 +6,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.2
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/forensicanalysis/artifactlib v0.12.2
-	github.com/forensicanalysis/forensicstore v0.12.1
+	github.com/forensicanalysis/forensicstore v0.12.2
 	github.com/forensicanalysis/fslib v0.12.1
 	github.com/frankban/quicktest v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.2.4
@@ -20,3 +20,5 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/sys v0.0.0-20191113165036-4c7a9d0fe056
 )
+
+replace github.com/forensicanalysis/artifactlib => ../artifactlib
