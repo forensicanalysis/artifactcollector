@@ -18,11 +18,11 @@ The artifactcollector offers the following features
 - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
 - 🛍️ Can extract files, directories, registry entries, command and WMI output.
 - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
-- 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution
 - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
 - ‍💻 Can run without admin/root rights
 - 🕊️ It's open source
 
+<!-- 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution -->
 
 ### Installation
 
