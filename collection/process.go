@@ -33,7 +33,7 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
-func (c *Collector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
+func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
 	process := &goforensicstore.Process{}
 	process.Artifact = definitionName
 	process.Type = "process"

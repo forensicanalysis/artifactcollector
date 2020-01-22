@@ -25,29 +25,78 @@ package collection
 
 import (
 	"fmt"
-	"log"
-	"os"
-	"runtime"
-	"strings"
-	"sync"
-	"time"
-
-	"github.com/cheggaaa/pb/v3"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/forensicanalysis/fslib"
+	"github.com/forensicanalysis/fslib/filesystem/registryfs"
+	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 	"github.com/pkg/errors"
+	"log"
+	"strings"
 )
 
-type Collector struct {
-	SourceFS fslib.FS
-	Store    *goforensicstore.ForensicStore
-	TempDir  string
+type sourceProvider struct {
+	artifact string
+	sources  []goartifacts.Source
 }
 
+type LiveCollector struct {
+	SourceFS   fslib.FS
+	registryfs fslib.FS
+	Store      *goforensicstore.ForensicStore
+	TempDir    string
+
+	providesMap map[string]sourceProvider
+}
+
+func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
+	providesMap := map[string]sourceProvider{}
+
+	for _, definition := range definitions {
+		for _, source := range definition.Sources {
+			for _, provide := range source.Provides {
+				if providingSources, ok := providesMap[provide.Key]; !ok {
+					providesMap[provide.Key] = sourceProvider{
+						definition.Name,
+						[]goartifacts.Source{source},
+					}
+				} else {
+					providingSources.sources = append(providingSources.sources, source)
+				}
+			}
+		}
+	}
+
+	sourceFS, err := systemfs.New()
+	if err != nil {
+		return nil, errors.Wrap(err, "system fs creation failed")
+	}
+
+	return &LiveCollector{
+		SourceFS:    sourceFS,
+		registryfs:  registryfs.New(),
+		Store:       store,
+		TempDir:     tempDir,
+		providesMap: providesMap,
+	}, nil
+}
+
+func (c *LiveCollector) FS() fslib.FS {
+	return c.SourceFS
+}
+
+func (c *LiveCollector) Registry() fslib.FS {
+	return c.registryfs
+}
+
+func (c *LiveCollector) AddPartitions() bool {
+	return true
+}
+
+/*
 // Collect gathers data specified in artifactDefinitions from infs and runtime
 // sources and saves the to the directory out in outfs
-func (c *Collector) Collect(sourceChannel <-chan goartifacts.NamedSource, sourceCount int) {
+func (c *LiveCollector) Collect(sourceChannel <-chan goartifacts.NamedSource, sourceCount int) {
 	tmpl := `Collect Artifact {{counters . }} {{bar . }}`
 	bar := pb.ProgressBarTemplate(tmpl).Start(sourceCount)
 	bar.SetRefreshRate(time.Second)
@@ -73,8 +122,9 @@ func (c *Collector) Collect(sourceChannel <-chan goartifacts.NamedSource, source
 
 	bar.Finish()
 }
+*/
 
-func (c *Collector) collectSource(name string, source goartifacts.Source) {
+func (c *LiveCollector) Collect(name string, source goartifacts.Source) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Collection for %s failed (%s)", name, r)
@@ -86,19 +136,19 @@ func (c *Collector) collectSource(name string, source goartifacts.Source) {
 	case "ARTIFACT_GROUP":
 		log.Println("Artifact groups are not collected directly")
 	case "COMMAND":
-		_, err = c.collectCommand(name, source)
+		_, err = c.CollectCommand(name, source)
 	case "DIRECTORY":
-		_, err = c.collectDirectory(name, source)
+		_, err = c.CollectDirectory(name, source)
 	case "FILE":
-		_, err = c.collectFile(name, source)
+		_, err = c.CollectFile(name, source)
 	case "PATH":
-		_, err = c.collectPath(name, source)
+		_, err = c.CollectPath(name, source)
 	case "REGISTRY_KEY":
-		_, err = c.collectRegistryKey(name, source)
+		_, err = c.CollectRegistryKey(name, source)
 	case "REGISTRY_VALUE":
-		_, err = c.collectRegistryValue(name, source)
+		_, err = c.CollectRegistryValue(name, source)
 	case "WMI":
-		_, err = c.collectWMI(name, source)
+		_, err = c.CollectWMI(name, source)
 	default:
 		log.Printf("Unknown artifact source %s %+v", source.Type, source)
 	}
@@ -107,7 +157,9 @@ func (c *Collector) collectSource(name string, source goartifacts.Source) {
 	}
 }
 
-func (c *Collector) collectCommand(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+func (c *LiveCollector) CollectCommand(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if source.Attributes.Cmd == "" {
 		log.Printf("No collection for %s", name)
 		return nil, nil
@@ -118,7 +170,9 @@ func (c *Collector) collectCommand(name string, source goartifacts.Source) (proc
 	return process, errors.Wrap(err, "could not insert struct")
 }
 
-func (c *Collector) collectFile(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
+func (c *LiveCollector) CollectFile(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
@@ -136,7 +190,9 @@ func (c *Collector) collectFile(name string, source goartifacts.Source) (files [
 	return files, nil
 }
 
-func (c *Collector) collectDirectory(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
+func (c *LiveCollector) CollectDirectory(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
@@ -154,27 +210,27 @@ func (c *Collector) collectDirectory(name string, source goartifacts.Source) (fi
 	return files, nil
 }
 
-func (c *Collector) collectPath(name string, source goartifacts.Source) (directories []*goforensicstore.Directory, err error) {
+func (c *LiveCollector) CollectPath(name string, source goartifacts.Source) (directories []*goforensicstore.Directory, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
 	for _, path := range source.Attributes.Paths {
-		if _, err := os.Stat(path); !os.IsNotExist(err) {
-			if err == nil {
-				log.Printf("Collect Path %s", path)
-				directory := goforensicstore.Directory{Artifact: name, Type: "directory", Path: path}
-				directories = append(directories, &directory)
-				_, err := c.Store.InsertStruct(directory)
-				if err != nil {
-					return directories, errors.Wrap(err, "could not insert struct")
-				}
-			}
+		log.Printf("Collect Path %s", path)
+		directory := goforensicstore.Directory{Artifact: name, Type: "directory", Path: path}
+		directories = append(directories, &directory)
+		_, err := c.Store.InsertStruct(directory)
+		if err != nil {
+			return directories, errors.Wrap(err, "could not insert struct")
 		}
 	}
 	return directories, nil
 }
 
-func (c *Collector) collectRegistryValue(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+func (c *LiveCollector) CollectRegistryValue(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if len(source.Attributes.KeyValuePairs) == 0 {
 		log.Printf("No collection for %s", name)
 	}
@@ -190,7 +246,9 @@ func (c *Collector) collectRegistryValue(name string, source goartifacts.Source)
 	return keys, nil
 }
 
-func (c *Collector) collectRegistryKey(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+func (c *LiveCollector) CollectRegistryKey(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if len(source.Attributes.Keys) == 0 {
 		log.Printf("No collection for %s", name)
 	}
@@ -206,7 +264,9 @@ func (c *Collector) collectRegistryKey(name string, source goartifacts.Source) (
 	return keys, nil
 }
 
-func (c *Collector) collectWMI(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+func (c *LiveCollector) CollectWMI(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+	source = goartifacts.ExpandSource(source, c)
+
 	if source.Attributes.Query == "" {
 		log.Printf("No collection for %s", name)
 		return nil, nil

@@ -38,7 +38,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"io"
 	"io/ioutil"
 	"log"
@@ -51,7 +50,6 @@ import (
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
-	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 	"github.com/mholt/archiver"
 	"github.com/pkg/errors"
 )
@@ -116,12 +114,6 @@ func main() {
 		return
 	}
 
-	sourceFS, err := systemfs.New()
-	if err != nil {
-		logPrint(errors.Wrap(err, "system fs creation failed"))
-		return
-	}
-
 	// create store
 	storeName, store, err := createStore(collectionName, config)
 	if err != nil {
@@ -136,18 +128,23 @@ func main() {
 		log.SetOutput(io.MultiWriter(&storeLogger{store}))
 	}
 
-	collector := collection.Collector{SourceFS: sourceFS, Store: store, TempDir: tempDir}
-	resolver := collection.NewResolver(assets.Artifacts, collector)
-
-	// decode artifact definitions
-	sourceChannel, sourceCount, err := goartifacts.ParallelProcessArtifacts(config.Artifacts, sourceFS, true, assets.Artifacts, resolver)
+	collector, err := collection.NewCollector(store, tempDir, assets.Artifacts)
 	if err != nil {
-		logPrint(errors.Wrap(err, "Decode failed"))
+		logPrint(errors.Wrap(err, "LiveCollector creation failed"))
 		return
 	}
 
-	// collect artifacts
-	collector.Collect(sourceChannel, sourceCount)
+	artifactDefinitions := assets.Artifacts
+
+	// select from entrypoint
+	if config.Artifacts != nil {
+		artifactDefinitions = goartifacts.FilterName(config.Artifacts, artifactDefinitions)
+	}
+
+	// select supported os
+	artifactDefinitions = goartifacts.FilterOS(artifactDefinitions)
+
+	goartifacts.CollectAll(collector, artifactDefinitions)
 
 	err = store.Close()
 	if err != nil {

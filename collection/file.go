@@ -37,7 +37,7 @@ import (
 	"github.com/spf13/afero"
 )
 
-func (c *Collector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
 	file := &goforensicstore.File{}
 	file.Artifact = definitionName
 	file.Type = "file"
