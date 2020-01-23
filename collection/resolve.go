@@ -44,8 +44,14 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 
 				scanner := bufio.NewScanner(f)
 				for scanner.Scan() {
-					for _, match := range regex.FindAllStringSubmatch(scanner.Text(), -1) {
-						resolves = append(resolves, match[1])
+					if provide.Regex != "" {
+						for _, match := range regex.FindAllStringSubmatch(scanner.Text(), -1) {
+							if len(match) > 1 {
+								resolves = append(resolves, match[1])
+							}
+						}
+					} else {
+						resolves = append(resolves, scanner.Text())
 					}
 				}
 				if err := scanner.Err(); err != nil {
@@ -69,7 +75,9 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 					for scanner.Scan() {
 						if provide.Regex != "" {
 							for _, match := range regex.FindAllStringSubmatch(scanner.Text(), -1) {
-								resolves = append(resolves, match[1])
+								if len(match) > 1 {
+									resolves = append(resolves, match[1])
+								}
 							}
 						} else {
 							resolves = append(resolves, scanner.Text())
@@ -90,7 +98,9 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 				for _, directory := range directories {
 					if provide.Regex != "" {
 						for _, match := range regex.FindAllStringSubmatch(directory.Path, -1) {
-							resolves = append(resolves, match[1])
+							if len(match) > 1 {
+								resolves = append(resolves, match[1])
+							}
 						}
 					} else {
 						resolves = append(resolves, directory.Path)
@@ -104,8 +114,14 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 					return nil, err
 				}
 				for _, key := range keys {
-					for _, match := range regex.FindAllStringSubmatch(key.Key, -1) {
-						resolves = append(resolves, match[1])
+					if provide.Regex != "" {
+						for _, match := range regex.FindAllStringSubmatch(key.Key, -1) {
+							if len(match) > 1 {
+								resolves = append(resolves, match[1])
+							}
+						}
+					} else {
+						resolves = append(resolves, key.Key)
 					}
 				}
 
@@ -117,8 +133,14 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 				}
 				for _, key := range keys {
 					for _, value := range key.Values {
-						for _, match := range regex.FindAllStringSubmatch(value.Data, -1) {
-							resolves = append(resolves, match[1])
+						if provide.Regex != "" {
+							for _, match := range regex.FindAllStringSubmatch(value.Data, -1) {
+								if len(match) > 1 {
+									resolves = append(resolves, match[1])
+								}
+							}
+						} else {
+							resolves = append(resolves, value.Data)
 						}
 					}
 				}
@@ -131,7 +153,15 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 				}
 				for _, elem := range wmi.WMI {
 					if wmiResult, ok := elem.(map[string]interface{}); ok {
-						resolves = append(resolves, fmt.Sprint(wmiResult[provide.WMIKey]))
+						if provide.Regex != "" {
+							for _, match := range regex.FindAllStringSubmatch(fmt.Sprint(wmiResult[provide.WMIKey]), -1) {
+								if len(match) > 1 {
+									resolves = append(resolves, match[1])
+								}
+							}
+						} else {
+							resolves = append(resolves, fmt.Sprint(wmiResult[provide.WMIKey]))
+						}
 					}
 				}
 			}
