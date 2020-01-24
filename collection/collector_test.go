@@ -190,7 +190,7 @@ func TestCollect(t *testing.T) {
 			}
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
-			ads, err := goartifacts.DecodeFiles(testFiles)
+			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return
@@ -198,7 +198,11 @@ func TestCollect(t *testing.T) {
 
 			collector := &TestCollector{fs: tt.args.infs}
 
-			goartifacts.CollectAll(collector, ads)
+			for _, artifactDefinition := range artifactDefinitions {
+				for _, source := range artifactDefinition.Sources {
+					collector.Collect(artifactDefinition.Name, source)
+				}
+			}
 
 			if len(collector.Collected) != tt.want {
 				t.Errorf("Collect() = %v (%v), want %v", len(collector.Collected), collector.Collected, tt.want)

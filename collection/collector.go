@@ -93,37 +93,6 @@ func (c *LiveCollector) AddPartitions() bool {
 	return true
 }
 
-/*
-// Collect gathers data specified in artifactDefinitions from infs and runtime
-// sources and saves the to the directory out in outfs
-func (c *LiveCollector) Collect(sourceChannel <-chan goartifacts.NamedSource, sourceCount int) {
-	tmpl := `Collect Artifact {{counters . }} {{bar . }}`
-	bar := pb.ProgressBarTemplate(tmpl).Start(sourceCount)
-	bar.SetRefreshRate(time.Second)
-
-	var wg sync.WaitGroup
-	workerCount := 1
-	if runtime.NumCPU() > 1 {
-		workerCount = runtime.NumCPU() - 1
-	}
-	wg.Add(workerCount)
-	for id := 0; id < workerCount; id++ {
-		go func(id int) {
-			log.Printf("Worker %d start", id)
-			for source := range sourceChannel {
-				c.collectSource(source.Name, source.Source)
-				bar.Increment()
-			}
-			log.Printf("Worker %d done", id)
-			wg.Done()
-		}(id)
-	}
-	wg.Wait()
-
-	bar.Finish()
-}
-*/
-
 func (c *LiveCollector) Collect(name string, source goartifacts.Source) {
 	defer func() {
 		if r := recover(); r != nil {

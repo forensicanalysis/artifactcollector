@@ -38,12 +38,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/cheggaaa/pb/v3"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/forensicanalysis/artifactcollector/assets"
@@ -144,7 +146,27 @@ func main() {
 	// select supported os
 	artifactDefinitions = goartifacts.FilterOS(artifactDefinitions)
 
-	goartifacts.CollectAll(collector, artifactDefinitions)
+	// setup bar
+	tmpl := `Collect Artifact {{counters . }} {{bar . }}`
+	bar := pb.ProgressBarTemplate(tmpl).Start(len(artifactDefinitions))
+	bar.SetRefreshRate(time.Second)
+
+	// collect artifacts
+	var wg sync.WaitGroup
+	for ax, artifactDefinition := range artifactDefinitions {
+		wg.Add(1)
+		go func(ax int, artifactDefinition goartifacts.ArtifactDefinition) {
+			for _, source := range artifactDefinition.Sources {
+				collector.Collect(artifactDefinition.Name, source)
+				bar.Increment()
+			}
+			wg.Done()
+		}(ax, artifactDefinition)
+	}
+	wg.Wait()
+
+	// finish bar
+	bar.Finish()
 
 	err = store.Close()
 	if err != nil {
