@@ -25,14 +25,15 @@ package collection
 
 import (
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/registryfs"
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 	"github.com/pkg/errors"
-	"log"
-	"strings"
 )
 
 type sourceProvider struct {
@@ -46,7 +47,8 @@ type LiveCollector struct {
 	Store      *goforensicstore.ForensicStore
 	TempDir    string
 
-	providesMap map[string]sourceProvider
+	providesMap   map[string]sourceProvider
+	knowledgeBase map[string][]string
 }
 
 func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
@@ -73,11 +75,12 @@ func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definiti
 	}
 
 	return &LiveCollector{
-		SourceFS:    sourceFS,
-		registryfs:  registryfs.New(),
-		Store:       store,
-		TempDir:     tempDir,
-		providesMap: providesMap,
+		SourceFS:      sourceFS,
+		registryfs:    registryfs.New(),
+		Store:         store,
+		TempDir:       tempDir,
+		providesMap:   providesMap,
+		knowledgeBase: map[string][]string{},
 	}, nil
 }
 
@@ -139,8 +142,8 @@ func (c *LiveCollector) CollectCommand(name string, source goartifacts.Source) (
 	return process, errors.Wrap(err, "could not insert struct")
 }
 
-func (c *LiveCollector) CollectFile(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *LiveCollector) CollectFile(name string, osource goartifacts.Source) (files []*goforensicstore.File, err error) {
+	source := goartifacts.ExpandSource(osource, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)

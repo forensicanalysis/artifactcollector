@@ -36,9 +36,7 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/cheggaaa/pb/v3"
 	"io"
 	"io/ioutil"
 	"log"
@@ -47,6 +45,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/cheggaaa/pb/v3"
 
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/collection"
@@ -65,16 +65,12 @@ import (
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	defer func() {
-		if r := recover(); r != nil {
-			logPrint("A critical error occurred: ", r)
-		}
-	}()
+	// default configuration
+	config := *assets.Config
+	config.Type = "_config"
 
-	// parse commandline
-	config, err := parseCmdline()
-	if err != nil {
-		fmt.Println("Error parsing arguments: ", err)
+	if len(config.Artifacts) == 0 {
+		fmt.Println("No artifacts selected in config")
 		return
 	}
 
@@ -97,6 +93,12 @@ func main() {
 		log.SetOutput(logfile)
 		defer logfile.Close()
 	}
+
+	defer func() {
+		if r := recover(); r != nil {
+			logPrint("A critical error occurred: ", r)
+		}
+	}()
 
 	// start running
 	logPrint("Start to collect forensic artifacts. This might take a while.")
@@ -168,6 +170,13 @@ func main() {
 	// finish bar
 	bar.Finish()
 
+	// remove store logger
+	if logfileError == nil {
+		log.SetOutput(logfile)
+	} else {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	err = store.Close()
 	if err != nil {
 		logPrint(errors.Wrap(err, "Close Store failed"))
@@ -196,32 +205,6 @@ func main() {
 	}})
 	logPrint("Collection done.")
 	time.Sleep(time.Second)
-}
-
-func parseCmdline() (conf collection.Configuration, err error) {
-	var unpackFlag bool
-	// default configuration
-	conf = *assets.Config
-	conf.Type = "_config"
-
-	// read from commandline
-	flag.BoolVar(&unpackFlag, "unpack", unpackFlag, "unpack files")
-	flag.BoolVar(&conf.User, "user", conf.User, "enable running without admin/root")
-	flag.Parse()
-
-	if unpackFlag {
-		tempDir, err := unpack()
-		fmt.Println(tempDir)
-		if err != nil {
-			os.Exit(1)
-		}
-		os.Exit(0)
-	}
-
-	if len(conf.Artifacts) == 0 {
-		return conf, errors.New("No artifacts given")
-	}
-	return conf, nil
 }
 
 func unpack() (tempDir string, err error) {
