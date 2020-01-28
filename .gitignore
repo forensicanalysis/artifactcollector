@@ -24,5 +24,6 @@ yarn-error.log*
 *.sln
 *.sw?
 
-cmd/artifactcollector/*.syso
 *.idea
+pack/artifacts/
+*.syso

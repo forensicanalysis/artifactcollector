@@ -1,4 +1,4 @@
-
+# Artifacts from the SANS FOR500 course
 
 name: FOR500
 doc: Windows Forensic Analysis
@@ -10,7 +10,7 @@ sources:
       - WindowsProgramExecution
       - WindowsDeletedFiles
       - WindowsNetworkActivity
-      - WindowFileOpening
+      # - WindowsFileOpening
 labels: [System]
 supported_os: [Windows]
 urls: ['https://www.sans.org/security-resources/posters/windows-forensic-analysis/170/download']
@@ -75,23 +75,23 @@ sources:
       # BrowserSearchTerms -> WindowsBrowserArtifacts
       # WindowsSystemResourceUsageMonitorDatabaseFile -> WindowsProgramExecution
 supported_os: [Windows]
----
-name: WindowFileOpening
-doc: File Opening
-sources:
-- type: ARTIFACT_GROUP
-  attributes:
-    names:
-      # WindowsOpenSaveMRU -> WindowsBrowserArtifacts
-      # RecentFiles
-      # JumpLists -> WindowsProgramExecution
-      # ShellBags
-      # LNKFiles
-      # WindowsPrefetchFiles -> WindowsProgramExecution
-      # LastVisitedMRU -> WindowsProgramExecution
-      # IEEdgeFile -> WindowsBrowserArtifacts
-      # OfficeRecentFiles
-supported_os: [Windows]
+# ---
+# name: WindowsFileOpening
+# doc: File Opening
+# sources:
+# - type: ARTIFACT_GROUP
+#   attributes:
+#     names:
+#       # WindowsOpenSaveMRU -> WindowsBrowserArtifacts
+#       # RecentFiles
+#       # JumpLists -> WindowsProgramExecution
+#       # ShellBags
+#       # LNKFiles
+#       # WindowsPrefetchFiles -> WindowsProgramExecution
+#       # LastVisitedMRU -> WindowsProgramExecution
+#       # IEEdgeFile -> WindowsBrowserArtifacts
+#       # OfficeRecentFiles
+# supported_os: [Windows]
 ---
 name: AccountUsage
 doc: Account Usage
@@ -115,5 +115,5 @@ sources:
       # PnPEvents
       # VolumeSerialNumber
       # DriverLetter
-      # LNKFiles -> WindowFileOpening
+      # LNKFiles -> WindowsFileOpening
 supported_os: [Windows]

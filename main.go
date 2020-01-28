@@ -47,7 +47,6 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
