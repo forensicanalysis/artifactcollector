@@ -147,7 +147,7 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			false, "Collect registry dummy", args{sourceFS, "extract", "collect_2.yaml"}, 0, nil},
+			false, "Collect registry dummy", args{sourceFS, "extract", "collect_2.yaml"}, 1, nil},
 		{
 			true, "Collect command dummy", args{sourceFS, "extract", "collect_3.yaml"}, 1,
 			[]map[string]interface{}{
@@ -162,7 +162,7 @@ func TestCollect(t *testing.T) {
 			true, "Collect directory dummy", args{sourceFS, "extract", "collect_4.yaml"}, 1,
 			[]map[string]interface{}{{"artifact": "Test4", "name": "dir", "type": "file", "origin": map[string]interface{}{"path": "/dir"}, "export_path": "extract/Test4/dir"}}},
 		{
-			false, "Collect registry value dummy", args{sourceFS, "extract", "collect_5.yaml"}, 0, nil},
+			false, "Collect registry value dummy", args{sourceFS, "extract", "collect_5.yaml"}, 1, nil},
 		{
 			true, "Collect with stars", args{sourceFS, "extract", "collect_6.yaml"}, 1,
 			[]map[string]interface{}{

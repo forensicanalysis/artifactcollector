@@ -3,6 +3,7 @@ package collection
 import (
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -66,33 +67,36 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 		args         args
 		wantResolves []string
 		wantErr      bool
+		os           string
 	}{
-		{"Resolve test", args{"environ_systemroot"}, []string{`/C/Windows`}, false},
+		{"Resolve test", args{"environ_systemroot"}, []string{`/C/Windows`}, false, "windows"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			testDir := setup(t)
-			defer teardown(t)
+			if tt.os == runtime.GOOS {
+				testDir := setup(t)
+				defer teardown(t)
 
-			store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, "extract", "ac.forensicstore"))
-			if err != nil {
-				t.Errorf("Collect() error = %v", err)
-				return
-			}
+				store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, "extract", "ac.forensicstore"))
+				if err != nil {
+					t.Errorf("Collect() error = %v", err)
+					return
+				}
 
-			collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
-			if err != nil {
-				t.Errorf("NewCollector() error = %v", err)
-				return
-			}
+				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
+				if err != nil {
+					t.Errorf("NewCollector() error = %v", err)
+					return
+				}
 
-			gotResolves, err := collector.Resolve(tt.args.parameter)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Resolve() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(gotResolves, tt.wantResolves) {
-				t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)
+				gotResolves, err := collector.Resolve(tt.args.parameter)
+				if (err != nil) != tt.wantErr {
+					t.Errorf("Resolve() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+				if !reflect.DeepEqual(gotResolves, tt.wantResolves) {
+					t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)
+				}
 			}
 		})
 	}
