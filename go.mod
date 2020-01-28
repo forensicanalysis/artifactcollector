@@ -3,9 +3,7 @@ module github.com/forensicanalysis/artifactcollector
 go 1.13
 
 require (
-	github.com/akavel/rsrc v0.8.0 // indirect
 	github.com/cheggaaa/pb/v3 v3.0.2
-	github.com/cugu/go-resources v0.2.2 // indirect
 	github.com/forensicanalysis/artifactlib v0.13.0
 	github.com/forensicanalysis/forensicstore v0.13.0
 	github.com/forensicanalysis/fslib v0.12.1
@@ -15,5 +13,4 @@ require (
 	github.com/spf13/afero v1.2.2
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/sys v0.0.0-20191113165036-4c7a9d0fe056
-	golang.org/x/tools v0.0.0-20200128002243-345141a36859 // indirect
 )

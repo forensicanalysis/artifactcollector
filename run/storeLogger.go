@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package main
+package run
 
 import (
 	"time"
