@@ -33,7 +33,6 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
@@ -45,10 +44,9 @@ type Collection struct {
 	Path string
 }
 
-func Run() *Collection {
+func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) *Collection {
+
 	// default configuration
-	config := *assets.Config
-	config.Type = "_config"
 
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
@@ -86,7 +84,7 @@ func Run() *Collection {
 	start := time.Now()
 
 	// unpack internal files
-	tempDir, err := unpack()
+	tempDir, err := unpack(embedded)
 	if err != nil {
 		logPrint(err)
 		return nil
@@ -100,7 +98,7 @@ func Run() *Collection {
 	}
 
 	// create store
-	storeName, store, err := createStore(collectionName, config)
+	storeName, store, err := createStore(collectionName, config, artifactDefinitions)
 	if err != nil {
 		logPrint(err)
 		return nil
@@ -113,13 +111,11 @@ func Run() *Collection {
 		log.SetOutput(io.MultiWriter(&storeLogger{store}))
 	}
 
-	collector, err := collection.NewCollector(store, tempDir, assets.Artifacts)
+	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
 	if err != nil {
 		logPrint(errors.Wrap(err, "LiveCollector creation failed"))
 		return nil
 	}
-
-	artifactDefinitions := assets.Artifacts
 
 	// select from entrypoint
 	if config.Artifacts != nil {
@@ -190,13 +186,13 @@ func Run() *Collection {
 	return &Collection{Path: zipPath}
 }
 
-func unpack() (tempDir string, err error) {
+func unpack(embedded map[string][]byte) (tempDir string, err error) {
 	tempDir, err = ioutil.TempDir("", "ac")
 	if err != nil {
 		return tempDir, err
 	}
 
-	for path, content := range assets.FS.Files {
+	for path, content := range embedded {
 		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0700); err != nil {
 			return tempDir, err
 		}
@@ -226,7 +222,7 @@ func enforceAdmin(forceAdmin bool) error {
 	}
 }
 
-func createStore(collectionName string, c collection.Configuration) (string, *goforensicstore.ForensicStore, error) {
+func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *goforensicstore.ForensicStore, error) {
 	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
 	store, err := goforensicstore.NewJSONLite(storeName)
 	if err != nil {
@@ -234,13 +230,14 @@ func createStore(collectionName string, c collection.Configuration) (string, *go
 	}
 
 	// insert configuration into store
-	_, err = store.InsertStruct(c)
+	config.Type = "_config"
+	_, err = store.InsertStruct(config)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// insert artifact definitions into store
-	for _, artifact := range assets.Artifacts {
+	for _, artifact := range definitions {
 		_, err = store.InsertStruct(
 			struct {
 				Data string `yaml:"artifacts"`

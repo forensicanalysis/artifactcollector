@@ -36,6 +36,7 @@
 package main
 
 import (
+	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/run"
 )
 
@@ -48,5 +49,5 @@ import (
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	_ = run.Run()
+	_ = run.Run(assets.Config, assets.Artifacts, assets.FS.Files)
 }
