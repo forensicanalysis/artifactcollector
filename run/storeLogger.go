@@ -19,26 +19,25 @@
 //
 // Author(s): Jonas Plum
 
-package main
+package run
 
 import (
-	"log"
 	"time"
+
+	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
-func init() {
-	plugins = append(plugins, &timeObserver{})
+type storeLogger struct {
+	store *goforensicstore.ForensicStore
 }
 
-type timeObserver struct {
-	start time.Time
-}
-
-func (u *timeObserver) notify(e event) {
-	switch e.Type {
-	case beforeStart:
-		u.start = time.Now()
-	case finished:
-		log.Printf("Collected artifacts in %.1f seconds\n", time.Since(u.start).Seconds())
+func (s *storeLogger) Write(b []byte) (int, error) {
+	type logEntry struct {
+		Type    string `yaml:"type"`
+		Time    string `yaml:"time"`
+		Message string `yaml:"message"`
 	}
+	now := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+	_, err := s.store.InsertStruct(logEntry{"_log", now, string(b)})
+	return len(b), err
 }
