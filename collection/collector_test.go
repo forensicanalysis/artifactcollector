@@ -22,8 +22,7 @@
 package collection
 
 import (
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/fslib"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -32,13 +31,51 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/testfs"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
 
 var exampleStore = "example1.forensicstore"
+
+type TestCollector struct {
+	fs        fslib.FS
+	Collected map[string][]goartifacts.Source
+}
+
+func (r *TestCollector) Collect(name string, source goartifacts.Source) {
+	source = goartifacts.ExpandSource(source, r)
+
+	if r.Collected == nil {
+		r.Collected = map[string][]goartifacts.Source{}
+	}
+	r.Collected[name] = append(r.Collected[name], source)
+}
+
+func (r *TestCollector) FS() fslib.FS {
+	return r.fs
+}
+
+func (r *TestCollector) Registry() fslib.FS {
+	return r.fs
+}
+
+func (r *TestCollector) AddPartitions() bool {
+	return false
+}
+
+func (r *TestCollector) Resolve(s string) ([]string, error) {
+	switch s {
+	case "foo":
+		return []string{"xxx", "yyy"}, nil
+	case "faz":
+		return []string{"%foo%"}, nil
+	}
+	return nil, errors.New("could not resolve")
+}
 
 func setup(t *testing.T) string {
 	dir, err := ioutil.TempDir("", strings.Replace(t.Name(), "/", "_", -1))
@@ -110,7 +147,7 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			false, "Collect registry dummy", args{sourceFS, "extract", "collect_2.yaml"}, 0, nil},
+			false, "Collect registry dummy", args{sourceFS, "extract", "collect_2.yaml"}, 1, nil},
 		{
 			true, "Collect command dummy", args{sourceFS, "extract", "collect_3.yaml"}, 1,
 			[]map[string]interface{}{
@@ -125,9 +162,9 @@ func TestCollect(t *testing.T) {
 			true, "Collect directory dummy", args{sourceFS, "extract", "collect_4.yaml"}, 1,
 			[]map[string]interface{}{{"artifact": "Test4", "name": "dir", "type": "file", "origin": map[string]interface{}{"path": "/dir"}, "export_path": "extract/Test4/dir"}}},
 		{
-			false, "Collect registry value dummy", args{sourceFS, "extract", "collect_5.yaml"}, 0, nil},
+			false, "Collect registry value dummy", args{sourceFS, "extract", "collect_5.yaml"}, 1, nil},
 		{
-			true, "Collect with stars", args{sourceFS, "extract", "collect_6.yaml"}, 4,
+			true, "Collect with stars", args{sourceFS, "extract", "collect_6.yaml"}, 1,
 			[]map[string]interface{}{
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/a/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/b/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
@@ -146,46 +183,29 @@ func TestCollect(t *testing.T) {
 				t.Skip("Test disabled on windows")
 			}
 
-			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
-			artifactDefinitions, err := goartifacts.ProcessFiles(nil, sourceFS, false, testFiles)
-			if err != nil {
-				t.Errorf("Collect() error = %v", err)
-				return
-			}
-
 			store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return
 			}
 
-			sourceCount := 0
-			for _, a := range artifactDefinitions {
-				sourceCount += len(a.Sources)
-			}
-
-			artifactChannel := make(chan goartifacts.NamedSource, 100)
-			go func() {
-				for _, artifactDefinition := range artifactDefinitions {
-					for _, source := range artifactDefinition.Sources {
-						artifactChannel <- goartifacts.NamedSource{
-							Source: source,
-							Name:   artifactDefinition.Name,
-						}
-					}
-				}
-				close(artifactChannel)
-			}()
-
-			Collect("", tt.args.infs, store, artifactChannel, sourceCount)
-
-			got, err := store.All()
+			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
+			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
 			if err != nil {
-				t.Errorf("store.All() error = %v", err)
+				t.Errorf("Collect() error = %v", err)
 				return
 			}
-			if len(got) != tt.want {
-				t.Errorf("Collect() = %v, want %v", got, tt.want)
+
+			collector := &TestCollector{fs: tt.args.infs}
+
+			for _, artifactDefinition := range artifactDefinitions {
+				for _, source := range artifactDefinition.Sources {
+					collector.Collect(artifactDefinition.Name, source)
+				}
+			}
+
+			if len(collector.Collected) != tt.want {
+				t.Errorf("Collect() = %v (%v), want %v", len(collector.Collected), collector.Collected, tt.want)
 			}
 
 			err = store.Close()
