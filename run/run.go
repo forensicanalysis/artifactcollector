@@ -41,13 +41,11 @@ import (
 )
 
 type Collection struct {
+	Name string
 	Path string
 }
 
 func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) *Collection {
-
-	// default configuration
-
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
@@ -67,7 +65,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
 	logfile, logfileError := os.OpenFile(collectionName+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if logfileError != nil {
-		log.Printf("Could not open logfile %s\n", err)
+		log.Printf("Could not open logfile %s\n", logfileError)
 	} else {
 		log.SetOutput(logfile)
 		defer logfile.Close()
@@ -174,7 +172,10 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		zipPath = storeName + ".zip"
 		err = os.RemoveAll(storeName)
 		if err == nil {
-			os.Rename(storeName+".zip", storeName) //nolint:errcheck
+			err := os.Rename(storeName+".zip", storeName) //nolint:errcheck
+			if err == nil {
+				zipPath = storeName
+			}
 		} else {
 			log.Printf("rename failed: %s", err)
 		}
@@ -183,7 +184,10 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	logPrint("Collection done.")
 	time.Sleep(time.Second)
 
-	return &Collection{Path: zipPath}
+	return &Collection{
+		Name: collectionName,
+		Path: zipPath,
+	}
 }
 
 func unpack(embedded map[string][]byte) (tempDir string, err error) {
