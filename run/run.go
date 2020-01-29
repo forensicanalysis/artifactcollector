@@ -29,7 +29,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
@@ -124,23 +123,20 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	artifactDefinitions = goartifacts.FilterOS(artifactDefinitions)
 
 	// setup bar
-	tmpl := `Collect Artifact {{counters . }} {{bar . }}`
+	tmpl := `Collecting {{string . "artifact"}} ({{counters . }} {{bar . }})`
 	bar := pb.ProgressBarTemplate(tmpl).Start(len(artifactDefinitions))
 	bar.SetRefreshRate(time.Second)
 
 	// collect artifacts
-	var wg sync.WaitGroup
-	for ax, artifactDefinition := range artifactDefinitions {
-		wg.Add(1)
-		go func(ax int, artifactDefinition goartifacts.ArtifactDefinition) {
-			for _, source := range artifactDefinition.Sources {
-				collector.Collect(artifactDefinition.Name, source)
-				bar.Increment()
-			}
-			wg.Done()
-		}(ax, artifactDefinition)
+	for _, artifactDefinition := range artifactDefinitions {
+		for _, source := range artifactDefinition.Sources {
+			startArtifact := time.Now()
+			bar.Set("artifact", artifactDefinition.Name)
+			bar.Increment()
+			collector.Collect(artifactDefinition.Name, source)
+			log.Printf("Collected %s in %.1f seconds\n", artifactDefinition.Name, time.Since(startArtifact).Seconds())
+		}
 	}
-	wg.Wait()
 
 	// finish bar
 	bar.Finish()
