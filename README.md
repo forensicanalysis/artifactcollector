@@ -31,7 +31,7 @@ Download from https://github.com/forensicanalysis/artifactcollector/releases or
 ```bash
 git clone https://github.com/forensicanalysis/artifactcollector
 cd artifactcollector
-go build .
+go install .
 ```
 
 ### Build your own artifactcollector
