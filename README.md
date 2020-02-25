@@ -29,7 +29,9 @@ The artifactcollector offers the following features
 Download from https://github.com/forensicanalysis/artifactcollector/releases or
 
 ```bash
-go get -u github.com/forensicanalysis/artifactcollector
+git clone https://github.com/forensicanalysis/artifactcollector
+cd artifactcollector
+go build .
 ```
 
 ### Build your own artifactcollector
