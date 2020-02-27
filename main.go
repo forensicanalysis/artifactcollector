@@ -29,7 +29,6 @@
 //    - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
 //    - 🛍️ Can extract files, directories, registry entries, command and WMI output.
 //    - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
-//    - 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution
 //    - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
 //    - ‍💻 Can run without admin/root rights
 //    - 🕊️ It's open source
@@ -40,6 +39,10 @@ import (
 	"github.com/forensicanalysis/artifactcollector/run"
 )
 
+//go:generate curl --fail --silent --output fa.zip --location https://github.com/forensicanalysis/artifacts/archive/v0.6.1.zip
+//go:generate unzip fa.zip
+//go:generate mv artifacts-0.6.1/*.yaml pack/artifacts/
+//go:generate rm -rf artifacts-0.6.1 fa.zip
 //go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources github.com/akavel/rsrc
 //go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
 //go:generate resources -declare -var=FS -package assets -output assets/assets.go pack/bin/*
