@@ -41,7 +41,7 @@ import (
 
 //go:generate curl --fail --silent --output fa.zip --location https://github.com/forensicanalysis/artifacts/archive/v0.6.1.zip
 //go:generate unzip fa.zip
-//go:generate mv artifacts-0.6.1/*.yaml pack/artifacts/
+//go:generate sh -c "mv artifacts-0.6.1/*.yaml pack/artifacts/"
 //go:generate rm -rf artifacts-0.6.1 fa.zip
 //go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources github.com/akavel/rsrc
 //go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
