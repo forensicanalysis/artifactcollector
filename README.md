@@ -37,12 +37,14 @@ go install .
 ### Build your own artifactcollector
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
-2. Add and edit artifact definitions as needed in `pack/artifacts`. 
-3. Edit `pack/ac.yaml` and add the artifacts you want to collect.
-4. Run `go generate`. This might yield some errors or problems in your artifacts.
-5. On windows you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`) 
+2. Run `go generate` to download all artifacts.
+3. Add artifact definition yaml files as needed in `pack/artifacts`. Do not edit the 
+artifact definitions, as they will be overwritten.
+4. Edit `pack/ac.yaml` and add the artifacts you want to collect.
+5. Run `go generate`. This might yield some errors or problems in your artifacts.
+6. On windows you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`) 
 to enable the icon for the executable and the UAC popup.
-6. Run `go build .` to generates an executable. 
+7. Run `go build .` to generates an executable. 
 
 ## Contact
 
