@@ -46,6 +46,38 @@ artifact definitions, as they will be overwritten.
 to enable the icon for the executable and the UAC popup.
 7. Run `go build .` to generates an executable. 
 
+### Embed binaries
+
+Binaries can be added to `pack/bin` and than included into the artifactcollector 
+in the `go generate` step. Additionally a corresponding COMMAND artifact like 
+the following is required. 
+
+```yaml
+name: Autoruns
+sources:
+- type: COMMAND
+  attributes:
+    cmd: autorunsc.exe
+    args: ["-x"]
+supported_os: [Windows]
+```
+
+Currently the output to stdout and stderr is saved, but generated 
+files are not collected.
+
+
+
+### Cross compilation
+
+Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO. 
+
+Example cross compilation for Windows:
+
+```sh
+CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
+CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
+```
+
 ## Contact
 
 For feedback, questions and discussions you can use the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
