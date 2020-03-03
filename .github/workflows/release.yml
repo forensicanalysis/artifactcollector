@@ -18,22 +18,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
 
+      - name: Setup Build
+        run: go generate
+      - name: Add Windows syso File
+        run: mv resources/artifactcollector.syso artifactcollector.syso
+        if: matrix.os == 'windows-latest'
+        shell: bash
       - name: Build
         run: go build .
-        working-directory: ./cmd/artifactcollector
 
       - name: Pack UNIX
         run: |
           zip -r ${{ matrix.os }}.zip artifactcollector*
           mv ${{ matrix.os }}.zip ../..
-        working-directory: ./cmd/artifactcollector
         shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
         run: |
           7z a ${{ matrix.os }}.zip artifactcollector*
           mv ${{ matrix.os }}.zip ../..
-        working-directory: ./cmd/artifactcollector
         shell: bash
         if: matrix.os == 'windows-latest'
 
