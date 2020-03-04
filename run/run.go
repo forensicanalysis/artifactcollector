@@ -167,13 +167,8 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	} else {
 		zipPath = storeName + ".zip"
 		err = os.RemoveAll(storeName)
-		if err == nil {
-			err := os.Rename(storeName+".zip", storeName) //nolint:errcheck
-			if err == nil {
-				zipPath = storeName
-			}
-		} else {
-			log.Printf("rename failed: %s", err)
+		if err != nil {
+			log.Printf("removal failed: %s", err)
 		}
 	}
 
