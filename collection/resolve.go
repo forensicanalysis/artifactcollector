@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strings"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 )
 
 func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error) {
+	parameter = strings.TrimPrefix(parameter, "environ_")
+
 	providingSources, ok := c.providesMap[parameter]
 	if !ok {
 		return nil, fmt.Errorf("parameter %s not provided", parameter)
@@ -23,7 +26,7 @@ func (c *LiveCollector) Resolve(parameter string) (resolves []string, err error)
 
 		i := -1
 		for index, p := range source.Provides {
-			if p.Key == parameter {
+			if strings.TrimPrefix(p.Key, "environ_") == parameter {
 				i = index
 			}
 		}
