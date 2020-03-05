@@ -17,6 +17,9 @@ jobs:
         with: {go-version: '1.13'}
       - name: Checkout code
         uses: actions/checkout@v1
+      - name: Set system path
+        run: echo "##[add-path]$(go env GOPATH)/bin"
+        shell: bash
 
       - name: Setup Build
         run: go generate
