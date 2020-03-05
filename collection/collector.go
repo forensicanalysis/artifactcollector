@@ -57,8 +57,9 @@ func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definiti
 	for _, definition := range definitions {
 		for _, source := range definition.Sources {
 			for _, provide := range source.Provides {
-				if providingSources, ok := providesMap[provide.Key]; !ok {
-					providesMap[provide.Key] = sourceProvider{
+				key := strings.TrimPrefix(provide.Key, "environ_")
+				if providingSources, ok := providesMap[key]; !ok {
+					providesMap[key] = sourceProvider{
 						definition.Name,
 						[]goartifacts.Source{source},
 					}
