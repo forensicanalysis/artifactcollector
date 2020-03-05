@@ -11,6 +11,8 @@ sources:
       - WindowsDeletedFiles
       - WindowsNetworkActivity
       # - WindowsFileOpening
+      - AccountUsage
+      - ExternalDevice
 labels: [System]
 supported_os: [Windows]
 urls: ['https://www.sans.org/security-resources/posters/windows-forensic-analysis/170/download']
