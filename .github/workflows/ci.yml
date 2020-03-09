@@ -92,5 +92,5 @@ jobs:
       - name: Upload store
         uses: actions/upload-artifact@master
         with:
-          name: store
+          name: store ${{ matrix.os }}
           path: store
