@@ -23,8 +23,6 @@
 
 @test "artifactcollector" {
   artifactcollector
-  unzip *.forensicstore -d store
-  mkdir store/my.store
-  mv store/*.forensicstore/* store/my.store
-  forensicstore validate store/my.store
+  7z e *.forensicstore.zip
+  forensicstore item validate *.forensicstore
 }

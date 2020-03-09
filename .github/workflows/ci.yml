@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
+      fail-fast: false
     steps:
       - name: Setup go 1.13
         uses: actions/setup-go@v1
@@ -44,11 +45,11 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
 
-      # - name: Setup node
-      #   uses: actions/setup-node@v1
-      #   with: {node-version: '10.x'}
-      # - name: Install bats
-      #   run: npm install -g bats
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with: {node-version: '10.x'}
+      - name: Install bats
+        run: npm install -g bats
 
       - name: Setup Build
         run: go generate
@@ -60,20 +61,36 @@ jobs:
         run: |
           go build .
           go install .
+
+      - name: Install forensicstore
+        run: go get -u github.com/forensicanalysis/forensicstore/cmd/forensicstore
+      - name: Windows bats test
+        run: bats test/bats/artifactcollector.windows.bats
+        if: matrix.os == 'windows-latest'
+        shell: bash
+      - name: UNIX bats test
+        run: bats test/bats/artifactcollector.unix.bats
+        if: matrix.os != 'windows-latest'
+        shell: bash
+
       - name: Remove Windows syso File
         run: rm artifactcollector.syso
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: Move Binary
         run: |
-          mkdir bin
+          mkdir bin store
           mv artifactcollector* bin
+          mv *.forensicstore.zip store
         shell: bash
-      # - name: Bats test
-      #   run: bats test/bats/artifactcollector.bats
-      #   shell: bash
-      - name: Upload
+
+      - name: Upload artifactcollector
         uses: actions/upload-artifact@master
         with:
           name: artifactcollector ${{ matrix.os }}
           path: bin
+      - name: Upload store
+        uses: actions/upload-artifact@master
+        with:
+          name: store ${{ matrix.os }}
+          path: store
