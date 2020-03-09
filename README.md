@@ -19,9 +19,9 @@ The artifactcollector offers the following features
 - 🛍️ Can extract files, directories, registry entries, command and WMI output.
 - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
 - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
-- ‍💻 Can run without admin/root rights
 - 🕊️ It's open source
 
+<!-- ‍💻 Can run without admin/root rights -->
 <!-- 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution -->
 
 ### Installation
@@ -38,19 +38,19 @@ go install .
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
 2. Run `go generate` to download all artifacts.
-3. Add artifact definition yaml files as needed in `pack/artifacts`. Do not edit the 
+3. Add artifact definition yaml files as needed in `pack/artifacts`. Do not edit the
 artifact definitions, as they will be overwritten.
 4. Edit `pack/ac.yaml` and add the artifacts you want to collect.
 5. Run `go generate`. This might yield some errors or problems in your artifacts.
-6. On windows you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`) 
+6. On windows you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
 to enable the icon for the executable and the UAC popup.
-7. Run `go build .` to generates an executable. 
+7. Run `go build .` to generates an executable.
 
 ### Embed binaries
 
-Binaries can be added to `pack/bin` and than included into the artifactcollector 
-in the `go generate` step. Additionally a corresponding COMMAND artifact like 
-the following is required. 
+Binaries can be added to `pack/bin` and than included into the artifactcollector
+in the `go generate` step. Additionally a corresponding COMMAND artifact like
+the following is required.
 
 ```yaml
 name: Autoruns
@@ -62,14 +62,14 @@ sources:
 supported_os: [Windows]
 ```
 
-Currently the output to stdout and stderr is saved, but generated 
+Currently the output to stdout and stderr is saved, but generated
 files are not collected.
 
 
 
 ### Cross compilation
 
-Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO. 
+Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO.
 
 Example cross compilation for Windows:
 
