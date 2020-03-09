@@ -22,7 +22,6 @@
 
 
 @test "artifactcollector" {
-  id -u
   artifactcollector
   unzip *.forensicstore -d store
   mkdir store/my.store

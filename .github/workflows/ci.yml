@@ -64,12 +64,12 @@ jobs:
 
       - name: Install forensicstore
         run: go get -u github.com/forensicanalysis/forensicstore
-      - name: Bats test
-        run: bats test/bats/artifactcollector.bats
+      - name: Windows bats test
+        run: bats test/bats/artifactcollector.windows.bats
         if: matrix.os == 'windows-latest'
         shell: bash
-      - name: Bats test
-        run: sudo bats test/bats/artifactcollector.bats
+      - name: UNIX bats test
+        run: sudo bats test/bats/artifactcollector.unix.bats
         if: matrix.os != 'windows-latest'
         shell: bash
 
