@@ -23,7 +23,7 @@
 
 @test "artifactcollector" {
   sudo artifactcollector
-  unzip *.forensicstore -d store
+  unzip *.forensicstore.zip -d store
   mkdir store/my.store
   mv store/*.forensicstore/* store/my.store
   forensicstore validate store/my.store
