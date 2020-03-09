@@ -79,12 +79,18 @@ jobs:
         shell: bash
       - name: Move Binary
         run: |
-          mkdir bin
+          mkdir bin store
           mv artifactcollector* bin
+          mv *.forensicstore.zip store
         shell: bash
 
-      - name: Upload
+      - name: Upload artifactcollector
         uses: actions/upload-artifact@master
         with:
           name: artifactcollector ${{ matrix.os }}
           path: bin
+      - name: Upload store
+        uses: actions/upload-artifact@master
+        with:
+          name: store
+          path: artifactcollector/testdata
