@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
+      fail-fast: false
     steps:
       - name: Setup go 1.13
         uses: actions/setup-go@v1
