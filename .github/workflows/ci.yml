@@ -69,7 +69,7 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: UNIX bats test
-        run: sudo bats test/bats/artifactcollector.unix.bats
+        run: bats test/bats/artifactcollector.unix.bats
         if: matrix.os != 'windows-latest'
         shell: bash
 
