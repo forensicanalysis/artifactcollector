@@ -62,10 +62,15 @@ jobs:
           go build .
           go install .
 
+      - name: Install forensicstore
+        run: go get -u github.com/forensicanalysis/forensicstore
       - name: Bats test
-        run: |
-          go get -u github.com/forensicanalysis/forensicstore
-          bats test/bats/artifactcollector.bats
+        run: bats test/bats/artifactcollector.bats
+        if: matrix.os == 'windows-latest'
+        shell: bash
+      - name: Bats test
+        run: sudo bats test/bats/artifactcollector.bats
+        if: matrix.os != 'windows-latest'
         shell: bash
 
       - name: Remove Windows syso File
