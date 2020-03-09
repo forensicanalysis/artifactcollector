@@ -1,2 +1,1 @@
 artifacts: ["DefaultEntryPoint"]  # artifact definitions to collect, "*" to collect all artifacts
-user: false                       # enforce admin rights, terminates, if user has to admin rights
