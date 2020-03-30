@@ -6,7 +6,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.2
 	github.com/forensicanalysis/artifactlib v0.13.0
 	github.com/forensicanalysis/forensicstore v0.13.0
-	github.com/forensicanalysis/fslib v0.12.1
+	github.com/forensicanalysis/fslib v0.12.2
 	github.com/go-ole/go-ole v1.2.4
 	github.com/mholt/archiver v3.1.1+incompatible
 	github.com/pkg/errors v0.8.1
