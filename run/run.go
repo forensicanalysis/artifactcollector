@@ -29,6 +29,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
@@ -72,7 +73,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	defer func() {
 		if r := recover(); r != nil {
-			logPrint("A critical error occurred: ", r)
+			logPrint("A critical error occurred: ", r, string(debug.Stack()))
 		}
 	}()
 
