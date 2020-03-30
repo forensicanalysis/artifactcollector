@@ -29,6 +29,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
@@ -44,7 +45,7 @@ type Collection struct {
 	Path string
 }
 
-func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) *Collection {
+func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) {
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
@@ -72,7 +73,8 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	defer func() {
 		if r := recover(); r != nil {
-			logPrint("A critical error occurred: ", r)
+			logPrint("A critical error occurred: ", r, string(debug.Stack()))
+			c = nil
 		}
 	}()
 
