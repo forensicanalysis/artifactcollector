@@ -4,7 +4,7 @@
  <a href="https://github.com/forensicanalysis/artifactcollector/actions"><img src="https://github.com/forensicanalysis/artifactcollector/workflows/CI/badge.svg" alt="build" /></a>
  <a href="https://codecov.io/gh/forensicanalysis/artifactcollector"><img src="https://codecov.io/gh/forensicanalysis/artifactcollector/branch/master/graph/badge.svg" alt="coverage" /></a>
  <a href="https://goreportcard.com/report/github.com/forensicanalysis/artifactcollector"><img src="https://goreportcard.com/badge/github.com/forensicanalysis/artifactcollector" alt="report" /></a>
- <a href="https://pkg.go.dev/github.com/forensicanalysis/artifactcollector"><img src="https://godoc.org/github.com/forensicanalysis/artifactcollector?status.svg" alt="doc" /></a>
+ <a href="https://pkg.go.dev/github.com/forensicanalysis/artifactcollector"><img src="https://img.shields.io/badge/go.dev-documentation-007d9c?logo=go&logoColor=white" alt="doc" /></a>
 </p>
 
 
