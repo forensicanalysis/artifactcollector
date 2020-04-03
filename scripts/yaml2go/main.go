@@ -71,7 +71,7 @@ func createGoFile(pkg, name string, objects interface{}) error {
 		return err
 	}
 
-	f, err := os.Create(filepath.Join(pkg, name+".go"))
+	f, err := os.Create(filepath.Join(pkg, name+".generated.go"))
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func createGoFile(pkg, name string, objects interface{}) error {
 	}
 
 	// add imports
-	cmd := exec.Command("goimports", "-w", filepath.Join(pkg, name+".go"))
+	cmd := exec.Command("goimports", "-w", filepath.Join(pkg, name+".generated.go"))
 	return cmd.Run()
 }
 
