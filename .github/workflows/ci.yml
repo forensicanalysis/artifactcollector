@@ -110,4 +110,4 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v1
       - run: godoc2readme --template docs/readme-template.md . > README2.md
-      - run: cmp README.md README2.md
+      - run: diff README.md README2.md

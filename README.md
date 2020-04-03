@@ -21,9 +21,6 @@ The artifactcollector offers the following features
 - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
 - 🕊️ It's open source
 
-<!-- ‍💻 Can run without admin/root rights -->
-<!-- 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution -->
-
 ### Installation
 
 Download from https://github.com/forensicanalysis/artifactcollector/releases or
@@ -65,8 +62,6 @@ supported_os: [Windows]
 Currently the output to stdout and stderr is saved, but generated
 files are not collected.
 
-
-
 ### Cross compilation
 
 Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO.
@@ -77,6 +72,7 @@ Example cross compilation for Windows:
 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
 ```
+
 
 ## Contact
 
