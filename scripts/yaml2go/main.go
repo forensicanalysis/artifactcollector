@@ -31,10 +31,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
+
+	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactlib/goartifacts"
 )
 
 func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefinition, error) {

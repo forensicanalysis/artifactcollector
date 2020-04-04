@@ -33,11 +33,12 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
+	"github.com/mholt/archiver"
+	"github.com/pkg/errors"
+
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
-	"github.com/mholt/archiver"
-	"github.com/pkg/errors"
 )
 
 type Collection struct {

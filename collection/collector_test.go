@@ -31,12 +31,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/spf13/afero"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/testfs"
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
 )
 
 var exampleStore = "example1.forensicstore"

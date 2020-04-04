@@ -28,12 +28,13 @@ import (
 	"log"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/registryfs"
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
-	"github.com/pkg/errors"
 )
 
 type sourceProvider struct {

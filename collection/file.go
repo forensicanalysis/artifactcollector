@@ -31,10 +31,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
-	"github.com/forensicanalysis/fslib"
 	"github.com/pkg/errors"
 	"github.com/spf13/afero"
+
+	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/fslib"
 )
 
 func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {

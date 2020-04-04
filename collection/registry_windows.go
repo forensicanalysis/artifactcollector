@@ -26,9 +26,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/pkg/errors"
 	"golang.org/x/sys/windows/registry"
+
+	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
 func (c *LiveCollector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
