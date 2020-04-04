@@ -4,7 +4,7 @@
  <a href="https://github.com/forensicanalysis/artifactcollector/actions"><img src="https://github.com/forensicanalysis/artifactcollector/workflows/CI/badge.svg" alt="build" /></a>
  <a href="https://codecov.io/gh/forensicanalysis/artifactcollector"><img src="https://codecov.io/gh/forensicanalysis/artifactcollector/branch/master/graph/badge.svg" alt="coverage" /></a>
  <a href="https://goreportcard.com/report/github.com/forensicanalysis/artifactcollector"><img src="https://goreportcard.com/badge/github.com/forensicanalysis/artifactcollector" alt="report" /></a>
- <a href="https://pkg.go.dev/github.com/forensicanalysis/artifactcollector"><img src="https://godoc.org/github.com/forensicanalysis/artifactcollector?status.svg" alt="doc" /></a>
+ <a href="https://pkg.go.dev/github.com/forensicanalysis/artifactcollector"><img src="https://img.shields.io/badge/go.dev-documentation-007d9c?logo=go&logoColor=white" alt="doc" /></a>
 </p>
 
 
@@ -20,9 +20,6 @@ The artifactcollector offers the following features
 - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
 - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
 - 🕊️ It's open source
-
-<!-- ‍💻 Can run without admin/root rights -->
-<!-- 🤖 Can [be bundled](https://github.com/forensicanalysis/acpack) for automated execution -->
 
 ### Installation
 
@@ -65,8 +62,6 @@ supported_os: [Windows]
 Currently the output to stdout and stderr is saved, but generated
 files are not collected.
 
-
-
 ### Cross compilation
 
 Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO.
@@ -77,6 +72,7 @@ Example cross compilation for Windows:
 CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
 ```
+
 
 ## Contact
 

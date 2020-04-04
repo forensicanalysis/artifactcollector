@@ -1,11 +1,12 @@
 package run
 
 import (
-	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactlib/goartifacts"
 )
 
 func TestRun(t *testing.T) {

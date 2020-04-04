@@ -30,7 +30,6 @@
 //    - 🛍️ Can extract files, directories, registry entries, command and WMI output.
 //    - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
 //    - 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
-//    - ‍💻 Can run without admin/root rights
 //    - 🕊️ It's open source
 package main
 

@@ -27,12 +27,12 @@ jobs:
 
       - name: Install golangci-lint & go-acc
         run: |
-          curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.19.1
+          curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.24.0
           go get -u github.com/ory/go-acc
         shell: bash
 
       - name: Lint
-        run: golangci-lint run --verbose --config test/.golangci.yml
+        run: golangci-lint run --verbose --tests=false --deadline=3m
         shell: bash
       - name: Test
         run: go-acc ./...
@@ -94,3 +94,20 @@ jobs:
         with:
           name: store ${{ matrix.os }}
           path: store
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go 1.13
+        uses: actions/setup-go@v1
+        with: {go-version: '1.13'}
+      - name: Set system path
+        run: echo "##[add-path]$(go env GOPATH)/bin"
+        shell: bash
+      - run: go get -u github.com/cugu/godoc2readme
+
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - run: godoc2readme --template docs/readme-template.md . > README2.md
+      - run: diff README.md README2.md
