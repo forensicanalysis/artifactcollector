@@ -31,6 +31,7 @@ import (
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 )
 
+// Resolve returns a list of values that can be used for the placeholder parameter.
 func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 	parameter = strings.TrimPrefix(parameter, "environ_")
 
