@@ -94,7 +94,7 @@ func (c *LiveCollector) FS() fslib.FS {
 	return c.SourceFS
 }
 
-// FS returns the used Registry.
+// Registry returns the used Registry.
 func (c *LiveCollector) Registry() fslib.FS {
 	return c.registryfs
 }

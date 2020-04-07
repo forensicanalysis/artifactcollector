@@ -22,7 +22,7 @@
 package collection
 
 import (
-	"crypto/md5" // #nosec
+	"crypto/md5"  // #nosec
 	"crypto/sha1" // #nosec
 	"fmt"
 	"io"
