@@ -32,8 +32,6 @@ linters:
     - errcheck
     - goconst
     - gocyclo
-    - gofmt
-    - goimports
     - golint
     - gosec
     - gosimple
