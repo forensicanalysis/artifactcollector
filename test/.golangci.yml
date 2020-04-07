@@ -1,0 +1,53 @@
+run:
+  # timeout for analysis, e.g. 30s, 5m, default is 1m
+  timeout: 3m
+
+  # include test files or not, default is true
+  tests: false
+
+  skip-files:
+    - ".*\\.generated\\.*."
+
+# all available settings of specific linters
+linters-settings:
+  gocyclo:
+    # minimal code complexity to report
+    min-complexity: 15
+  goimports:
+    # put imports beginning with prefix after 3rd-party packages;
+    # it's a comma-separated list of prefixes
+    local-prefixes: github.com/forensicanalysis
+  misspell:
+    ignore-words:
+      - someword
+  nakedret:
+    # make an issue if func has more lines of code than this setting and it has naked returns; default is 30
+    max-func-lines: 30
+  whitespace:
+    multi-func: true # Enforces newlines (or comments) after every multi-line function
+
+linters:
+  enable:
+    - deadcode
+    - errcheck
+    - goconst
+    - gocyclo
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - nakedret
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck
+    - whitespace
+
+issues:
+  exclude-use-default: false
+
+  exclude:
+    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked

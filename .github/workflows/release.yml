@@ -31,15 +31,11 @@ jobs:
         run: go build .
 
       - name: Pack UNIX
-        run: |
-          zip -r ${{ matrix.os }}.zip artifactcollector*
-          mv ${{ matrix.os }}.zip ../..
+        run: zip -r ${{ matrix.os }}.zip artifactcollector*
         shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
-        run: |
-          7z a ${{ matrix.os }}.zip artifactcollector*
-          mv ${{ matrix.os }}.zip ../..
+        run: 7z a ${{ matrix.os }}.zip artifactcollector*
         shell: bash
         if: matrix.os == 'windows-latest'
 

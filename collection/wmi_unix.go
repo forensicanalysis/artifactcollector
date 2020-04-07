@@ -25,6 +25,7 @@ package collection
 
 import "errors"
 
+// WMIQuery is a dummy function for non windows systems.
 func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	return nil, errors.New("WMI calls are not supported")
 }

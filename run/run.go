@@ -41,12 +41,15 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
+// Collection is the output of a run that can be used to further process the output
+// (e.g. send the output to a SFTP server).
 type Collection struct {
 	Name string
 	Path string
 }
 
-func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) {
+// Run performs the full artifact collection process.
+func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) { //nolint:gocyclo
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
@@ -64,7 +67,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// setup logging
 	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
-	logfile, logfileError := os.OpenFile(collectionName+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logfile, logfileError := os.OpenFile(collectionName+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if logfileError != nil {
 		log.Printf("Could not open logfile %s\n", logfileError)
 	} else {

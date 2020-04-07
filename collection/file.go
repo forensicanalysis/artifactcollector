@@ -22,8 +22,8 @@
 package collection
 
 import (
-	"crypto/md5"
-	"crypto/sha1"
+	"crypto/md5"  // #nosec
+	"crypto/sha1" // #nosec
 	"fmt"
 	"io"
 	"os"
@@ -37,6 +37,15 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"github.com/forensicanalysis/fslib"
 )
+
+func getString(m map[string]interface{}, key string) string {
+	if value, ok := m[key]; ok {
+		if valueString, ok := value.(string); ok {
+			return valueString
+		}
+	}
+	return ""
+}
 
 func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
 	file := &goforensicstore.File{}
@@ -62,24 +71,11 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 		file.Size = float64(srcInfo.Size())
 		attr := srcInfo.Sys()
-
-		if m, ok := attr.(map[string]interface{}); ok {
-			if created, ok := m["created"]; ok {
-				if createdString, ok := created.(string); ok {
-					file.Created = createdString
-				}
-			}
-			if modified, ok := m["modified"]; ok {
-				if modifiedString, ok := modified.(string); ok {
-					file.Modified = modifiedString
-				}
-			}
-			if accessed, ok := m["accessed"]; ok {
-				if accessedString, ok := accessed.(string); ok {
-					file.Accessed = accessedString
-				}
-			}
-			file.Attributes = m
+		if attributes, ok := attr.(map[string]interface{}); ok {
+			file.Created = getString(attributes, "created")
+			file.Modified = getString(attributes, "modified")
+			file.Accessed = getString(attributes, "accessed")
+			file.Attributes = attributes
 		}
 
 		// copy file

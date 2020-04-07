@@ -32,11 +32,11 @@ import (
 )
 
 // WMIQuery runs a WMI query and returns the result as a map.
-func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
+func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo
 	// init COM, oh yeah
-	err = ole.CoInitialize(0)
+	err := ole.CoInitialize(0)
 	if err != nil {
-		return wmiResult, err
+		return nil, err
 	}
 	defer ole.CoUninitialize()
 
@@ -55,7 +55,7 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	// service is a SWbemServices
 	serviceRaw, err := oleutil.CallMethod(wmi, "ConnectServer")
 	if err != nil {
-		return wmiResult, err
+		return nil, err
 	}
 	service := serviceRaw.ToIDispatch()
 	defer service.Release()
@@ -63,7 +63,7 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	// result is a SWBemObjectSet
 	resultRaw, err := oleutil.CallMethod(service, "ExecQuery", q)
 	if err != nil {
-		return wmiResult, err
+		return nil, err
 	}
 	result := resultRaw.ToIDispatch()
 	defer result.Release()
@@ -71,13 +71,13 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 	// list of results
 	enumProperty, err := oleutil.GetProperty(result, "_NewEnum")
 	if err != nil {
-		return wmiResult, err
+		return nil, err
 	}
 	defer enumProperty.Clear() //nolint:errcheck
 
 	enum, err := enumProperty.ToIUnknown().IEnumVARIANT(ole.IID_IEnumVariant)
 	if err != nil {
-		return wmiResult, err
+		return nil, err
 	}
 	if enum == nil {
 		log.Fatal(fmt.Errorf("can't get IEnumVARIANT, enum is nil"))
@@ -86,6 +86,7 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 
 	i := 0
 	// iterate results
+	var wmiResult []map[string]interface{}
 	for itemRaw, length, err := enum.Next(1); length > 0; itemRaw, length, err = enum.Next(1) {
 		if err != nil {
 			log.Fatal(err)
@@ -126,5 +127,5 @@ func WMIQuery(q string) (wmiResult []map[string]interface{}, err error) {
 
 		i++
 	}
-	return
+	return wmiResult, nil
 }
