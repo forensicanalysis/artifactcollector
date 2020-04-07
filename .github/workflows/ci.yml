@@ -32,8 +32,11 @@ jobs:
         shell: bash
 
       - name: Lint
+        run: golangci-lint run --verbose --config test/.golangci.yml --enable gofmt --enable goimports
+        if: matrix.os != 'windows-latest'
+      - name: Lint Windows
         run: golangci-lint run --verbose --config test/.golangci.yml
-        shell: bash
+        if: matrix.os == 'windows-latest'
       - name: Test
         run: go-acc ./...
         shell: bash
