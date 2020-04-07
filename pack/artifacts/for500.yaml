@@ -24,8 +24,9 @@ sources:
   attributes:
     names:
       - WindowsOpenSaveMRU
+      - WindowsOpenSavePidlMRU
       # EmailAttachments
-      - SkypeMainDirectory
+      # SkypeMainDirectory is only for macos
       - BrowserCache
       - BrowserHistory
       # AdsZoneIdentifier
