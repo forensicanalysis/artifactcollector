@@ -170,7 +170,7 @@ func valueData(rk *registry.Key, name string) (dataType string, bytesData []byte
 		data = bytesData
 		stringData = fmt.Sprintf("% x", bytesData)
 	}
-	return
+	return dataType, bytesData, data, stringData, err
 }
 
 func getValueTypeString(valtype uint32) (string, error) {
