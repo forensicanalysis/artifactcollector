@@ -58,6 +58,8 @@ type LiveCollector struct {
 func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
 	providesMap := map[string]sourceProvider{}
 
+	definitions = goartifacts.FilterOS(definitions)
+
 	for _, definition := range definitions {
 		for _, source := range definition.Sources {
 			for _, provide := range source.Provides {
@@ -69,6 +71,7 @@ func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definiti
 					}
 				} else {
 					providingSources.sources = append(providingSources.sources, source)
+					providesMap[key] = providingSources
 				}
 			}
 		}

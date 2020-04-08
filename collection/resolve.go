@@ -45,6 +45,7 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 	}
 
 	var resolves []string
+	resolvesSet := map[string]bool{}
 	for _, source := range providingSources.sources {
 		i := -1
 		for index, p := range source.Provides {
@@ -81,12 +82,18 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		resolves = append(resolves, resolve...)
+
+		for _, r := range resolve {
+			if _, ok := resolvesSet[r]; !ok {
+				resolvesSet[r] = true
+				resolves = append(resolves, r)
+			}
+		}
 	}
 
 	// cache results
 	c.knowledgeBase[parameter] = resolves
-	log.Println(parameter, resolves)
+	log.Printf("%s resolves to %v\n", parameter, resolves)
 
 	return resolves, nil
 }
@@ -99,7 +106,7 @@ func (c *LiveCollector) resolveCommand(providingSources sourceProvider, source g
 		return nil, err
 	}
 	// TODO check if exists
-	f, err := c.SourceFS.Open(process.StdoutPath)
+	f, err := c.Store.LoadFile(process.StdoutPath)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +136,7 @@ func (c *LiveCollector) resolveFile(providingSources sourceProvider, source goar
 
 	for _, file := range files {
 		// TODO check if exists
-		f, err := c.SourceFS.Open(file.ExportPath)
+		f, err := c.Store.LoadFile(file.ExportPath)
 		if err != nil {
 			return nil, err
 		}
