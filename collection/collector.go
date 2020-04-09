@@ -37,11 +37,6 @@ import (
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 )
 
-type sourceProvider struct {
-	artifact string
-	sources  []goartifacts.Source
-}
-
 // The LiveCollector can resolve and collect artifact on live systems.
 type LiveCollector struct {
 	SourceFS   fslib.FS
@@ -49,26 +44,25 @@ type LiveCollector struct {
 	Store      *goforensicstore.ForensicStore
 	TempDir    string
 
-	providesMap   map[string]sourceProvider
+	providesMap   map[string][]goartifacts.Source
 	knowledgeBase map[string][]string
 }
 
 // NewCollector creates a new LiveCollector that collects the given
 // ArtifactDefinitions.
 func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
-	providesMap := map[string]sourceProvider{}
+	providesMap := map[string][]goartifacts.Source{}
+
+	definitions = goartifacts.FilterOS(definitions)
 
 	for _, definition := range definitions {
 		for _, source := range definition.Sources {
 			for _, provide := range source.Provides {
 				key := strings.TrimPrefix(provide.Key, "environ_")
 				if providingSources, ok := providesMap[key]; !ok {
-					providesMap[key] = sourceProvider{
-						definition.Name,
-						[]goartifacts.Source{source},
-					}
+					providesMap[key] = []goartifacts.Source{source}
 				} else {
-					providingSources.sources = append(providingSources.sources, source)
+					providesMap[key] = append(providingSources, source)
 				}
 			}
 		}

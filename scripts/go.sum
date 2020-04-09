@@ -25,6 +25,7 @@ github.com/forensicanalysis/forensicstore v0.12.1 h1:jdqcUSvfemYSqKJWT+ajMUEA3pn
 github.com/forensicanalysis/forensicstore v0.12.1/go.mod h1:t/xpmXXSOLIriXM7NrrnT/5KTo6R7L9+9psIMgzcMEo=
 github.com/forensicanalysis/forensicstore v0.13.0 h1:Qp1x2y5rZzB4uhcysywwpQdvo62jBIfjke/M3b1bx0M=
 github.com/forensicanalysis/forensicstore v0.13.0/go.mod h1:RBnEI1Iw7cmwAgrBF1CzI2TxW6qdtVjNeQOx50spP9M=
+github.com/forensicanalysis/forensicstore v0.14.1/go.mod h1:4H5IPh9CfRNkiJS5STQe2bICcE8+rcoBGr+stLHOME4=
 github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.12.1 h1:T0qnZTrvYFUqeP9At821fUqEyWz5RCTzkA7zqQmqe/A=
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
@@ -130,6 +131,7 @@ gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127/go.mod h1:Co6ibVJAznAaIkqp8
 gopkg.in/djherbis/times.v1 v1.2.0 h1:UCvDKl1L/fmBygl2Y7hubXCnY7t4Yj46ZrBFNUipFbM=
 gopkg.in/djherbis/times.v1 v1.2.0/go.mod h1:AQlg6unIsrsCEdQYhTzERy542dz6SFdQFZFv6mUY0P8=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
+gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.7 h1:VUgggvou5XRW9mHwD/yXxIYSMtY0zoKQf/v226p2nyo=
 gopkg.in/yaml.v2 v2.2.7/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 www.velocidex.com/golang/go-ntfs v0.0.0-20191105110820-b0cec4e3c2bb h1:yHgiY5bI3Wllxl5a9dAkU68qQMA7uLxEfqBdSsM8SI0=
