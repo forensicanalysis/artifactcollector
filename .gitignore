@@ -27,3 +27,6 @@ yarn-error.log*
 *.idea
 pack/artifacts/
 *.syso
+
+*.log
+*.forensicstore.zip
