@@ -10,7 +10,7 @@ import (
 )
 
 func TestRun(t *testing.T) {
-	config := collection.Configuration{Artifacts: []string{"Hostname"}, User: true}
+	config := collection.Configuration{Artifacts: []string{"Test"}, User: true}
 	definitions := []goartifacts.ArtifactDefinition{{
 		Name: "Test",
 		Sources: []goartifacts.Source{
