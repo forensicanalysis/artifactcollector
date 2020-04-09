@@ -108,8 +108,8 @@ func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provid
 
 func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
-	// COMMAND	The lines of the stdout of the command.
-	process, err := c.CollectCommand("", source)
+	// COMMAND The lines of the stdout of the command.
+	process, err := c.collectCommand("", source)
 	if err != nil {
 		return nil, err
 	}
@@ -135,8 +135,8 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 }
 
 func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
-	// FILE	The lines of the file content.
-	files, err := c.CollectFile("", source)
+	// FILE The lines of the file content.
+	files, err := c.collectFile("", source)
 	if err != nil {
 		return nil, err
 	}
@@ -170,8 +170,8 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 
 func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
-	// PATH	The defined paths.
-	directories, err := c.CollectPath("", source)
+	// PATH The defined paths.
+	directories, err := c.collectPath("", source)
 	if err != nil {
 		return nil, err
 	}
@@ -191,8 +191,8 @@ func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifac
 
 func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
-	// REGISTRY_KEY	The key paths.
-	keys, err := c.CollectRegistryKey("", source)
+	// REGISTRY_KEY The key paths.
+	keys, err := c.collectRegistryKey("", source)
 	if err != nil {
 		return nil, err
 	}
@@ -212,8 +212,8 @@ func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide go
 
 func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
-	// REGISTRY_VALUE	The registry values.
-	keys, err := c.CollectRegistryValue("", source)
+	// REGISTRY_VALUE The registry values.
+	keys, err := c.collectRegistryValue("", source)
 	if err != nil {
 		return nil, err
 	}
@@ -235,8 +235,8 @@ func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide 
 
 func (c *LiveCollector) resolveWMI(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
-	// WMI	The values selected using the wmi_key.
-	wmi, err := c.CollectWMI("", source)
+	// WMI The values selected using the wmi_key.
+	wmi, err := c.collectWMI("", source)
 	if err != nil {
 		return nil, err
 	}
