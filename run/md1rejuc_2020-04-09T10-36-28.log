@@ -1,0 +1,155 @@
+2020/04/09 10:36:28 run.go:260: Start to collect forensic artifacts. This might take a while.
+2020/04/09 10:36:28 jsonlite.go:130: Creating store md1rejuc_2020-04-09T10-36-28.forensicstore
+2020/04/09 10:36:28 system_fs.go:109: ntfs creation failed: Invalid magic
+2020/04/09 10:36:28 system_fs.go:109: ntfs creation failed: Invalid magic
+2020/04/09 10:36:28 collector.go:157: Collect FILE /C/Windows/explorer.exe
+2020/04/09 10:36:28 collector.go:199: Collect Path /C/Program Files
+2020/04/09 10:36:28 collector.go:178: Collect directory /C
+2020/04/09 10:36:28 collector.go:178: Collect directory /D
+2020/04/09 10:36:28 collector.go:143: Collect Command hostname []
+2020/04/09 10:36:28 items.go:119: hostname is not bundled into artifactcollector, try execution from path
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/AUS Central Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/AUS Eastern Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Afghanistan Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Alaskan Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Aleutian Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Altai Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Arab Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Arabian Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Arabic Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Argentina Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Astrakhan Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Atlantic Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Aus Central W. Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Azerbaijan Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Azores Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Bahia Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Bangladesh Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Belarus Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Bougainville Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Canada Central Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Cape Verde Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Caucasus Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Cen. Australia Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central America Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Asia Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Brazilian Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Europe Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central European Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Pacific Standard Time
+2020/04/09 10:36:29 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Central Standard Time (Mexico)
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Chatham Islands Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/China Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Cuba Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Dateline Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/E. Africa Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/E. Australia Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/E. Europe Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/E. South America Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Easter Island Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Eastern Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Eastern Standard Time (Mexico)
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Egypt Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Ekaterinburg Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/FLE Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Fiji Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/GMT Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/GTB Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Georgian Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Greenland Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Greenwich Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Haiti Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Hawaiian Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/India Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Iran Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Israel Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Jordan Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Kaliningrad Standard Time
+2020/04/09 10:36:30 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Kamchatka Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Korea Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Libya Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Line Islands Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Lord Howe Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Magadan Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Magallanes Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Marquesas Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Mauritius Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Mid-Atlantic Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Middle East Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Montevideo Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Morocco Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Mountain Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Mountain Standard Time (Mexico)
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Myanmar Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/N. Central Asia Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Namibia Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Nepal Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/New Zealand Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Newfoundland Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Norfolk Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/North Asia East Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/North Asia Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/North Korea Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Omsk Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Pacific SA Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Pacific Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Pacific Standard Time (Mexico)
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Pakistan Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Paraguay Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Qyzylorda Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Romance Standard Time
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Russia Time Zone 10
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Russia Time Zone 11
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Russia Time Zone 3
+2020/04/09 10:36:31 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Russian Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/SA Eastern Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/SA Pacific Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/SA Western Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/SE Asia Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Saint Pierre Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Sakhalin Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Samoa Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Sao Tome Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Saratov Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Singapore Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/South Africa Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Sri Lanka Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Sudan Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Syria Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Taipei Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Tasmania Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Tocantins Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Tokyo Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Tomsk Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Tonga Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Transbaikal Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Turkey Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Turks And Caicos Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/US Eastern Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/US Mountain Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC+12
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC+13
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC-02
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC-08
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC-09
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/UTC-11
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Ulaanbaatar Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Venezuela Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Vladivostok Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Volgograd Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/W. Australia Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/W. Central Africa Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/W. Europe Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/W. Mongolia Standard Time
+2020/04/09 10:36:32 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/West Asia Standard Time
+2020/04/09 10:36:33 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/West Bank Standard Time
+2020/04/09 10:36:33 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/West Pacific Standard Time
+2020/04/09 10:36:33 collector.go:218: Collect Registry Key /HKEY_LOCAL_MACHINE/Software/Microsoft/Windows NT/CurrentVersion/Time Zones/Yakutsk Standard Time
+2020/04/09 10:36:33 collector.go:237: Collect Registry Value /HKEY_LOCAL_MACHINE/System/CurrentControlSet/Control/Nls/CodePage ACP
+2020/04/09 10:36:33 collector.go:256: Collect WMI SELECT LastBootUpTime FROM Win32_OperatingSystem
+2020/04/09 10:36:33 run.go:144: Collected Hostname in 4.5 seconds
+2020/04/09 10:36:33 run.go:150: Collected artifacts in 5.0 seconds
+2020/04/09 10:36:33 run.go:260: Compress results.
+2020/04/09 10:36:34 run.go:260: Collection done.

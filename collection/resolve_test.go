@@ -23,8 +23,9 @@ package collection
 
 import (
 	"path/filepath"
-	"reflect"
 	"runtime"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -90,7 +91,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 		wantErr      bool
 		os           string
 	}{
-		{"Resolve test", args{"environ_systemroot"}, []string{`/C/Windows`}, false, "windows"},
+		{"Resolve test", args{"environ_systemroot"}, []string{`/C/Windows`, `C:\windows`}, false, "windows"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -115,8 +116,16 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 					t.Errorf("Resolve() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				if !reflect.DeepEqual(gotResolves, tt.wantResolves) {
+
+				sort.Strings(gotResolves)
+				sort.Strings(tt.wantResolves)
+				if len(gotResolves) != len(tt.wantResolves) {
 					t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)
+				}
+				for i := range gotResolves {
+					if !strings.EqualFold(gotResolves[i], tt.wantResolves[i]) {
+						t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)
+					}
 				}
 			}
 		})
