@@ -215,10 +215,11 @@ func TestCollect(t *testing.T) {
 
 			// test log file
 			osfs := afero.NewOsFs()
-			_, err = osfs.Open(filepath.Join(testDir, tt.args.out, "ac.forensicstore", "item.db"))
+			f, err := osfs.Open(filepath.Join(testDir, tt.args.out, "ac.forensicstore", "item.db"))
 			if !assert.NoErrorf(t, err, "Could not open forensicstore %s", err) {
 				return
 			}
+			f.Close()
 
 			/*
 				dec := json.NewDecoder(f)
