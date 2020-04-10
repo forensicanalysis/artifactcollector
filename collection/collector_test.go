@@ -24,11 +24,9 @@ package collection
 import (
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -39,8 +37,6 @@ import (
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/testfs"
 )
-
-var exampleStore = "example1.forensicstore"
 
 type TestCollector struct {
 	fs        fslib.FS
@@ -79,33 +75,18 @@ func (r *TestCollector) Resolve(s string) ([]string, error) {
 }
 
 func setup(t *testing.T) string {
-	dir, err := ioutil.TempDir("", strings.Replace(t.Name(), "/", "_", -1))
+	dir, err := ioutil.TempDir("", "artifactcollector")
 	if err != nil {
-		log.Fatal("setup tempdir failed ", err)
-	}
-	input, err := ioutil.ReadFile(filepath.FromSlash("../test/forensicstore/example1.forensicstore/item.db"))
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = os.MkdirAll(filepath.Join(dir, exampleStore), 0755)
-	if err != nil {
-		t.Fatal("setup MkdirAll failed ", err)
-	}
-	if err := ioutil.WriteFile(filepath.Join(dir, exampleStore, "item.db"), input, 0644); err != nil {
-		log.Fatal(err)
+		t.Fatal("setup tempdir failed ", err)
 	}
 	return dir
 }
 
-func teardown(t *testing.T) {
-	files, err := ioutil.ReadDir(os.TempDir())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, f := range files {
-		if strings.HasPrefix(f.Name(), strings.Replace(t.Name(), "/", "_", -1)) {
-			os.Remove(f.Name())
+func teardown(t *testing.T, folders ...string) {
+	for _, folder := range folders {
+		err := os.RemoveAll(folder)
+		if err != nil {
+			t.Fatal(err)
 		}
 	}
 }
@@ -178,7 +159,7 @@ func TestCollect(t *testing.T) {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			testDir := setup(t)
-			defer teardown(t)
+			defer teardown(t, testDir)
 
 			if runtime.GOOS == "windows" && !tt.runOnWindows {
 				t.Skip("Test disabled on windows")
