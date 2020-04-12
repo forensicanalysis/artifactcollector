@@ -47,6 +47,14 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
+func normalizeFileName(fname string) (nfname string) {
+	nfname = fname
+	if len(fname) > 255 {
+		nfname = nfname[len(fname)-255:]
+	}
+	return strings.ReplaceAll(nfname, "/", "_")
+}
+
 func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
 	file := &goforensicstore.File{}
 	file.Artifact = definitionName
@@ -80,7 +88,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 		// copy file
 		if collectContents && file.Size > 0 {
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(dstdir, path.Base(srcpath)))
+			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(dstdir, normalizeFileName(srcpath)))
 			if err != nil {
 				return file.AddError(errors.Wrap(err, "error storing file").Error())
 			}
