@@ -19,7 +19,7 @@ func TestNormalizeFilePath(t *testing.T) {
 		{
 			"Long path",
 			`/C/Users/user/AppData/Local/Google/Chrome/User Data/Default/Extensions/` + x32 + `/1.11_1/_metadata/folder_` + x32 + `/` + longFileName + `.json`,
-			`C_User_user_AppD_Loca_Goog_Chro_User_Defa_Exte_xxxx_1.11__met_fold_long.json`,
+			`AppD_Loca_Goog_Chro_User_Defa_Exte_xxxx_1.11__met_fold_long.json`,
 		},
 	}
 
