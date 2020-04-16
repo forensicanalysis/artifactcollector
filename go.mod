@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/cheggaaa/pb/v3 v3.0.2
 	github.com/forensicanalysis/artifactlib v0.13.1
+	github.com/forensicanalysis/artifactsgo v0.1.0
 	github.com/forensicanalysis/forensicstore v0.14.1
 	github.com/forensicanalysis/fslib v0.12.2
 	github.com/go-ole/go-ole v1.2.4

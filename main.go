@@ -38,22 +38,24 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/run"
+	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactsgo"
 )
 
-//go:generate curl --fail --silent --output fa.zip --location https://github.com/forensicanalysis/artifacts/archive/v0.6.2.zip
-//go:generate unzip fa.zip
-//go:generate sh -c "mv artifacts-0.6.2/*.yaml pack/artifacts/"
-//go:generate rm -rf artifacts-0.6.2 fa.zip
-//go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources github.com/akavel/rsrc
+//go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources@v0.3.0 github.com/akavel/rsrc
+//go:generate go mod tidy
 //go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
-//go:generate resources -declare -var=FS -package assets -output assets/assets.go pack/bin/*
+//go:generate resources -package assets -output assets/bin.generated.go pack/bin/*
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.syso
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.syso
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.user.syso
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	collection := run.Run(assets.Config, assets.Artifacts, assets.FS.Files)
+	var artifacts []goartifacts.ArtifactDefinition
+	artifacts = append(artifacts, artifactsgo.Artifacts...)
+	artifacts = append(artifacts, assets.Artifacts...)
+	collection := run.Run(assets.Config, artifacts, assets.FS)
 	if collection == nil {
 		os.Exit(1)
 	}
