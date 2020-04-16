@@ -34,12 +34,12 @@
 package main
 
 import (
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/artifactsgo"
 	"os"
 
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/run"
+	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactsgo"
 )
 
 //go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources@v0.3.0 github.com/akavel/rsrc
