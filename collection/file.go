@@ -91,9 +91,8 @@ func normalizeFilePath(filePath string) string {
 }
 
 func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
-	file := &goforensicstore.File{}
+	file := goforensicstore.NewFile()
 	file.Artifact = definitionName
-	file.Type = "file"
 	file.Name = path.Base(srcpath)
 	file.Origin = map[string]interface{}{"path": srcpath}
 

@@ -78,7 +78,9 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 }
 
 func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, goforensicstore.RegistryKey) {
-	rk := goforensicstore.RegistryKey{Artifact: name, Type: "windows-registry-key", Values: []goforensicstore.RegistryValue{}}
+	rk := goforensicstore.NewRegistryKey()
+	rk.Artifact = name
+	rk.Values = []goforensicstore.RegistryValue{}
 	// get registry key
 	cleankey, k, err := getRegistryKey(fskey)
 	rk.Key = cleankey

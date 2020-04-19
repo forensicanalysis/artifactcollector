@@ -34,9 +34,8 @@ import (
 )
 
 func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
-	process := &goforensicstore.Process{}
+	process := goforensicstore.NewProcess()
 	process.Artifact = definitionName
-	process.Type = "process"
 	process.CommandLine = cmd + " " + strings.Join(args, " ")
 	process.Name = cmd
 
