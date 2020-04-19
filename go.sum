@@ -43,8 +43,8 @@ github.com/forensicanalysis/artifactlib v0.13.2/go.mod h1:Ff5eslnDDuG/v5M5cSfqRr
 github.com/forensicanalysis/artifactsgo v0.1.0 h1:ZwOpR0J16GyNRO2ARq983CL2BKQ8vtmBzvpqBU7TgV4=
 github.com/forensicanalysis/artifactsgo v0.1.0/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
 github.com/forensicanalysis/forensicstore v0.12.1/go.mod h1:t/xpmXXSOLIriXM7NrrnT/5KTo6R7L9+9psIMgzcMEo=
-github.com/forensicanalysis/forensicstore v0.15.0 h1:6r6KWvvqfgH9EovPjlkbcl+8XnPzQgIQQGe7XvwUM8A=
-github.com/forensicanalysis/forensicstore v0.15.0/go.mod h1:YyJvaOdsQCE1MigRcr+v12UzHL0TOTalBDHk0CIVIag=
+github.com/forensicanalysis/forensicstore v0.15.1 h1:GvEI9TG2fYFUMWnkqKe5VERkm9pgvVIWSRAQCDD5EhE=
+github.com/forensicanalysis/forensicstore v0.15.1/go.mod h1:YyJvaOdsQCE1MigRcr+v12UzHL0TOTalBDHk0CIVIag=
 github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.12.1 h1:T0qnZTrvYFUqeP9At821fUqEyWz5RCTzkA7zqQmqe/A=
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
