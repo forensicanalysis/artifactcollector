@@ -24,8 +24,8 @@
 package collection
 
 import (
-	"reflect"
 	"runtime"
+	"strings"
 	"testing"
 )
 
@@ -52,7 +52,7 @@ func TestWMIQuery(t *testing.T) {
 				t.Errorf("WMIQuery() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got[0]["WindowsDirectory"], tt.want) {
+			if !strings.EqualFold(got[0]["WindowsDirectory"].(string), tt.want) {
 				t.Errorf("WMIQuery() got = %v, want %v", got[0]["WindowsDirectory"], tt.want)
 			}
 		})
