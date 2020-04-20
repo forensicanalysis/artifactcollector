@@ -27,7 +27,6 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
@@ -36,11 +35,12 @@ import (
 func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
 	process := goforensicstore.NewProcess()
 	process.Artifact = definitionName
-	process.CommandLine = cmd + " " + strings.Join(args, " ")
+	process.CommandLine = cmd
 	process.Name = cmd
 
 	process.Arguments = []interface{}{}
 	for _, arg := range args {
+		process.CommandLine += " " + arg
 		process.Arguments = append(process.Arguments, arg)
 	}
 
@@ -48,11 +48,13 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	if err != nil {
 		return process.AddError(err.Error())
 	}
+	defer stdoutfile.Close()
 	process.StdoutPath = filepath.ToSlash(stdoutpath)
 	stderrpath, stderrfile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
+	defer stderrfile.Close()
 	process.StderrPath = filepath.ToSlash(stderrpath)
 
 	// run command

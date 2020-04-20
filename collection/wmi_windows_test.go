@@ -25,6 +25,7 @@ package collection
 
 import (
 	"reflect"
+	"runtime"
 	"testing"
 )
 
@@ -42,6 +43,10 @@ func TestWMIQuery(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if runtime.GOOS != "windows" {
+				t.Skip()
+			}
+
 			got, err := WMIQuery(tt.args.q)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("WMIQuery() error = %v, wantErr %v", err, tt.wantErr)

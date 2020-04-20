@@ -27,6 +27,7 @@ import (
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"testing"
 )
 
@@ -38,6 +39,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer store.Close()
 
 	type fields struct {
 		Store   *goforensicstore.ForensicStore
@@ -54,16 +56,37 @@ func TestLiveCollector_createProcess(t *testing.T) {
 		args   args
 		want   *goforensicstore.Process
 	}{
-		{"hostname", fields{store, testDir}, args{"test", "hostname", nil}, &goforensicstore.Process{}},
+		{
+			"hostname",
+			fields{store, testDir},
+			args{"test", "hostname", nil},
+			&goforensicstore.Process{
+				Name:       "hostname",
+				Artifact:   "test",
+				Type:       "process",
+				StdoutPath: "test/stdout",
+				StderrPath: "test/stderr",
+				CommandLine: "hostname",
+				Arguments: []interface{}{},
+				ReturnCode: 0,
+				Errors:     []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
+			}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if runtime.GOOS != "windows" {
+				t.Skip()
+			}
+
 			c := &LiveCollector{
 				Store:   tt.fields.Store,
 				TempDir: tt.fields.TempDir,
 			}
-			if got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("createProcess() = %v, want %v", got, tt.want)
+			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
+			got.ID = ""      // unset ID
+			got.Created = "" // unset created
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("createProcess() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
