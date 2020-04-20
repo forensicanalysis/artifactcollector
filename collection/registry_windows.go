@@ -41,7 +41,7 @@ func (c *LiveCollector) createRegistryKey(definitionName, key string) *goforensi
 		rk.AddError(err.Error())
 	}
 	rk.Values = values
-	return &rk
+	return rk
 }
 
 func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *goforensicstore.RegistryKey {
@@ -55,7 +55,7 @@ func (c *LiveCollector) createRegistryValue(definitionName, key, valueName strin
 		rk.Values = []goforensicstore.RegistryValue{value}
 	}
 
-	return &rk
+	return rk
 }
 
 func getRegistryKey(key string) (string, *registry.Key, error) {
@@ -77,7 +77,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 	return key, &k, errors.Wrap(err, "Could not open key")
 }
 
-func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, goforensicstore.RegistryKey) {
+func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *goforensicstore.RegistryKey) {
 	rk := goforensicstore.NewRegistryKey()
 	rk.Artifact = name
 	rk.Values = []goforensicstore.RegistryValue{}
