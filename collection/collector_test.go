@@ -170,6 +170,7 @@ func TestCollect(t *testing.T) {
 				t.Errorf("Collect() error = %v", err)
 				return
 			}
+			defer store.Close()
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
 			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
@@ -188,12 +189,6 @@ func TestCollect(t *testing.T) {
 
 			if len(collector.Collected) != tt.want {
 				t.Errorf("Collect() = %v (%v), want %v", len(collector.Collected), collector.Collected, tt.want)
-			}
-
-			err = store.Close()
-			if err != nil {
-				t.Errorf("Collect() error = %v", err)
-				return
 			}
 
 			// TODO: test extracted file

@@ -28,9 +28,8 @@ import (
 )
 
 func (c *LiveCollector) createWMI(definitonName, query string) *goforensicstore.Process {
-	process := &goforensicstore.Process{}
+	process := goforensicstore.NewProcess()
 	process.Artifact = definitonName
-	process.Type = "process"
 	process.CommandLine = query
 	process.Name = "WMI"
 	process.Created = time.Now().Format("2006-01-02T15:04:05.000Z")
