@@ -27,4 +27,5 @@ type Configuration struct {
 	Artifacts []string `yaml:"artifacts"`
 	User      bool     `yaml:"user"`
 	Case      string   `yaml:"case"`
+	OutputDir string   `yaml:"output_dir"`
 }
