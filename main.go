@@ -61,7 +61,9 @@ func main() {
 	artifacts = append(artifacts, assets.Artifacts...)
 
 	config := assets.Config
-	config.OutputDir = *outDir
+	if config.OutputDir == "" {
+		config.OutputDir = *outDir
+	}
 
 	collection := run.Run(config, artifacts, assets.FS)
 	if collection == nil {
