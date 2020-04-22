@@ -53,7 +53,7 @@ import (
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	outDir := flag.String("o", "./", "Output directory for forensic store and log file")
+	outDir := flag.String("o", "./", "Output directory for forensicstore and log file")
 	flag.Parse()
 
 	var artifacts []goartifacts.ArtifactDefinition
