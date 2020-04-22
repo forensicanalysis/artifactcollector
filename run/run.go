@@ -67,7 +67,8 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// setup logging
 	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
-	logfile, logfileError := os.OpenFile(collectionName+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	logfilePath := filepath.Join(config.OutputDir, collectionName+".log")
+	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if logfileError != nil {
 		log.Printf("Could not open logfile %s\n", logfileError)
 	} else {
@@ -101,7 +102,8 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	// create store
-	storeName, store, err := createStore(collectionName, config, artifactDefinitions)
+	collectionPath := filepath.Join(config.OutputDir, collectionName)
+	storeName, store, err := createStore(collectionPath, config, artifactDefinitions)
 	if err != nil {
 		logPrint(err)
 		return nil
