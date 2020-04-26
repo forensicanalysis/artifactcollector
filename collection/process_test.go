@@ -24,11 +24,12 @@
 package collection
 
 import (
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"testing"
+
+	"github.com/forensicanalysis/forensicstore/goforensicstore"
 )
 
 func TestLiveCollector_createProcess(t *testing.T) {
@@ -61,15 +62,15 @@ func TestLiveCollector_createProcess(t *testing.T) {
 			fields{store, testDir},
 			args{"test", "hostname", nil},
 			&goforensicstore.Process{
-				Name:       "hostname",
-				Artifact:   "test",
-				Type:       "process",
-				StdoutPath: "test/stdout",
-				StderrPath: "test/stderr",
+				Name:        "hostname",
+				Artifact:    "test",
+				Type:        "process",
+				StdoutPath:  "test/stdout",
+				StderrPath:  "test/stderr",
 				CommandLine: "hostname",
-				Arguments: []interface{}{},
-				ReturnCode: 0,
-				Errors:     []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
+				Arguments:   []interface{}{},
+				ReturnCode:  0,
+				Errors:      []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
 			}},
 	}
 	for _, tt := range tests {

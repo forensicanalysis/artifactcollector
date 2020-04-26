@@ -49,7 +49,7 @@ type Collection struct {
 }
 
 // Run performs the full artifact collection process.
-func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) { //nolint:gocyclo
+func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) { //nolint:gocyclo,funlen
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
@@ -165,7 +165,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	logPrint("Compress results.")
-	time.Sleep(time.Millisecond * 500)
+	time.Sleep(time.Millisecond * 500) //nolint: gomnd
 
 	zipPath := ""
 

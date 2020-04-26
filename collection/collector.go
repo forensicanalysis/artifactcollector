@@ -133,7 +133,7 @@ func (c *LiveCollector) Collect(name string, source goartifacts.Source) {
 }
 
 // collectCommand collects a COMMAND source to the forensicstore.
-func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (*goforensicstore.Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Cmd == "" {
@@ -141,18 +141,19 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 		return nil, nil
 	}
 	log.Printf("Collect Command %s %s", source.Attributes.Cmd, source.Attributes.Args)
-	process = c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
-	_, err = c.Store.InsertStruct(process)
+	process := c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
+	_, err := c.Store.InsertStruct(process)
 	return process, errors.Wrap(err, "could not insert struct")
 }
 
 // collectFile collects a FILE source to the forensicstore.
-func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) (files []*goforensicstore.File, err error) {
+func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*goforensicstore.File, error) {
 	source := goartifacts.ExpandSource(osource, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
+	var files []*goforensicstore.File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToTitle(source.Type), path)
 		file := c.createFile(name, true, path, name)
@@ -168,12 +169,13 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) (fi
 }
 
 // collectDirectory collects a DIRECTORY source to the forensicstore.
-func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source) (files []*goforensicstore.File, err error) {
+func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source) ([]*goforensicstore.File, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
+	var files []*goforensicstore.File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToLower(source.Type), path)
 		file := c.createFile(name, false, path, name)
@@ -189,12 +191,13 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 }
 
 // collectPath collects a PATH source to the forensicstore.
-func (c *LiveCollector) collectPath(name string, source goartifacts.Source) (directories []*goforensicstore.Directory, err error) {
+func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*goforensicstore.Directory, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
+	var directories []*goforensicstore.Directory
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect Path %s", path)
 		directory := goforensicstore.Directory{Artifact: name, Type: "directory", Path: path}
@@ -208,12 +211,13 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) (dir
 }
 
 // collectRegistryKey collects a REGISTRY_KEY source to the forensicstore.
-func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Source) ([]*goforensicstore.RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Keys) == 0 {
 		log.Printf("No collection for %s", name)
 	}
+	var keys []*goforensicstore.RegistryKey
 	for _, key := range source.Attributes.Keys {
 		log.Printf("Collect Registry Key %s", key)
 		k := c.createRegistryKey(name, key)
@@ -227,12 +231,13 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 }
 
 // collectRegistryValue collects a REGISTRY_VALUE source to the forensicstore.
-func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Source) (keys []*goforensicstore.RegistryKey, err error) {
+func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Source) ([]*goforensicstore.RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.KeyValuePairs) == 0 {
 		log.Printf("No collection for %s", name)
 	}
+	var keys []*goforensicstore.RegistryKey
 	for _, kvpair := range source.Attributes.KeyValuePairs {
 		log.Printf("Collect Registry Value %s %s", kvpair.Key, kvpair.Value)
 		key := c.createRegistryValue(name, kvpair.Key, kvpair.Value)
@@ -246,7 +251,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 }
 
 // collectWMI collects a WMI source to the forensicstore.
-func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (process *goforensicstore.Process, err error) {
+func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*goforensicstore.Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Query == "" {
@@ -254,7 +259,7 @@ func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (proc
 		return nil, nil
 	}
 	log.Printf("Collect WMI %s", source.Attributes.Query)
-	process = c.createWMI(name, source.Attributes.Query)
-	_, err = c.Store.InsertStruct(process)
+	process := c.createWMI(name, source.Attributes.Query)
+	_, err := c.Store.InsertStruct(process)
 	return process, errors.Wrap(err, "could not insert struct")
 }
