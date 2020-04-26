@@ -32,10 +32,8 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/spf13/afero"
 
 	"github.com/forensicanalysis/forensicstore/goforensicstore"
-	"github.com/forensicanalysis/fslib"
 )
 
 func getString(m map[string]interface{}, key string) string {
@@ -90,13 +88,13 @@ func normalizeFilePath(filePath string) string {
 	return last(normalizedFilePath, maxLength)
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File {
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File { //nolint:funlen
 	file := goforensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
 	file.Origin = map[string]interface{}{"path": srcpath}
 
-	if !strings.Contains(srcpath, "*") && !strings.Contains(srcpath, "%%") {
+	if !strings.Contains(srcpath, "*") && !strings.Contains(srcpath, "%%") { //nolint: nestif
 		// exists
 		srcInfo, err := c.SourceFS.Stat(srcpath)
 		if err != nil {
@@ -134,7 +132,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			}
 			defer srcFile.Close()
 
-			size, hashes, err := hashCopyFile(srcFile, storeFile)
+			size, hashes, err := hashCopy(srcFile, storeFile)
 			if err != nil {
 				errorMessage := fmt.Sprintf("copy error %s %s -> %s %s", c.SourceFS.Name(), srcpath, c.Store.Name(), dstpath)
 				return file.AddError(errors.Wrap(err, errorMessage).Error())
@@ -156,7 +154,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 	return file.AddError("path contains unknown expanders")
 }
 
-func hashCopyFile(srcfile fslib.Item, destfile afero.File) (int64, map[string][]byte, error) {
+func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string][]byte, error) {
 	sha1hash := sha1.New() // #nosec
 	md5hash := md5.New()   // #nosec
 	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash), srcfile)

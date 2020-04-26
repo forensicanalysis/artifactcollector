@@ -70,7 +70,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 	key = strings.Trim(key, "/")
 	key = strings.ReplaceAll(key, "/", `\`)
 	keyparts := strings.SplitN(key, `\`, 2)
-	if len(keyparts) != 2 {
+	if len(keyparts) != 2 { //nolint:gomnd
 		return key, nil, fmt.Errorf("wrong number of keyparts %s", keyparts)
 	}
 	k, err := registry.OpenKey(registryMap[keyparts[0]], keyparts[1], registry.READ|registry.QUERY_VALUE|registry.ENUMERATE_SUB_KEYS)

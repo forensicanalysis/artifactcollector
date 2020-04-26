@@ -32,7 +32,7 @@ import (
 )
 
 // WMIQuery runs a WMI query and returns the result as a map.
-func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo
+func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,funlen
 	// init COM, oh yeah
 	err := ole.CoInitialize(0)
 	if err != nil {
