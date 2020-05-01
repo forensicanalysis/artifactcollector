@@ -29,7 +29,7 @@ import (
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 func Test_collectorResolver_Resolve(t *testing.T) {
@@ -99,7 +99,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 				testDir := setup(t)
 				defer teardown(t)
 
-				store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, "extract", "ac.forensicstore"))
+				store, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
 				if err != nil {
 					t.Errorf("Collect() error = %v", err)
 					return

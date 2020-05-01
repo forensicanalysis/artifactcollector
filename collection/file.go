@@ -33,7 +33,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 func getString(m map[string]interface{}, key string) string {
@@ -88,8 +88,8 @@ func normalizeFilePath(filePath string) string {
 	return last(normalizedFilePath, maxLength)
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File { //nolint:funlen
-	file := goforensicstore.NewFile()
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *forensicstore.File { //nolint:funlen
+	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
 	file.Origin = map[string]interface{}{"path": srcpath}
@@ -112,9 +112,9 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 		file.Size = float64(srcInfo.Size())
 		attr := srcInfo.Sys()
 		if attributes, ok := attr.(map[string]interface{}); ok {
-			file.Created = getString(attributes, "created")
-			file.Modified = getString(attributes, "modified")
-			file.Accessed = getString(attributes, "accessed")
+			file.Ctime = getString(attributes, "created")
+			file.Mtime = getString(attributes, "modified")
+			file.Atime = getString(attributes, "accessed")
 			file.Attributes = attributes
 		}
 

@@ -33,7 +33,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/testfs"
 )
@@ -165,7 +165,7 @@ func TestCollect(t *testing.T) {
 				t.Skip("Test disabled on windows")
 			}
 
-			store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
+			store, err := forensicstore.New(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return

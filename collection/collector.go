@@ -31,7 +31,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/registryfs"
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
@@ -41,7 +41,7 @@ import (
 type LiveCollector struct {
 	SourceFS   fslib.FS
 	registryfs fslib.FS
-	Store      *goforensicstore.ForensicStore
+	Store      *forensicstore.ForensicStore
 	TempDir    string
 
 	providesMap   map[string][]goartifacts.Source
@@ -50,7 +50,7 @@ type LiveCollector struct {
 
 // NewCollector creates a new LiveCollector that collects the given
 // ArtifactDefinitions.
-func NewCollector(store *goforensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
+func NewCollector(store *forensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
 	providesMap := map[string][]goartifacts.Source{}
 
 	definitions = goartifacts.FilterOS(definitions)
@@ -133,7 +133,7 @@ func (c *LiveCollector) Collect(name string, source goartifacts.Source) {
 }
 
 // collectCommand collects a COMMAND source to the forensicstore.
-func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (*goforensicstore.Process, error) {
+func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (*forensicstore.Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Cmd == "" {
@@ -147,13 +147,13 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 }
 
 // collectFile collects a FILE source to the forensicstore.
-func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*goforensicstore.File, error) {
+func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*forensicstore.File, error) {
 	source := goartifacts.ExpandSource(osource, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
-	var files []*goforensicstore.File
+	var files []*forensicstore.File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToTitle(source.Type), path)
 		file := c.createFile(name, true, path, name)
@@ -169,13 +169,13 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 }
 
 // collectDirectory collects a DIRECTORY source to the forensicstore.
-func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source) ([]*goforensicstore.File, error) {
+func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source) ([]*forensicstore.File, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
-	var files []*goforensicstore.File
+	var files []*forensicstore.File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToLower(source.Type), path)
 		file := c.createFile(name, false, path, name)
@@ -191,16 +191,16 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 }
 
 // collectPath collects a PATH source to the forensicstore.
-func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*goforensicstore.Directory, error) {
+func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*forensicstore.Directory, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
 	}
-	var directories []*goforensicstore.Directory
+	var directories []*forensicstore.Directory
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect Path %s", path)
-		directory := goforensicstore.Directory{Artifact: name, Type: "directory", Path: path}
+		directory := forensicstore.Directory{Artifact: name, Type: "directory", Path: path}
 		directories = append(directories, &directory)
 		_, err := c.Store.InsertStruct(directory)
 		if err != nil {
@@ -211,13 +211,13 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 }
 
 // collectRegistryKey collects a REGISTRY_KEY source to the forensicstore.
-func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Source) ([]*goforensicstore.RegistryKey, error) {
+func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Source) ([]*forensicstore.RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Keys) == 0 {
 		log.Printf("No collection for %s", name)
 	}
-	var keys []*goforensicstore.RegistryKey
+	var keys []*forensicstore.RegistryKey
 	for _, key := range source.Attributes.Keys {
 		log.Printf("Collect Registry Key %s", key)
 		k := c.createRegistryKey(name, key)
@@ -231,13 +231,13 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 }
 
 // collectRegistryValue collects a REGISTRY_VALUE source to the forensicstore.
-func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Source) ([]*goforensicstore.RegistryKey, error) {
+func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Source) ([]*forensicstore.RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.KeyValuePairs) == 0 {
 		log.Printf("No collection for %s", name)
 	}
-	var keys []*goforensicstore.RegistryKey
+	var keys []*forensicstore.RegistryKey
 	for _, kvpair := range source.Attributes.KeyValuePairs {
 		log.Printf("Collect Registry Value %s %s", kvpair.Key, kvpair.Value)
 		key := c.createRegistryValue(name, kvpair.Key, kvpair.Value)
@@ -251,7 +251,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 }
 
 // collectWMI collects a WMI source to the forensicstore.
-func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*goforensicstore.Process, error) {
+func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*forensicstore.Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Query == "" {

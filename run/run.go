@@ -33,12 +33,11 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/mholt/archiver"
 	"github.com/pkg/errors"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -164,28 +163,12 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		return nil
 	}
 
-	logPrint("Compress results.")
-	time.Sleep(time.Millisecond * 500) //nolint: gomnd
-
-	zipPath := ""
-
-	// compress data
-	if err := archiver.Archive([]string{storeName}, storeName+".zip"); err != nil {
-		log.Printf("compression failed: %s", err)
-	} else {
-		zipPath = storeName + ".zip"
-		err = os.RemoveAll(storeName)
-		if err != nil {
-			log.Printf("removal failed: %s", err)
-		}
-	}
-
 	logPrint("Collection done.")
 	time.Sleep(time.Second)
 
 	return &Collection{
 		Name: collectionName,
-		Path: zipPath,
+		Path: storeName,
 	}
 }
 
@@ -225,9 +208,9 @@ func enforceAdmin(forceAdmin bool) error {
 	}
 }
 
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *goforensicstore.ForensicStore, error) {
+func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, error) {
 	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, err := goforensicstore.NewJSONLite(storeName)
+	store, err := forensicstore.New(storeName)
 	if err != nil {
 		return "", nil, err
 	}

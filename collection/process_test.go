@@ -29,21 +29,21 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 func TestLiveCollector_createProcess(t *testing.T) {
 	testDir := setup(t)
 	defer teardown(t, testDir)
 
-	store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, "store"))
+	store, err := forensicstore.New(filepath.Join(testDir, "store"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer store.Close()
 
 	type fields struct {
-		Store   *goforensicstore.ForensicStore
+		Store   *forensicstore.ForensicStore
 		TempDir string
 	}
 	type args struct {
@@ -55,20 +55,19 @@ func TestLiveCollector_createProcess(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *goforensicstore.Process
+		want   *forensicstore.Process
 	}{
 		{
 			"hostname",
 			fields{store, testDir},
 			args{"test", "hostname", nil},
-			&goforensicstore.Process{
+			&forensicstore.Process{
 				Name:        "hostname",
 				Artifact:    "test",
 				Type:        "process",
 				StdoutPath:  "test/stdout",
 				StderrPath:  "test/stderr",
 				CommandLine: "hostname",
-				Arguments:   []interface{}{},
 				ReturnCode:  0,
 				Errors:      []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
 			}},
@@ -85,7 +84,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 			}
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
 			got.ID = ""      // unset ID
-			got.Created = "" // unset created
+			got.CreatedTime = "" // unset created
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("createProcess() = %#v, want %#v", got, tt.want)
 			}

@@ -24,11 +24,11 @@ package run
 import (
 	"time"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 type storeLogger struct {
-	store *goforensicstore.ForensicStore
+	store *forensicstore.ForensicStore
 }
 
 func (s *storeLogger) Write(b []byte) (int, error) {
