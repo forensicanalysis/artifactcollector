@@ -6,7 +6,7 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.2
 	github.com/forensicanalysis/artifactlib v0.13.2
 	github.com/forensicanalysis/artifactsgo v0.1.0
-	github.com/forensicanalysis/forensicstore v0.15.1
+	github.com/forensicanalysis/forensicstore v0.15.2-0.20200501210627-47d0e6d202db
 	github.com/forensicanalysis/fslib v0.13.1
 	github.com/go-ole/go-ole v1.2.4
 	github.com/pkg/errors v0.9.1
@@ -14,7 +14,3 @@ require (
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4
 )
-
-replace github.com/forensicanalysis/forensicstore => ../forensicstore
-
-replace github.com/forensicanalysis/sqlitefs => ../sqlitefs

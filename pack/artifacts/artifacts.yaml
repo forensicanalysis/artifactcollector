@@ -4,7 +4,14 @@ name: DefaultEntryPoint
 doc: Windows Forensic Analysis
 sources:
 - type: ARTIFACT_GROUP
-  attributes: {names: ['FOR500']}
+  attributes:
+    names:
+    - 'FOR500'
+    - 'WindowsEventLogs'
+    - 'WindowsRunKeys'
+    - 'WindowsUninstallKeys'
+    - 'WindowsServices'
+    - 'WindowsUSBInformation'
   supported_os: [Windows]
 - type: ARTIFACT_GROUP
   attributes:
