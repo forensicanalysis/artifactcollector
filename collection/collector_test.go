@@ -29,9 +29,6 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib"
@@ -209,10 +206,9 @@ func TestCollect(t *testing.T) {
 			*/
 
 			// test log file
-			osfs := afero.NewOsFs()
-			f, err := osfs.Open(filepath.Join(testDir, tt.args.out, "ac.forensicstore", "item.db"))
-			if !assert.NoErrorf(t, err, "Could not open forensicstore %s", err) {
-				return
+			f, err := os.Open(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
+			if err != nil {
+				t.Errorf("Could not open forensicstore %s", err)
 			}
 			f.Close()
 

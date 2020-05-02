@@ -29,4 +29,5 @@ pack/artifacts/
 *.syso
 
 *.log
+*.forensicstore
 *.forensicstore.zip

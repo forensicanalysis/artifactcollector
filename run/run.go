@@ -22,6 +22,7 @@
 package run
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -33,7 +34,6 @@ import (
 	"time"
 
 	"github.com/cheggaaa/pb/v3"
-	"github.com/pkg/errors"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -117,7 +117,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
 	if err != nil {
-		logPrint(errors.Wrap(err, "LiveCollector creation failed"))
+		logPrint(fmt.Errorf("LiveCollector creation failed: %w", err))
 		return nil
 	}
 
@@ -159,7 +159,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	err = store.Close()
 	if err != nil {
-		logPrint(errors.Wrap(err, "Close Store failed"))
+		logPrint(fmt.Errorf("Close Store failed: %w", err))
 		return nil
 	}
 

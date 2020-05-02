@@ -27,7 +27,7 @@ sources:
       - WindowsOpenSavePidlMRU
       # EmailAttachments
       # SkypeMainDirectory is only for macos
-      - BrowserCache
+      # BrowserCache not collected by default
       - BrowserHistory
       # AdsZoneIdentifier
 supported_os: [Windows]

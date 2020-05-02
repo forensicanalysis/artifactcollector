@@ -16,7 +16,7 @@ sources:
 - type: ARTIFACT_GROUP
   attributes:
     names:
-    - 'BrowserCache'
+    # - 'BrowserCache'
     - 'BrowserHistory'
     - 'IPTablesRules'
     - 'LinuxAtJobs'
@@ -27,7 +27,7 @@ sources:
 - type: ARTIFACT_GROUP
   attributes:
     names:
-    - 'BrowserCache'
+    # - 'BrowserCache'
     - 'BrowserHistory'
     - 'MacOSAtJobs'
     - 'MacOSAuditLogFiles'

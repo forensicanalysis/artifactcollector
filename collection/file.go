@@ -31,8 +31,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/forensicanalysis/forensicstore"
 )
 
@@ -122,20 +120,20 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 		if collectContents && file.Size > 0 {
 			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(dstdir, normalizeFilePath(srcpath)))
 			if err != nil {
-				return file.AddError(errors.Wrap(err, "error storing file").Error())
+				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
 			defer storeFile.Close()
 
 			srcFile, err := c.SourceFS.Open(srcpath)
 			if err != nil {
-				return file.AddError(errors.Wrap(err, "error openung file").Error())
+				return file.AddError(fmt.Errorf("error openung file: %w", err).Error())
 			}
 			defer srcFile.Close()
 
 			size, hashes, err := hashCopy(srcFile, storeFile)
 			if err != nil {
-				errorMessage := fmt.Sprintf("copy error %s %s -> %s %s", c.SourceFS.Name(), srcpath, c.Store.Name(), dstpath)
-				return file.AddError(errors.Wrap(err, errorMessage).Error())
+				errorMessage := fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err)
+				return file.AddError(errorMessage.Error())
 			}
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
@@ -158,5 +156,5 @@ func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string][]byte, 
 	sha1hash := sha1.New() // #nosec
 	md5hash := md5.New()   // #nosec
 	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash), srcfile)
-	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, errors.Wrap(err, "copy failed")
+	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, fmt.Errorf("copy failed: %w", err)
 }

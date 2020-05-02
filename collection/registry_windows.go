@@ -22,11 +22,11 @@
 package collection
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sys/windows/registry"
 
 	"github.com/forensicanalysis/forensicstore"
@@ -74,7 +74,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 		return key, nil, fmt.Errorf("wrong number of keyparts %s", keyparts)
 	}
 	k, err := registry.OpenKey(registryMap[keyparts[0]], keyparts[1], registry.READ|registry.QUERY_VALUE|registry.ENUMERATE_SUB_KEYS)
-	return key, &k, errors.Wrap(err, "Could not open key")
+	return key, &k, fmt.Errorf("Could not open key: %w", err)
 }
 
 func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *forensicstore.RegistryKey) {
@@ -102,13 +102,13 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.Regis
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
-		return nil, []error{errors.Wrap(err, "Could not stat")}
+		return nil, []error{fmt.Errorf("Could not stat: %w", err)}
 	}
 
 	if ki.ValueCount > 0 {
 		valuenames, err := k.ReadValueNames(int(ki.ValueCount))
 		if err != nil {
-			return nil, []error{errors.Wrap(err, "could not read value names")}
+			return nil, []error{fmt.Errorf("could not read value names: %w", err)}
 		}
 
 		for _, valuename := range valuenames {
@@ -127,7 +127,7 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.Regis
 func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value forensicstore.RegistryValue, err error) {
 	dataType, _, _, stringData, err := valueData(k, valueName)
 	if err != nil {
-		return value, errors.Wrap(err, "could not parse registry data")
+		return value, fmt.Errorf("could not parse registry data: %w", err)
 	}
 	if valueName == "" {
 		valueName = "(Default)"

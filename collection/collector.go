@@ -28,8 +28,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib"
@@ -70,7 +68,7 @@ func NewCollector(store *forensicstore.ForensicStore, tempDir string, definition
 
 	sourceFS, err := systemfs.New()
 	if err != nil {
-		return nil, errors.Wrap(err, "system fs creation failed")
+		return nil, fmt.Errorf("system fs creation failed: %w", err)
 	}
 
 	return &LiveCollector{
@@ -128,7 +126,7 @@ func (c *LiveCollector) Collect(name string, source goartifacts.Source) {
 		log.Printf("Unknown artifact source %s %+v", source.Type, source)
 	}
 	if err != nil {
-		log.Print(errors.Wrap(err, fmt.Sprintf("could not collect %s", source.Type)))
+		log.Print(fmt.Errorf("could not collect %s: %w", source.Type, err))
 	}
 }
 
@@ -143,7 +141,7 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 	log.Printf("Collect Command %s %s", source.Attributes.Cmd, source.Attributes.Args)
 	process := c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
 	_, err := c.Store.InsertStruct(process)
-	return process, errors.Wrap(err, "could not insert struct")
+	return process, fmt.Errorf("could not insert struct: %w", err)
 }
 
 // collectFile collects a FILE source to the forensicstore.
@@ -161,7 +159,7 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
 			if err != nil {
-				return files, errors.Wrap(err, "could not insert struct")
+				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
 		}
 	}
@@ -183,7 +181,7 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
 			if err != nil {
-				return files, errors.Wrap(err, "could not insert struct")
+				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
 		}
 	}
@@ -204,7 +202,7 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 		directories = append(directories, &directory)
 		_, err := c.Store.InsertStruct(directory)
 		if err != nil {
-			return directories, errors.Wrap(err, "could not insert struct")
+			return directories, fmt.Errorf("could not insert struct: %w", err)
 		}
 	}
 	return directories, nil
@@ -261,5 +259,5 @@ func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*for
 	log.Printf("Collect WMI %s", source.Attributes.Query)
 	process := c.createWMI(name, source.Attributes.Query)
 	_, err := c.Store.InsertStruct(process)
-	return process, errors.Wrap(err, "could not insert struct")
+	return process, fmt.Errorf("could not insert struct: %w", err)
 }
