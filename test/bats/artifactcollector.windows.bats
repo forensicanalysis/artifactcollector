@@ -23,6 +23,5 @@
 
 @test "artifactcollector" {
   artifactcollector
-  7z e *.forensicstore.zip
-  forensicstore item validate *.forensicstore
+  forensicstore validate *.forensicstore
 }

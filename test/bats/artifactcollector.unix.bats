@@ -23,6 +23,5 @@
 
 @test "artifactcollector" {
   sudo ./artifactcollector
-  unzip *.forensicstore.zip
-  forensicstore item validate *.forensicstore
+  forensicstore validate *.forensicstore
 }

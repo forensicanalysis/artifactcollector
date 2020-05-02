@@ -102,7 +102,7 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.Regis
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
-		return nil, []error{fmt.Errorf("Could not stat: %w", err)}
+		return nil, []error{fmt.Errorf("could not stat: %w", err)}
 	}
 
 	if ki.ValueCount > 0 {
