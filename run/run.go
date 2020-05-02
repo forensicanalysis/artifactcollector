@@ -22,7 +22,6 @@
 package run
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -96,7 +95,6 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// enforce admin rights
 	if err = enforceAdmin(!config.User); err != nil {
-		logPrint(err)
 		return nil
 	}
 
@@ -159,7 +157,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	err = store.Close()
 	if err != nil {
-		logPrint(fmt.Errorf("Close Store failed: %w", err))
+		logPrint(fmt.Sprintf("Close Store failed: %s", err))
 		return nil
 	}
 
@@ -198,11 +196,13 @@ func enforceAdmin(forceAdmin bool) error {
 	case runtime.GOOS == "windows":
 		_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 		if err != nil {
-			return errors.New("Need to be windows admin")
+			logPrint("Need to be windows admin")
+			return os.ErrPermission
 		}
 		return nil
 	case os.Getgid() != 0:
-		return errors.New("Need to be root")
+		logPrint("need to be root")
+		return os.ErrPermission
 	default:
 		return nil
 	}
