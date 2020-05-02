@@ -86,7 +86,7 @@ jobs:
         run: |
           mkdir bin store
           mv artifactcollector* bin
-          mv *.forensicstore.zip store
+          mv *.forensicstore store
         shell: bash
 
       - name: Upload artifactcollector
