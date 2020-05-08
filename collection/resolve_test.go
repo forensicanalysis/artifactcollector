@@ -22,6 +22,7 @@
 package collection
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -98,6 +99,12 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 			if tt.os == runtime.GOOS {
 				testDir := setup(t)
 				defer teardown(t)
+
+				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0755)
+				if err != nil {
+					t.Errorf("Could not make dir %s", err)
+					return
+				}
 
 				store, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
 				if err != nil {

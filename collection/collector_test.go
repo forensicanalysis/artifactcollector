@@ -162,6 +162,12 @@ func TestCollect(t *testing.T) {
 				t.Skip("Test disabled on windows")
 			}
 
+			err := os.MkdirAll(filepath.Join(testDir, tt.args.out), 0755)
+			if err != nil {
+				t.Errorf("Could not make dir %s", err)
+				return
+			}
+
 			store, err := forensicstore.New(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)

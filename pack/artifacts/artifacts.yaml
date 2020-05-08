@@ -12,6 +12,9 @@ sources:
     - 'WindowsUninstallKeys'
     - 'WindowsServices'
     - 'WindowsUSBInformation'
+    - 'WindowsComputerName'
+    - 'WindowsNetworkInterfaceInformation'
+    - 'WindowsHotfixes'
   supported_os: [Windows]
 - type: ARTIFACT_GROUP
   attributes:
