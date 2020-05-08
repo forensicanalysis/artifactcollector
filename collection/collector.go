@@ -198,8 +198,10 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 	var directories []*forensicstore.Directory
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect Path %s", path)
-		directory := forensicstore.Directory{Artifact: name, Type: "directory", Path: path}
-		directories = append(directories, &directory)
+		directory := forensicstore.NewDirectory()
+		directory.Artifact = name
+		directory.Path = path
+		directories = append(directories, directory)
 		_, err := c.Store.InsertStruct(directory)
 		if err != nil {
 			return directories, fmt.Errorf("could not insert struct: %w", err)
