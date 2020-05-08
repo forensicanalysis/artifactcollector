@@ -32,7 +32,7 @@ func (c *LiveCollector) createWMI(definitonName, query string) *forensicstore.Pr
 	process.Artifact = definitonName
 	process.CommandLine = query
 	process.Name = "WMI"
-	process.CreatedTime = time.Now().Format("2006-01-02T15:04:05.000Z")
+	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
 
 	results, err := WMIQuery(query)
 	if err != nil {

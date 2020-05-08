@@ -63,7 +63,7 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	}
 	execution.Stdout = stdoutfile
 	execution.Stderr = stderrfile
-	process.CreatedTime = time.Now().Format("2006-01-02T15:04:05.000Z")
+	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
 	if err = execution.Run(); err != nil {
 		return process.AddError(err.Error())
 	}

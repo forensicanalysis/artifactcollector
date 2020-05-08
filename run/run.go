@@ -61,7 +61,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	if config.Case != "" {
 		hostname = config.Case + "-" + hostname
 	}
-	collectionName := fmt.Sprintf("%s_%s", hostname, time.Now().UTC().Format("2006-01-02T15-04-05"))
+	collectionName := fmt.Sprintf("%s_%s", hostname, time.Now().UTC().Format(time.RFC3339Nano))
 
 	// setup logging
 	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)

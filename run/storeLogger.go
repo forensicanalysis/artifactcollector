@@ -37,7 +37,7 @@ func (s *storeLogger) Write(b []byte) (int, error) {
 		Time    string `yaml:"time"`
 		Message string `yaml:"message"`
 	}
-	now := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
+	now := time.Now().UTC().Format(time.RFC3339Nano)
 	_, err := s.store.InsertStruct(logEntry{"_log", now, string(b)})
 	return len(b), err
 }

@@ -93,7 +93,7 @@ func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*regi
 	if err != nil {
 		rk.Errors = append(rk.Errors, err.Error())
 	} else {
-		rk.ModifiedTime = info.ModTime().In(time.UTC).Format("2006-01-02T15:04:05.000Z")
+		rk.ModifiedTime = info.ModTime().UTC().Format(time.RFC3339Nano)
 	}
 	return k, rk
 }
