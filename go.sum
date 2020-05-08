@@ -47,6 +47,8 @@ github.com/forensicanalysis/artifactsgo v0.1.0/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l
 github.com/forensicanalysis/forensicstore v0.12.1/go.mod h1:t/xpmXXSOLIriXM7NrrnT/5KTo6R7L9+9psIMgzcMEo=
 github.com/forensicanalysis/forensicstore v0.15.2-0.20200502121146-2de7482bf8cf h1:0cmXY3kbASjhoqh8Lnb8dD87zydhW4Hs2kd0xPQctVg=
 github.com/forensicanalysis/forensicstore v0.15.2-0.20200502121146-2de7482bf8cf/go.mod h1:s6yY2jAuy5ClA2nXJwW6Gz80Woq/GI5VHPabQ0oD4V0=
+github.com/forensicanalysis/forensicstore v0.15.2-0.20200508152104-5846cf8746ee h1:15ulskPku3apZVpe8wsNGzLHouaptt5Vs5ZFtVr9LTI=
+github.com/forensicanalysis/forensicstore v0.15.2-0.20200508152104-5846cf8746ee/go.mod h1:VIssGlpD7mOxEcynW2XHuL66NLYmH/Q/hVKB6h0jMPM=
 github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.13.1 h1:Ul0Jo6iR+uNm6GWuGmcZ+Wl/83euXlQ3VQtis3WhIMc=
@@ -189,6 +191,12 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.5.1 h1:nOGnQDM7FYENwehXlg/kFVnos3rEvtKTjRvOWSzb6H4=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
+github.com/tidwall/gjson v1.6.0 h1:9VEQWz6LLMUsUl6PueE49ir4Ka6CzLymOAZDxpFsTDc=
+github.com/tidwall/gjson v1.6.0/go.mod h1:P256ACg0Mn+j1RXIDXoss50DeIABTYK1PULOJHhxOls=
+github.com/tidwall/match v1.0.1 h1:PnKP62LPNxHKTwvHHZZzdOAOCtsJTjo6dZLCwpKm5xc=
+github.com/tidwall/match v1.0.1/go.mod h1:LujAq0jyVjBy028G1WhWfIzbpQfMO8bBZ6Tyb0+pL9E=
+github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
+github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGrc=
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
