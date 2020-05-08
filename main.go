@@ -34,15 +34,12 @@
 package main
 
 import (
-	"flag"
-	"fmt"
+	"os"
+
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/run"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/artifactsgo"
-	"os"
-	"path/filepath"
-	"regexp"
 )
 
 //go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources@v0.3.0 github.com/akavel/rsrc
@@ -55,34 +52,9 @@ import (
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	outDir := *flag.String("o", "", "Output directory for forensicstore and log file")
-	flag.Parse()
-
 	var artifacts []goartifacts.ArtifactDefinition
 	artifacts = append(artifacts, artifactsgo.Artifacts...)
 	artifacts = append(artifacts, assets.Artifacts...)
-
-	cwd, _ := os.Getwd()
-
-	windowsZipTempDir := regexp.MustCompile(`(?i)C:\\Windows\\system32`)
-	sevenZipTempDir := regexp.MustCompile(`(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*`)
-
-	// output dir order:
-	// 1. -o flag given
-	// 2. implemented in config
-	// 3.1. running from zip -> Desktop
-	// 3.2. otherwise -> current directory
-	switch {
-	case outDir != "":
-		assets.Config.OutputDir = outDir
-	case assets.Config.OutputDir != "":
-	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
-		fmt.Println("Running from zip, results will be available on Desktop")
-		homedir, _ := os.UserHomeDir()
-		assets.Config.OutputDir = filepath.Join(homedir, "Desktop")
-	default:
-		assets.Config.OutputDir = "" // current directory
-	}
 
 	collection := run.Run(assets.Config, artifacts, assets.FS)
 	if collection == nil {

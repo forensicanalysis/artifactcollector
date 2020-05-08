@@ -22,12 +22,14 @@
 package run
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"time"
@@ -51,6 +53,31 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
+	}
+
+	var outputDirFlag string
+	flag.StringVar(&outputDirFlag, "o", "", "Output directory for forensicstore and log file")
+	flag.Parse()
+
+	cwd, _ := os.Getwd()
+	windowsZipTempDir := regexp.MustCompile(`(?i)C:\\Windows\\system32`)
+	sevenZipTempDir := regexp.MustCompile(`(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*`)
+
+	// output dir order:
+	// 1. -o flag given
+	// 2. implemented in config
+	// 3.1. running from zip -> Desktop
+	// 3.2. otherwise -> current directory
+	switch {
+	case outputDirFlag != "":
+		config.OutputDir = outputDirFlag
+	case config.OutputDir != "":
+	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
+		fmt.Println("Running from zip, results will be available on Desktop")
+		homedir, _ := os.UserHomeDir()
+		config.OutputDir = filepath.Join(homedir, "Desktop")
+	default:
+		config.OutputDir = "" // current directory
 	}
 
 	// setup
