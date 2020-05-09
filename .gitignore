@@ -30,4 +30,6 @@ pack/artifacts/
 
 *.log
 *.forensicstore
+*.forensicstore-wal
+*.forensicstore-shm
 *.forensicstore.zip

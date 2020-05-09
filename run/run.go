@@ -22,6 +22,7 @@
 package run
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -34,6 +35,7 @@ import (
 	"runtime/debug"
 	"time"
 
+	"crawshaw.io/sqlite"
 	"github.com/cheggaaa/pb/v3"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
@@ -134,10 +136,12 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	// add store as log writer
-	if logfileError == nil {
-		log.SetOutput(io.MultiWriter(logfile, &storeLogger{store}))
-	} else {
-		log.SetOutput(io.MultiWriter(&storeLogger{store}))
+	storeLogger, storeLoggerError := newStoreLogger(store)
+	switch {
+	case logfileError == nil && storeLoggerError == nil:
+		log.SetOutput(io.MultiWriter(logfile, storeLogger))
+	case storeLoggerError == nil:
+		log.SetOutput(storeLogger)
 	}
 
 	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
@@ -242,30 +246,53 @@ func createStore(collectionName string, config *collection.Configuration, defini
 		return "", nil, err
 	}
 
+	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
+		key TEXT NOT NULL,
+		value TEXT
+	);`)
+	if err != nil {
+		return "", nil, err
+	}
+
+	conn := store.Connection()
+
 	// insert configuration into store
-	config.Type = "_config"
-	_, err = store.InsertStruct(config)
+	err = addConfig(conn, "config", config)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// insert artifact definitions into store
 	for _, artifact := range definitions {
-		_, err = store.InsertStruct(
-			struct {
-				Data string `yaml:"artifacts"`
-				Type string `yaml:"type,omitempty"`
-			}{
-				fmt.Sprintf("%#v", artifact),
-				"_artifact-definition",
-			},
-		)
+		err = addConfig(conn, "artifact:"+artifact.Name, artifact)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 
 	return storeName, store, nil
+}
+
+func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
+	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
+	if err != nil {
+		return err
+	}
+
+	b, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	stmt.SetText("$key", key)
+	stmt.SetText("$value", string(b))
+
+	_, err = stmt.Step()
+	if err != nil {
+		return err
+	}
+
+	return stmt.Finalize()
 }
 
 func logPrint(a ...interface{}) {

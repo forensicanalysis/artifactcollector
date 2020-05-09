@@ -43,6 +43,7 @@ github.com/forensicanalysis/forensicstore v0.15.2-0.20200501210627-47d0e6d202db 
 github.com/forensicanalysis/forensicstore v0.15.2-0.20200501210627-47d0e6d202db/go.mod h1:s6yY2jAuy5ClA2nXJwW6Gz80Woq/GI5VHPabQ0oD4V0=
 github.com/forensicanalysis/forensicstore v0.15.2-0.20200502121146-2de7482bf8cf/go.mod h1:s6yY2jAuy5ClA2nXJwW6Gz80Woq/GI5VHPabQ0oD4V0=
 github.com/forensicanalysis/forensicstore v0.15.2-0.20200508152104-5846cf8746ee/go.mod h1:VIssGlpD7mOxEcynW2XHuL66NLYmH/Q/hVKB6h0jMPM=
+github.com/forensicanalysis/forensicstore v0.15.2-0.20200509133905-18430897ceeb/go.mod h1:VIssGlpD7mOxEcynW2XHuL66NLYmH/Q/hVKB6h0jMPM=
 github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.13.1 h1:Ul0Jo6iR+uNm6GWuGmcZ+Wl/83euXlQ3VQtis3WhIMc=
