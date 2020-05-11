@@ -137,6 +137,9 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// add store as log writer
 	storeLogger, storeLoggerError := newStoreLogger(store)
+	if storeLoggerError != nil {
+		log.Printf("Could not setup logging to forensicstore: %s", storeLoggerError)
+	}
 	switch {
 	case logfileError == nil && storeLoggerError == nil:
 		log.SetOutput(io.MultiWriter(logfile, storeLogger))
