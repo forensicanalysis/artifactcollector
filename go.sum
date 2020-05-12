@@ -40,8 +40,8 @@ github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga
 github.com/forensicanalysis/artifactcollector v0.12.1/go.mod h1:TaV5QYUVDklFun5W0MvFMGIgDbhxxIUEnnRKvujm3aI=
 github.com/forensicanalysis/artifactlib v0.12.2/go.mod h1:sYvEmDCBeij/3tTD9TcQA6ztKdaaGVR/chR7Asv4oUw=
 github.com/forensicanalysis/artifactlib v0.13.1/go.mod h1:FdiGzYLnTKZy+uIXBuQIzFRuK0nGlGycH/7Ss9MNdHg=
-github.com/forensicanalysis/artifactlib v0.13.2 h1:1iyQa1DvD4psXV6wokXTTvtVaLMv/iqc42pkfsGC+gc=
-github.com/forensicanalysis/artifactlib v0.13.2/go.mod h1:Ff5eslnDDuG/v5M5cSfqRrJM2O++lkCJuTco+e05zuY=
+github.com/forensicanalysis/artifactlib v0.13.3 h1:ZOaaV56xlqWmE0Ak4mvR2b6AD1cPjGNmHzwUacl9gmY=
+github.com/forensicanalysis/artifactlib v0.13.3/go.mod h1:Ff5eslnDDuG/v5M5cSfqRrJM2O++lkCJuTco+e05zuY=
 github.com/forensicanalysis/artifactsgo v0.1.1 h1:QmtqYn1n/rfUNSmB1D8yL3+4qI5o1I7QZfWkEwV/PRI=
 github.com/forensicanalysis/artifactsgo v0.1.1/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
 github.com/forensicanalysis/forensicstore v0.12.1/go.mod h1:t/xpmXXSOLIriXM7NrrnT/5KTo6R7L9+9psIMgzcMEo=

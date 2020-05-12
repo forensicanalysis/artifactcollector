@@ -35,6 +35,7 @@ github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga
 github.com/forensicanalysis/artifactlib v0.13.1/go.mod h1:FdiGzYLnTKZy+uIXBuQIzFRuK0nGlGycH/7Ss9MNdHg=
 github.com/forensicanalysis/artifactlib v0.13.2 h1:1iyQa1DvD4psXV6wokXTTvtVaLMv/iqc42pkfsGC+gc=
 github.com/forensicanalysis/artifactlib v0.13.2/go.mod h1:Ff5eslnDDuG/v5M5cSfqRrJM2O++lkCJuTco+e05zuY=
+github.com/forensicanalysis/artifactlib v0.13.3/go.mod h1:Ff5eslnDDuG/v5M5cSfqRrJM2O++lkCJuTco+e05zuY=
 github.com/forensicanalysis/artifactsgo v0.1.0 h1:ZwOpR0J16GyNRO2ARq983CL2BKQ8vtmBzvpqBU7TgV4=
 github.com/forensicanalysis/artifactsgo v0.1.0/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
 github.com/forensicanalysis/artifactsgo v0.1.1/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=

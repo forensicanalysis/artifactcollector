@@ -127,9 +127,15 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		return nil
 	}
 
+	// select from entrypoint
+	filteredArtifactDefinitions := artifactDefinitions
+	if config.Artifacts != nil {
+		filteredArtifactDefinitions = goartifacts.FilterName(config.Artifacts, artifactDefinitions)
+	}
+
 	// create store
 	collectionPath := filepath.Join(config.OutputDir, collectionName)
-	storeName, store, teardown, err := createStore(collectionPath, config, artifactDefinitions)
+	storeName, store, teardown, err := createStore(collectionPath, config, filteredArtifactDefinitions)
 	if err != nil {
 		logPrint(err)
 		return nil
@@ -153,21 +159,13 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		return nil
 	}
 
-	// select from entrypoint
-	if config.Artifacts != nil {
-		artifactDefinitions = goartifacts.FilterName(config.Artifacts, artifactDefinitions)
-	}
-
-	// select supported os
-	artifactDefinitions = goartifacts.FilterOS(artifactDefinitions)
-
 	// setup bar
 	tmpl := `Collecting {{string . "artifact"}} ({{counters . }} {{bar . }})`
-	bar := pb.ProgressBarTemplate(tmpl).Start(len(artifactDefinitions))
+	bar := pb.ProgressBarTemplate(tmpl).Start(len(filteredArtifactDefinitions))
 	bar.SetRefreshRate(time.Second)
 
 	// collect artifacts
-	for _, artifactDefinition := range artifactDefinitions {
+	for _, artifactDefinition := range filteredArtifactDefinitions {
 		startArtifact := time.Now()
 		bar.Set("artifact", artifactDefinition.Name)
 		bar.Increment()
@@ -189,7 +187,6 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		log.SetOutput(ioutil.Discard)
 	}
 
-	time.Sleep(time.Second)
 	err = teardown()
 	if err != nil {
 		logPrint(fmt.Sprintf("Close Store failed: %s", err))
