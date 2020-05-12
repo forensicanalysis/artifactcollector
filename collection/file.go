@@ -24,6 +24,7 @@ package collection
 import (
 	"crypto/md5"  // #nosec
 	"crypto/sha1" // #nosec
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -43,7 +44,7 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *forensicstore.File { //nolint:funlen
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) *forensicstore.File { //nolint:funlen
 	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
@@ -70,55 +71,65 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			file.Ctime = getString(attributes, "created")
 			file.Mtime = getString(attributes, "modified")
 			file.Atime = getString(attributes, "accessed")
+			delete(attributes, "created")
+			delete(attributes, "modified")
+			delete(attributes, "accessed")
 			file.Attributes = attributes
 		}
 
 		// copy file
 		if collectContents && file.Size > 0 {
-			hostname, err := os.Hostname()
+			dstpath, size, hashes, err := c.insertFile(srcpath)
 			if err != nil {
-				hostname = ""
-			}
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
-			if err != nil {
-				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
-			}
-			defer storeFile.Close()
-
-			srcFile, err := c.SourceFS.Open(srcpath)
-			if err != nil {
-				return file.AddError(fmt.Errorf("error openung file: %w", err).Error())
-			}
-			defer srcFile.Close()
-
-			size, hashes, err := hashCopy(srcFile, storeFile)
-			if err != nil {
-				errorMessage := fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err)
-				return file.AddError(errorMessage.Error())
+				return file.AddError(err.Error())
 			}
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
 			}
 
 			file.ExportPath = filepath.ToSlash(dstpath)
-			file.Hashes = map[string]interface{}{
-				"SHA-1": fmt.Sprintf("%x", hashes["SHA-1"]),
-				"MD5":   fmt.Sprintf("%x", hashes["MD5"]),
-			}
-			return file
+			file.Hashes = hashes
 		}
-
 		return file
 	}
 	return file.AddError("path contains unknown expanders")
 }
 
-func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string][]byte, error) {
+func (c *LiveCollector) insertFile(srcpath string) (string, int64, map[string]interface{}, error) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = ""
+	}
+	dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("error storing file: %w", err)
+	}
+	defer storeFile.Close()
+
+	srcFile, err := c.SourceFS.Open(srcpath)
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("error openung file: %w", err)
+	}
+	defer srcFile.Close()
+
+	size, hashes, err := hashCopy(srcFile, storeFile)
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err)
+	}
+	return dstpath, size, hashes, nil
+}
+
+func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string]interface{}, error) {
 	sha1hash := sha1.New() // #nosec
 	md5hash := md5.New()   // #nosec
-	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash), srcfile)
+	sha256hash := sha256.New()
+	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash, sha256hash), srcfile)
 	if err != nil {
 		return 0, nil, fmt.Errorf("copy failed: %w", err)
 	}
-	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, nil
+	return size, map[string]interface{}{
+		"MD5":     fmt.Sprintf("%x", md5hash.Sum(nil)),
+		"SHA-1":   fmt.Sprintf("%x", sha1hash.Sum(nil)),
+		"SHA-256": fmt.Sprintf("%x", sha256hash.Sum(nil)),
+	}, nil
 }
