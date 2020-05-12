@@ -189,6 +189,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		log.SetOutput(ioutil.Discard)
 	}
 
+	time.Sleep(time.Second)
 	err = teardown()
 	if err != nil {
 		logPrint(fmt.Sprintf("Close Store failed: %s", err))
@@ -196,7 +197,6 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	logPrint("Collection done.")
-	time.Sleep(time.Second)
 
 	return &Collection{
 		Name: collectionName,
