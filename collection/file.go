@@ -43,49 +43,6 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func first(s string, n int) string {
-	if len(s) < n {
-		n = len(s)
-	}
-	return s[:n]
-}
-
-func last(s string, n int) string {
-	if len(s) < n {
-		n = len(s)
-	}
-	return s[len(s)-n:]
-}
-
-func splitExt(filePath string) (nameOnly, ext string) {
-	ext = path.Ext(filePath)
-	nameOnly = filePath[:len(filePath)-len(ext)-1]
-	return nameOnly, ext
-}
-
-func normalizeFilePath(filePath string) string {
-	maxLength := 64
-	maxSegmentLength := 4
-	filePath = strings.TrimLeft(filePath, "/")
-	pathSegments := strings.Split(filePath, "/")
-	normalizedFilePath := strings.Join(pathSegments, "_")
-
-	// get first 4 letters of every directory, while longer than maxLength
-	for i := 0; i < len(pathSegments)-1 && len(normalizedFilePath) > maxLength; i++ {
-		pathSegments[i] = first(pathSegments[i], maxSegmentLength)
-		normalizedFilePath = strings.Join(pathSegments, "_")
-	}
-
-	if len(normalizedFilePath) > maxLength {
-		// if still to long get first maxSegmentLength letters of filename + extension
-		nameOnly, ext := splitExt(pathSegments[len(pathSegments)-1])
-		pathSegments[len(pathSegments)-1] = first(nameOnly, maxSegmentLength) + ext
-		normalizedFilePath = strings.Join(pathSegments, "_")
-	}
-
-	return last(normalizedFilePath, maxLength)
-}
-
 func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *forensicstore.File { //nolint:funlen
 	file := forensicstore.NewFile()
 	file.Artifact = definitionName
@@ -118,7 +75,11 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 		// copy file
 		if collectContents && file.Size > 0 {
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(dstdir, normalizeFilePath(srcpath)))
+			hostname, err := os.Hostname()
+			if err != nil {
+				hostname = ""
+			}
+			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
 			if err != nil {
 				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
