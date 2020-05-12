@@ -75,6 +75,9 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			delete(attributes, "modified")
 			delete(attributes, "accessed")
 			file.Attributes = attributes
+			file.Attributes["stat_size"] = srcInfo.Size()
+		} else {
+			file.Attributes = map[string]interface{}{"stat_size": srcInfo.Size()}
 		}
 
 		// copy file
@@ -87,6 +90,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
 			}
 
+			file.Size = float64(size)
 			file.ExportPath = filepath.ToSlash(dstpath)
 			file.Hashes = hashes
 		}
@@ -96,6 +100,12 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 }
 
 func (c *LiveCollector) insertFile(srcpath string) (string, int64, map[string]interface{}, error) {
+	srcFile, err := c.SourceFS.Open(srcpath)
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("error opening file: %w", err)
+	}
+	defer srcFile.Close()
+
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = ""
@@ -105,12 +115,6 @@ func (c *LiveCollector) insertFile(srcpath string) (string, int64, map[string]in
 		return "", 0, nil, fmt.Errorf("error storing file: %w", err)
 	}
 	defer storeFile.Close()
-
-	srcFile, err := c.SourceFS.Open(srcpath)
-	if err != nil {
-		return "", 0, nil, fmt.Errorf("error openung file: %w", err)
-	}
-	defer srcFile.Close()
 
 	size, hashes, err := hashCopy(srcFile, storeFile)
 	if err != nil {
