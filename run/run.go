@@ -22,23 +22,25 @@
 package run
 
 import (
+	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"runtime/debug"
 	"time"
 
+	"crawshaw.io/sqlite"
 	"github.com/cheggaaa/pb/v3"
-	"github.com/mholt/archiver"
-	"github.com/pkg/errors"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -53,6 +55,31 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
 		return nil
+	}
+
+	var outputDirFlag string
+	flag.StringVar(&outputDirFlag, "o", "", "Output directory for forensicstore and log file")
+	flag.Parse()
+
+	cwd, _ := os.Getwd()
+	windowsZipTempDir := regexp.MustCompile(`(?i)C:\\Windows\\system32`)
+	sevenZipTempDir := regexp.MustCompile(`(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*`)
+
+	// output dir order:
+	// 1. -o flag given
+	// 2. implemented in config
+	// 3.1. running from zip -> Desktop
+	// 3.2. otherwise -> current directory
+	switch {
+	case outputDirFlag != "":
+		config.OutputDir = outputDirFlag
+	case config.OutputDir != "":
+	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
+		fmt.Println("Running from zip, results will be available on Desktop")
+		homedir, _ := os.UserHomeDir()
+		config.OutputDir = filepath.Join(homedir, "Desktop")
+	default:
+		config.OutputDir = "" // current directory
 	}
 
 	// setup
@@ -97,46 +124,48 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// enforce admin rights
 	if err = enforceAdmin(!config.User); err != nil {
-		logPrint(err)
 		return nil
+	}
+
+	// select from entrypoint
+	filteredArtifactDefinitions := artifactDefinitions
+	if config.Artifacts != nil {
+		filteredArtifactDefinitions = goartifacts.FilterName(config.Artifacts, artifactDefinitions)
 	}
 
 	// create store
 	collectionPath := filepath.Join(config.OutputDir, collectionName)
-	storeName, store, err := createStore(collectionPath, config, artifactDefinitions)
+	storeName, store, teardown, err := createStore(collectionPath, config, filteredArtifactDefinitions)
 	if err != nil {
 		logPrint(err)
 		return nil
 	}
 
 	// add store as log writer
-	if logfileError == nil {
-		log.SetOutput(io.MultiWriter(logfile, &storeLogger{store}))
-	} else {
-		log.SetOutput(io.MultiWriter(&storeLogger{store}))
+	storeLogger, storeLoggerError := newStoreLogger(store)
+	if storeLoggerError != nil {
+		log.Printf("Could not setup logging to forensicstore: %s", storeLoggerError)
+	}
+	switch {
+	case logfileError == nil && storeLoggerError == nil:
+		log.SetOutput(io.MultiWriter(logfile, storeLogger))
+	case storeLoggerError == nil:
+		log.SetOutput(storeLogger)
 	}
 
 	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
 	if err != nil {
-		logPrint(errors.Wrap(err, "LiveCollector creation failed"))
+		logPrint(fmt.Errorf("LiveCollector creation failed: %w", err))
 		return nil
 	}
 
-	// select from entrypoint
-	if config.Artifacts != nil {
-		artifactDefinitions = goartifacts.FilterName(config.Artifacts, artifactDefinitions)
-	}
-
-	// select supported os
-	artifactDefinitions = goartifacts.FilterOS(artifactDefinitions)
-
 	// setup bar
 	tmpl := `Collecting {{string . "artifact"}} ({{counters . }} {{bar . }})`
-	bar := pb.ProgressBarTemplate(tmpl).Start(len(artifactDefinitions))
+	bar := pb.ProgressBarTemplate(tmpl).Start(len(filteredArtifactDefinitions))
 	bar.SetRefreshRate(time.Second)
 
 	// collect artifacts
-	for _, artifactDefinition := range artifactDefinitions {
+	for _, artifactDefinition := range filteredArtifactDefinitions {
 		startArtifact := time.Now()
 		bar.Set("artifact", artifactDefinition.Name)
 		bar.Increment()
@@ -158,34 +187,17 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		log.SetOutput(ioutil.Discard)
 	}
 
-	err = store.Close()
+	err = teardown()
 	if err != nil {
-		logPrint(errors.Wrap(err, "Close Store failed"))
+		logPrint(fmt.Sprintf("Close Store failed: %s", err))
 		return nil
 	}
 
-	logPrint("Compress results.")
-	time.Sleep(time.Millisecond * 500) //nolint: gomnd
-
-	zipPath := ""
-
-	// compress data
-	if err := archiver.Archive([]string{storeName}, storeName+".zip"); err != nil {
-		log.Printf("compression failed: %s", err)
-	} else {
-		zipPath = storeName + ".zip"
-		err = os.RemoveAll(storeName)
-		if err != nil {
-			log.Printf("removal failed: %s", err)
-		}
-	}
-
 	logPrint("Collection done.")
-	time.Sleep(time.Second)
 
 	return &Collection{
 		Name: collectionName,
-		Path: zipPath,
+		Path: storeName,
 	}
 }
 
@@ -215,47 +227,72 @@ func enforceAdmin(forceAdmin bool) error {
 	case runtime.GOOS == "windows":
 		_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 		if err != nil {
-			return errors.New("Need to be windows admin")
+			logPrint("Need to be windows admin")
+			return os.ErrPermission
 		}
 		return nil
 	case os.Getgid() != 0:
-		return errors.New("Need to be root")
+		logPrint("need to be root")
+		return os.ErrPermission
 	default:
 		return nil
 	}
 }
 
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *goforensicstore.ForensicStore, error) {
+func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, func() error, error) {
 	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, err := goforensicstore.NewJSONLite(storeName)
+	store, teardown, err := forensicstore.New(storeName)
 	if err != nil {
-		return "", nil, err
+		return "", nil, teardown, err
 	}
 
+	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
+		key TEXT NOT NULL,
+		value TEXT
+	);`)
+	if err != nil {
+		return "", nil, teardown, err
+	}
+
+	conn := store.Connection()
+
 	// insert configuration into store
-	config.Type = "_config"
-	_, err = store.InsertStruct(config)
+	err = addConfig(conn, "config", config)
 	if err != nil {
 		log.Println(err)
 	}
 
 	// insert artifact definitions into store
 	for _, artifact := range definitions {
-		_, err = store.InsertStruct(
-			struct {
-				Data string `yaml:"artifacts"`
-				Type string `yaml:"type,omitempty"`
-			}{
-				fmt.Sprintf("%#v", artifact),
-				"_artifact-definition",
-			},
-		)
+		err = addConfig(conn, "artifact:"+artifact.Name, artifact)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 
-	return storeName, store, nil
+	return storeName, store, teardown, nil
+}
+
+func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
+	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
+	if err != nil {
+		return err
+	}
+
+	b, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	stmt.SetText("$key", key)
+	stmt.SetText("$value", string(b))
+
+	_, err = stmt.Step()
+	if err != nil {
+		return err
+	}
+
+	return stmt.Finalize()
 }
 
 func logPrint(a ...interface{}) {

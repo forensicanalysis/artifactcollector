@@ -22,6 +22,7 @@
 package collection
 
 import (
+	"os"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -29,7 +30,7 @@ import (
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 func Test_collectorResolver_Resolve(t *testing.T) {
@@ -99,11 +100,18 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 				testDir := setup(t)
 				defer teardown(t)
 
-				store, err := goforensicstore.NewJSONLite(filepath.Join(testDir, "extract", "ac.forensicstore"))
+				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0755)
+				if err != nil {
+					t.Errorf("Could not make dir %s", err)
+					return
+				}
+
+				store, teardown, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
 				if err != nil {
 					t.Errorf("Collect() error = %v", err)
 					return
 				}
+				defer teardown()
 
 				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
 				if err != nil {

@@ -24,6 +24,7 @@ package collection
 import (
 	"crypto/md5"  // #nosec
 	"crypto/sha1" // #nosec
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"os"
@@ -31,9 +32,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
-
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 func getString(m map[string]interface{}, key string) string {
@@ -45,51 +44,8 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func first(s string, n int) string {
-	if len(s) < n {
-		n = len(s)
-	}
-	return s[:n]
-}
-
-func last(s string, n int) string {
-	if len(s) < n {
-		n = len(s)
-	}
-	return s[len(s)-n:]
-}
-
-func splitExt(filePath string) (nameOnly, ext string) {
-	ext = path.Ext(filePath)
-	nameOnly = filePath[:len(filePath)-len(ext)-1]
-	return nameOnly, ext
-}
-
-func normalizeFilePath(filePath string) string {
-	maxLength := 64
-	maxSegmentLength := 4
-	filePath = strings.TrimLeft(filePath, "/")
-	pathSegments := strings.Split(filePath, "/")
-	normalizedFilePath := strings.Join(pathSegments, "_")
-
-	// get first 4 letters of every directory, while longer than maxLength
-	for i := 0; i < len(pathSegments)-1 && len(normalizedFilePath) > maxLength; i++ {
-		pathSegments[i] = first(pathSegments[i], maxSegmentLength)
-		normalizedFilePath = strings.Join(pathSegments, "_")
-	}
-
-	if len(normalizedFilePath) > maxLength {
-		// if still to long get first maxSegmentLength letters of filename + extension
-		nameOnly, ext := splitExt(pathSegments[len(pathSegments)-1])
-		pathSegments[len(pathSegments)-1] = first(nameOnly, maxSegmentLength) + ext
-		normalizedFilePath = strings.Join(pathSegments, "_")
-	}
-
-	return last(normalizedFilePath, maxLength)
-}
-
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, dstdir string) *goforensicstore.File { //nolint:funlen
-	file := goforensicstore.NewFile()
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) *forensicstore.File { //nolint:funlen
+	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
 	file.Origin = map[string]interface{}{"path": srcpath}
@@ -112,51 +68,72 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 		file.Size = float64(srcInfo.Size())
 		attr := srcInfo.Sys()
 		if attributes, ok := attr.(map[string]interface{}); ok {
-			file.Created = getString(attributes, "created")
-			file.Modified = getString(attributes, "modified")
-			file.Accessed = getString(attributes, "accessed")
+			file.Ctime = getString(attributes, "created")
+			file.Mtime = getString(attributes, "modified")
+			file.Atime = getString(attributes, "accessed")
+			delete(attributes, "created")
+			delete(attributes, "modified")
+			delete(attributes, "accessed")
 			file.Attributes = attributes
+			file.Attributes["stat_size"] = srcInfo.Size()
+		} else {
+			file.Attributes = map[string]interface{}{"stat_size": srcInfo.Size()}
 		}
 
 		// copy file
 		if collectContents && file.Size > 0 {
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(dstdir, normalizeFilePath(srcpath)))
+			dstpath, size, hashes, err := c.insertFile(srcpath)
 			if err != nil {
-				return file.AddError(errors.Wrap(err, "error storing file").Error())
-			}
-			defer storeFile.Close()
-
-			srcFile, err := c.SourceFS.Open(srcpath)
-			if err != nil {
-				return file.AddError(errors.Wrap(err, "error openung file").Error())
-			}
-			defer srcFile.Close()
-
-			size, hashes, err := hashCopy(srcFile, storeFile)
-			if err != nil {
-				errorMessage := fmt.Sprintf("copy error %s %s -> %s %s", c.SourceFS.Name(), srcpath, c.Store.Name(), dstpath)
-				return file.AddError(errors.Wrap(err, errorMessage).Error())
+				return file.AddError(err.Error())
 			}
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
 			}
 
+			file.Size = float64(size)
 			file.ExportPath = filepath.ToSlash(dstpath)
-			file.Hashes = map[string]interface{}{
-				"SHA-1": fmt.Sprintf("%x", hashes["SHA-1"]),
-				"MD5":   fmt.Sprintf("%x", hashes["MD5"]),
-			}
-			return file
+			file.Hashes = hashes
 		}
-
 		return file
 	}
 	return file.AddError("path contains unknown expanders")
 }
 
-func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string][]byte, error) {
+func (c *LiveCollector) insertFile(srcpath string) (string, int64, map[string]interface{}, error) {
+	srcFile, err := c.SourceFS.Open(srcpath)
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("error opening file: %w", err)
+	}
+	defer srcFile.Close()
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		hostname = ""
+	}
+	dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("error storing file: %w", err)
+	}
+	defer storeFile.Close()
+
+	size, hashes, err := hashCopy(srcFile, storeFile)
+	if err != nil {
+		return "", 0, nil, fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err)
+	}
+	return dstpath, size, hashes, nil
+}
+
+func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string]interface{}, error) {
 	sha1hash := sha1.New() // #nosec
 	md5hash := md5.New()   // #nosec
-	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash), srcfile)
-	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, errors.Wrap(err, "copy failed")
+	sha256hash := sha256.New()
+	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash, sha256hash), srcfile)
+	if err != nil {
+		return 0, nil, fmt.Errorf("copy failed: %w", err)
+	}
+	return size, map[string]interface{}{
+		"MD5":     fmt.Sprintf("%x", md5hash.Sum(nil)),
+		"SHA-1":   fmt.Sprintf("%x", sha1hash.Sum(nil)),
+		"SHA-256": fmt.Sprintf("%x", sha256hash.Sum(nil)),
+	}, nil
 }

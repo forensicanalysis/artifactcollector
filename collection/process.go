@@ -29,19 +29,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
-func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *goforensicstore.Process {
-	process := goforensicstore.NewProcess()
+func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *forensicstore.Process {
+	process := forensicstore.NewProcess()
 	process.Artifact = definitionName
 	process.CommandLine = cmd
 	process.Name = cmd
 
-	process.Arguments = []interface{}{}
 	for _, arg := range args {
 		process.CommandLine += " " + arg
-		process.Arguments = append(process.Arguments, arg)
 	}
 
 	stdoutpath, stdoutfile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
@@ -65,7 +63,7 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	}
 	execution.Stdout = stdoutfile
 	execution.Stderr = stderrfile
-	process.Created = time.Now().Format("2006-01-02T15:04:05.000Z")
+	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
 	if err = execution.Run(); err != nil {
 		return process.AddError(err.Error())
 	}

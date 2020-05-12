@@ -87,18 +87,18 @@ func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,fun
 	i := 0
 	// iterate results
 	var wmiResult []map[string]interface{}
-	for itemRaw, length, err := enum.Next(1); length > 0; itemRaw, length, err = enum.Next(1) {
+	for elementRaw, length, err := enum.Next(1); length > 0; elementRaw, length, err = enum.Next(1) {
 		if err != nil {
 			log.Fatal(err)
 		}
 		wmiResult = append(wmiResult, map[string]interface{}{})
 
-		// item is a SWbemObject, but really a Win32_Process
-		item := itemRaw.ToIDispatch()
-		defer item.Release()
+		// element is a SWbemObject, but really a Win32_Process
+		element := elementRaw.ToIDispatch()
+		defer element.Release()
 
 		// get properties of result
-		rawProperties, err := oleutil.GetProperty(item, "Properties_")
+		rawProperties, err := oleutil.GetProperty(element, "Properties_")
 		if err != nil {
 			return wmiResult, err
 		}
@@ -110,7 +110,7 @@ func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,fun
 			if err != nil {
 				return err
 			}
-			property, err := oleutil.GetProperty(item, propertyName.ToString())
+			property, err := oleutil.GetProperty(element, propertyName.ToString())
 			if err != nil {
 				return err
 			}

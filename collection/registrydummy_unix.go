@@ -23,12 +23,12 @@
 
 package collection
 
-import "github.com/forensicanalysis/forensicstore/goforensicstore"
+import "github.com/forensicanalysis/forensicstore"
 
-func (c *LiveCollector) createRegistryValue(definitionName, key, value string) *goforensicstore.RegistryKey {
-	return &goforensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
+func (c *LiveCollector) createRegistryValue(definitionName, key, value string) *forensicstore.RegistryKey {
+	return &forensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
 }
 
-func (c *LiveCollector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
-	return &goforensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
+func (c *LiveCollector) createRegistryKey(definitionName, key string) *forensicstore.RegistryKey {
+	return &forensicstore.RegistryKey{Artifact: definitionName, Type: "empty"}
 }

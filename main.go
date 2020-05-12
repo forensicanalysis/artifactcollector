@@ -34,7 +34,6 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	"github.com/forensicanalysis/artifactcollector/assets"
@@ -53,16 +52,9 @@ import (
 //go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
 
 func main() {
-	outDir := flag.String("o", "", "Output directory for forensicstore and log file")
-	flag.Parse()
-
 	var artifacts []goartifacts.ArtifactDefinition
 	artifacts = append(artifacts, artifactsgo.Artifacts...)
 	artifacts = append(artifacts, assets.Artifacts...)
-
-	if *outDir != "" {
-		assets.Config.OutputDir = *outDir
-	}
 
 	collection := run.Run(assets.Config, artifacts, assets.FS)
 	if collection == nil {

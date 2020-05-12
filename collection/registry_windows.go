@@ -22,17 +22,17 @@
 package collection
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sys/windows/registry"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
-func (c *LiveCollector) createRegistryKey(definitionName, key string) *goforensicstore.RegistryKey {
+func (c *LiveCollector) createRegistryKey(definitionName, key string) *forensicstore.RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -44,7 +44,7 @@ func (c *LiveCollector) createRegistryKey(definitionName, key string) *goforensi
 	return rk
 }
 
-func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *goforensicstore.RegistryKey {
+func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *forensicstore.RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -52,7 +52,7 @@ func (c *LiveCollector) createRegistryValue(definitionName, key, valueName strin
 	if err != nil {
 		rk.AddError(err.Error())
 	} else {
-		rk.Values = []goforensicstore.RegistryValue{value}
+		rk.Values = []forensicstore.RegistryValue{value}
 	}
 
 	return rk
@@ -74,13 +74,16 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 		return key, nil, fmt.Errorf("wrong number of keyparts %s", keyparts)
 	}
 	k, err := registry.OpenKey(registryMap[keyparts[0]], keyparts[1], registry.READ|registry.QUERY_VALUE|registry.ENUMERATE_SUB_KEYS)
-	return key, &k, errors.Wrap(err, "Could not open key")
+	if err != nil {
+		return key, &k, fmt.Errorf("could not open key: %w", err)
+	}
+	return key, &k, nil
 }
 
-func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *goforensicstore.RegistryKey) {
-	rk := goforensicstore.NewRegistryKey()
+func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *forensicstore.RegistryKey) {
+	rk := forensicstore.NewRegistryKey()
 	rk.Artifact = name
-	rk.Values = []goforensicstore.RegistryValue{}
+	rk.Values = []forensicstore.RegistryValue{}
 	// get registry key
 	cleankey, k, err := getRegistryKey(fskey)
 	rk.Key = cleankey
@@ -93,22 +96,22 @@ func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*regi
 	if err != nil {
 		rk.Errors = append(rk.Errors, err.Error())
 	} else {
-		rk.Modified = info.ModTime().In(time.UTC).Format("2006-01-02T15:04:05.000Z")
+		rk.ModifiedTime = info.ModTime().UTC().Format(time.RFC3339Nano)
 	}
 	return k, rk
 }
 
-func (c *LiveCollector) getValues(k *registry.Key) (values []goforensicstore.RegistryValue, valueErrors []error) {
+func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.RegistryValue, valueErrors []error) {
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
-		return nil, []error{errors.Wrap(err, "Could not stat")}
+		return nil, []error{fmt.Errorf("could not stat: %w", err)}
 	}
 
 	if ki.ValueCount > 0 {
 		valuenames, err := k.ReadValueNames(int(ki.ValueCount))
 		if err != nil {
-			return nil, []error{errors.Wrap(err, "could not read value names")}
+			return nil, []error{fmt.Errorf("could not read value names: %w", err)}
 		}
 
 		for _, valuename := range valuenames {
@@ -124,15 +127,15 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []goforensicstore.Reg
 	return values, valueErrors
 }
 
-func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value goforensicstore.RegistryValue, err error) {
+func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value forensicstore.RegistryValue, err error) {
 	dataType, _, _, stringData, err := valueData(k, valueName)
 	if err != nil {
-		return value, errors.Wrap(err, "could not parse registry data")
+		return value, fmt.Errorf("could not parse registry data: %w", err)
 	}
 	if valueName == "" {
 		valueName = "(Default)"
 	}
-	return goforensicstore.RegistryValue{Name: valueName, Data: stringData, DataType: dataType}, nil
+	return forensicstore.RegistryValue{Name: valueName, Data: stringData, DataType: dataType}, nil
 }
 
 func valueData(rk *registry.Key, name string) (dataType string, bytesData []byte, data interface{}, stringData string, err error) {

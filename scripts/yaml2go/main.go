@@ -23,6 +23,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/forensicanalysis/artifactsgo"
 	"io"
 	"io/ioutil"
 	"log"
@@ -31,7 +32,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
@@ -55,7 +55,7 @@ func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefin
 				break
 			}
 			if err != nil {
-				return nil, errors.Wrap(err, fmt.Sprintf("decode of %s failed", artifactDefinitionFile))
+				return nil, fmt.Errorf("decode of %s failed: %w", artifactDefinitionFile, err)
 			}
 
 			artifactDefinitions = append(artifactDefinitions, artifactDefinition)
@@ -117,13 +117,28 @@ func main() {
 		log.Fatal(err)
 	}
 
-	flaws, err := goartifacts.ValidateFiles(artifactDefinitionFiles)
-	if err != nil {
-		log.Fatal(err)
+	artifactDefinitionMap := map[string][]goartifacts.ArtifactDefinition{
+		"default.yaml": artifactsgo.Artifacts,
 	}
+
+	// decode file
+	var flaws []goartifacts.Flaw
+	for _, filename := range artifactDefinitionFiles {
+		ads, typeflaw, err := goartifacts.DecodeFile(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		artifactDefinitionMap[filename] = ads
+		flaws = append(flaws, typeflaw...)
+	}
+
+	// validate
+	flaws = append(flaws, goartifacts.ValidateArtifactDefinitions(artifactDefinitionMap)...)
 	for _, flaw := range flaws {
 		if flaw.Severity != goartifacts.Common {
-			log.Println(flaw.File, flaw.ArtifactDefinition, ":", flaw.Message)
+			if flaw.Message != "Error open default.yaml: no such file or directory" {
+				log.Println(flaw.File, flaw.ArtifactDefinition, ":", flaw.Message)
+			}
 		}
 	}
 

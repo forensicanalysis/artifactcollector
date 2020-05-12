@@ -24,20 +24,36 @@ package run
 import (
 	"time"
 
-	"github.com/forensicanalysis/forensicstore/goforensicstore"
+	"github.com/forensicanalysis/forensicstore"
 )
 
 type storeLogger struct {
-	store *goforensicstore.ForensicStore
+	store *forensicstore.ForensicStore
+}
+
+func newStoreLogger(store *forensicstore.ForensicStore) (*storeLogger, error) {
+	_, err := store.Query(`CREATE TABLE IF NOT EXISTS logs (
+		msg TEXT NOT NULL,
+		insert_time TEXT NOT NULL
+	)`)
+	return &storeLogger{store: store}, err
 }
 
 func (s *storeLogger) Write(b []byte) (int, error) {
-	type logEntry struct {
-		Type    string `yaml:"type"`
-		Time    string `yaml:"time"`
-		Message string `yaml:"message"`
+	conn := s.store.Connection()
+
+	stmt, err := conn.Prepare("INSERT INTO `logs` (msg, insert_time) VALUES ($msg, $time)")
+	if err != nil {
+		return len(b), err
 	}
-	now := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
-	_, err := s.store.InsertStruct(logEntry{"_log", now, string(b)})
-	return len(b), err
+
+	stmt.SetText("$msg", string(b))
+	stmt.SetText("$time", time.Now().UTC().Format(time.RFC3339Nano))
+
+	_, err = stmt.Step()
+	if err != nil {
+		return len(b), err
+	}
+
+	return len(b), stmt.Finalize()
 }

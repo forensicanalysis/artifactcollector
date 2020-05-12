@@ -161,6 +161,12 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 				resolves = append(resolves, scanner.Text())
 			}
 		}
+
+		err = f.Close()
+		if err != nil {
+			return nil, err
+		}
+
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("reading standard input: %w", err)
 		}
