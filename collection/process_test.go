@@ -36,11 +36,11 @@ func TestLiveCollector_createProcess(t *testing.T) {
 	testDir := setup(t)
 	defer teardown(t, testDir)
 
-	store, err := forensicstore.New(filepath.Join(testDir, "store"))
+	store, teardown, err := forensicstore.New(filepath.Join(testDir, "store"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer teardown()
 
 	type fields struct {
 		Store   *forensicstore.ForensicStore
@@ -83,7 +83,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 				TempDir: tt.fields.TempDir,
 			}
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
-			got.ID = ""      // unset ID
+			got.ID = ""          // unset ID
 			got.CreatedTime = "" // unset created
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("createProcess() = %#v, want %#v", got, tt.want)

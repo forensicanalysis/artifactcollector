@@ -33,10 +33,9 @@ type storeLogger struct {
 
 func newStoreLogger(store *forensicstore.ForensicStore) (*storeLogger, error) {
 	_, err := store.Query(`CREATE TABLE IF NOT EXISTS logs (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		msg TEXT NOT NULL,
-		insert_time TEXT NOT NULL,
-	);`)
+		insert_time TEXT NOT NULL
+	)`)
 	return &storeLogger{store: store}, err
 }
 

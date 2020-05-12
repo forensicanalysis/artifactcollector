@@ -129,7 +129,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// create store
 	collectionPath := filepath.Join(config.OutputDir, collectionName)
-	storeName, store, err := createStore(collectionPath, config, artifactDefinitions)
+	storeName, store, teardown, err := createStore(collectionPath, config, artifactDefinitions)
 	if err != nil {
 		logPrint(err)
 		return nil
@@ -137,6 +137,9 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// add store as log writer
 	storeLogger, storeLoggerError := newStoreLogger(store)
+	if storeLoggerError != nil {
+		log.Printf("Could not setup logging to forensicstore: %s", storeLoggerError)
+	}
 	switch {
 	case logfileError == nil && storeLoggerError == nil:
 		log.SetOutput(io.MultiWriter(logfile, storeLogger))
@@ -186,7 +189,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		log.SetOutput(ioutil.Discard)
 	}
 
-	err = store.Close()
+	err = teardown()
 	if err != nil {
 		logPrint(fmt.Sprintf("Close Store failed: %s", err))
 		return nil
@@ -239,11 +242,11 @@ func enforceAdmin(forceAdmin bool) error {
 	}
 }
 
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, error) {
+func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, func() error, error) {
 	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, err := forensicstore.New(storeName)
+	store, teardown, err := forensicstore.New(storeName)
 	if err != nil {
-		return "", nil, err
+		return "", nil, teardown, err
 	}
 
 	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
@@ -251,7 +254,7 @@ func createStore(collectionName string, config *collection.Configuration, defini
 		value TEXT
 	);`)
 	if err != nil {
-		return "", nil, err
+		return "", nil, teardown, err
 	}
 
 	conn := store.Connection()
@@ -270,7 +273,7 @@ func createStore(collectionName string, config *collection.Configuration, defini
 		}
 	}
 
-	return storeName, store, nil
+	return storeName, store, teardown, nil
 }
 
 func addConfig(conn *sqlite.Conn, key string, value interface{}) error {

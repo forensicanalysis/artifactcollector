@@ -168,12 +168,12 @@ func TestCollect(t *testing.T) {
 				return
 			}
 
-			store, err := forensicstore.New(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
+			_, teardown, err := forensicstore.New(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return
 			}
-			defer store.Close()
+			defer teardown()
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
 			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)

@@ -141,7 +141,10 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 	log.Printf("Collect Command %s %s", source.Attributes.Cmd, source.Attributes.Args)
 	process := c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
 	_, err := c.Store.InsertStruct(process)
-	return process, fmt.Errorf("could not insert struct: %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("could not insert struct: %w", err)
+	}
+	return process, nil
 }
 
 // collectFile collects a FILE source to the forensicstore.
@@ -261,5 +264,8 @@ func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*for
 	log.Printf("Collect WMI %s", source.Attributes.Query)
 	process := c.createWMI(name, source.Attributes.Query)
 	_, err := c.Store.InsertStruct(process)
-	return process, fmt.Errorf("could not insert struct: %w", err)
+	if err != nil {
+		return nil, fmt.Errorf("could not insert struct: %w", err)
+	}
+	return process, nil
 }

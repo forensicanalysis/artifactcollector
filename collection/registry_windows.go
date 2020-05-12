@@ -74,7 +74,10 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 		return key, nil, fmt.Errorf("wrong number of keyparts %s", keyparts)
 	}
 	k, err := registry.OpenKey(registryMap[keyparts[0]], keyparts[1], registry.READ|registry.QUERY_VALUE|registry.ENUMERATE_SUB_KEYS)
-	return key, &k, fmt.Errorf("could not open key: %w", err)
+	if err != nil {
+		return key, &k, fmt.Errorf("could not open key: %w", err)
+	}
+	return key, &k, nil
 }
 
 func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *forensicstore.RegistryKey) {

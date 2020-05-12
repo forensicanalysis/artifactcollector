@@ -106,11 +106,12 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 					return
 				}
 
-				store, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
+				store, teardown, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
 				if err != nil {
 					t.Errorf("Collect() error = %v", err)
 					return
 				}
+				defer teardown()
 
 				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
 				if err != nil {

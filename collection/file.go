@@ -117,5 +117,8 @@ func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string][]byte, 
 	sha1hash := sha1.New() // #nosec
 	md5hash := md5.New()   // #nosec
 	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash), srcfile)
-	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, fmt.Errorf("copy failed: %w", err)
+	if err != nil {
+		return 0, nil, fmt.Errorf("copy failed: %w", err)
+	}
+	return size, map[string][]byte{"MD5": md5hash.Sum(nil), "SHA-1": sha1hash.Sum(nil)}, nil
 }
