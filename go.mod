@@ -10,5 +10,6 @@ require (
 	github.com/forensicanalysis/forensicstore v0.16.2
 	github.com/forensicanalysis/fslib v0.14.0
 	github.com/go-ole/go-ole v1.2.4
+	github.com/spf13/afero v1.2.3-0.20200410222221-ceb6a5e37254
 	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4
 )
