@@ -141,6 +141,10 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		return nil
 	}
 
+	if config.FS != nil {
+		store.Fs = config.FS
+	}
+
 	// add store as log writer
 	storeLogger, storeLoggerError := newStoreLogger(store)
 	if storeLoggerError != nil {
