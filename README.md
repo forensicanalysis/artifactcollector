@@ -36,7 +36,7 @@ go install .
 
 If you want to extract the raw artifacts or process the collected data have a look at
 
-###[🕵️ elementary](https://github.com/forensicanalysis/elementary)
+### [🕵️ elementary](https://github.com/forensicanalysis/elementary)
 
 ### Build your own artifactcollector
 
