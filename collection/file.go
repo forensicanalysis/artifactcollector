@@ -48,7 +48,7 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) *forensicstore.File { //nolint:funlen
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *forensicstore.File) { //nolint:funlen
 	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
@@ -94,6 +94,12 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			if err != nil {
 				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
+			defer func() {
+				// this writes the file to the database
+				if err := storeFile.Close(); err != nil {
+					f = file.AddError(fmt.Errorf("write error: %w", err).Error())
+				}
+			}()
 
 			srcFile, err := c.SourceFS.Open(srcpath)
 			if err != nil {
@@ -102,8 +108,8 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 			size, hashes, err := hashCopy(storeFile, srcFile)
 
-			if err := srcFile.Close(); err != nil {
-				log.Println(err)
+			if cerr := srcFile.Close(); cerr != nil {
+				log.Println(cerr)
 			}
 
 			if err != nil {
@@ -118,6 +124,11 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 					if oerr != nil {
 						return file.AddError(fmt.Errorf("error opening NTFS file: %w", oerr).Error())
 					}
+					defer func() {
+						if terr := teardown(); terr != nil {
+							log.Println(terr)
+						}
+					}()
 
 					// reset file or open a new store file
 					if !resetFile(storeFile) {
@@ -131,10 +142,6 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 					}
 
 					size, hashes, err = hashCopy(storeFile, ntfsSrcFile)
-
-					if terr := teardown(); terr != nil {
-						log.Println(terr)
-					}
 				}
 				if err != nil {
 					return file.AddError(fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err).Error())
@@ -142,11 +149,6 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			}
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
-			}
-
-			// this writes the file to the database
-			if err := storeFile.Close(); err != nil {
-				return file.AddError(fmt.Errorf("write error: %w", err).Error())
 			}
 
 			file.Size = float64(size)

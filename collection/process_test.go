@@ -24,7 +24,6 @@
 package collection
 
 import (
-	"path/filepath"
 	"reflect"
 	"runtime"
 	"testing"
@@ -33,33 +32,24 @@ import (
 )
 
 func TestLiveCollector_createProcess(t *testing.T) {
-	testDir := setup(t)
-	defer teardown(t, testDir)
-
-	store, teardown, err := forensicstore.New(filepath.Join(testDir, "store"))
+	store, teardown, err := forensicstore.New(":memory:")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer teardown()
 
-	type fields struct {
-		Store   *forensicstore.ForensicStore
-		TempDir string
-	}
 	type args struct {
 		definitionName string
 		cmd            string
 		args           []string
 	}
 	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *forensicstore.Process
+		name string
+		args args
+		want *forensicstore.Process
 	}{
 		{
 			"hostname",
-			fields{store, testDir},
 			args{"test", "hostname", nil},
 			&forensicstore.Process{
 				Name:        "hostname",
@@ -78,10 +68,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 				t.Skip()
 			}
 
-			c := &LiveCollector{
-				Store:   tt.fields.Store,
-				TempDir: tt.fields.TempDir,
-			}
+			c := &LiveCollector{Store: store}
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
 			got.ID = ""          // unset ID
 			got.CreatedTime = "" // unset created
