@@ -135,10 +135,8 @@ func main() {
 	// validate
 	flaws = append(flaws, goartifacts.ValidateArtifactDefinitions(artifactDefinitionMap)...)
 	for _, flaw := range flaws {
-		if flaw.Severity != goartifacts.Common {
-			if flaw.Message != "Error open default.yaml: no such file or directory" {
-				log.Println(flaw.File, flaw.ArtifactDefinition, ":", flaw.Message)
-			}
+		if flaw.Severity != goartifacts.Common && !strings.Contains(flaw.Message, "Error open default.yaml") {
+			log.Println(flaw.File, flaw.ArtifactDefinition, ":", flaw.Message)
 		}
 	}
 

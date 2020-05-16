@@ -25,14 +25,18 @@ import (
 	"crypto/md5"  // #nosec
 	"crypto/sha1" // #nosec
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"syscall"
 
 	"github.com/forensicanalysis/forensicstore"
+	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 )
 
 func getString(m map[string]interface{}, key string) string {
@@ -44,7 +48,7 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) *forensicstore.File { //nolint:funlen
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *forensicstore.File) { //nolint:funlen,gocyclo,gocognit
 	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
@@ -82,9 +86,66 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 		// copy file
 		if collectContents && file.Size > 0 {
-			dstpath, size, hashes, err := c.insertFile(srcpath)
+			hostname, err := os.Hostname()
 			if err != nil {
-				return file.AddError(err.Error())
+				hostname = ""
+			}
+			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+			if err != nil {
+				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
+			}
+			defer func() {
+				// this writes the file to the database
+				if err := storeFile.Close(); err != nil {
+					f = file.AddError(fmt.Errorf("write error: %w", err).Error())
+				}
+			}()
+
+			srcFile, err := c.SourceFS.Open(srcpath)
+			if err != nil {
+				return file.AddError(fmt.Errorf("error opening file: %w", err).Error())
+			}
+
+			size, hashes, err := hashCopy(storeFile, srcFile)
+
+			if cerr := srcFile.Close(); cerr != nil {
+				log.Println(cerr)
+			}
+
+			if err != nil {
+				// Copy failed, try NTFS copy
+				var errno syscall.Errno
+				// is a lock violation
+				errorLockViolation := 33
+				if systemFS, ok := c.SourceFS.(*systemfs.FS); ok && errors.As(err, &errno) && int(errno) == errorLockViolation {
+					log.Println("copy error because of a lock violation, try low level copy")
+
+					ntfsSrcFile, teardown, oerr := systemFS.NTFSOpen(srcpath)
+					if oerr != nil {
+						return file.AddError(fmt.Errorf("error opening NTFS file: %w", oerr).Error())
+					}
+					defer func() {
+						if terr := teardown(); terr != nil {
+							log.Println(terr)
+						}
+					}()
+
+					// reset file or open a new store file
+					if !resetFile(storeFile) {
+						if err := storeFile.Close(); err != nil {
+							log.Println(err)
+						}
+						dstpath, storeFile, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+						if err != nil {
+							return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
+						}
+					}
+
+					size, hashes, err = hashCopy(storeFile, ntfsSrcFile)
+				}
+				if err != nil {
+					return file.AddError(fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err).Error())
+				}
 			}
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
@@ -99,37 +160,30 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 	return file.AddError("path contains unknown expanders")
 }
 
-func (c *LiveCollector) insertFile(srcpath string) (string, int64, map[string]interface{}, error) {
-	srcFile, err := c.SourceFS.Open(srcpath)
-	if err != nil {
-		return "", 0, nil, fmt.Errorf("error opening file: %w", err)
-	}
-	defer srcFile.Close()
-
-	hostname, err := os.Hostname()
-	if err != nil {
-		hostname = ""
-	}
-	dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
-	if err != nil {
-		return "", 0, nil, fmt.Errorf("error storing file: %w", err)
-	}
-	defer storeFile.Close()
-
-	size, hashes, err := hashCopy(srcFile, storeFile)
-	if err != nil {
-		return "", 0, nil, fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err)
-	}
-	return dstpath, size, hashes, nil
+type Resetter interface {
+	Reset()
 }
 
-func hashCopy(srcfile io.Reader, destfile io.Writer) (int64, map[string]interface{}, error) {
-	sha1hash := sha1.New() // #nosec
-	md5hash := md5.New()   // #nosec
-	sha256hash := sha256.New()
-	size, err := io.Copy(io.MultiWriter(destfile, sha1hash, md5hash, sha256hash), srcfile)
+func resetFile(storeFile io.WriteCloser) bool {
+	reset := false
+	if seeker, ok := storeFile.(io.Seeker); ok {
+		_, err := seeker.Seek(0, io.SeekCurrent)
+		if err != nil {
+			reset = true
+		}
+	}
+	if resetter, ok := storeFile.(Resetter); ok {
+		resetter.Reset()
+		reset = true
+	}
+	return reset
+}
+
+func hashCopy(dst io.Writer, src io.Reader) (int64, map[string]interface{}, error) {
+	md5hash, sha1hash, sha256hash := md5.New(), sha1.New(), sha256.New() // #nosec
+	size, err := io.Copy(io.MultiWriter(dst, sha1hash, md5hash, sha256hash), src)
 	if err != nil {
-		return 0, nil, fmt.Errorf("copy failed: %w", err)
+		return 0, nil, err
 	}
 	return size, map[string]interface{}{
 		"MD5":     fmt.Sprintf("%x", md5hash.Sum(nil)),

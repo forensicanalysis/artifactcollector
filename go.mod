@@ -7,8 +7,8 @@ require (
 	github.com/cheggaaa/pb/v3 v3.0.2
 	github.com/forensicanalysis/artifactlib v0.13.3
 	github.com/forensicanalysis/artifactsgo v0.1.1
-	github.com/forensicanalysis/forensicstore v0.16.2
-	github.com/forensicanalysis/fslib v0.14.0
+	github.com/forensicanalysis/forensicstore v0.16.5-0.20200516143041-b03e3fd28117
+	github.com/forensicanalysis/fslib v0.14.2-0.20200516142315-b8fa32d1f77f
 	github.com/go-ole/go-ole v1.2.4
 	github.com/spf13/afero v1.2.3-0.20200410222221-ceb6a5e37254
 	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4

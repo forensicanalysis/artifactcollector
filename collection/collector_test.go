@@ -24,13 +24,13 @@ package collection
 import (
 	"errors"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib"
 	"github.com/forensicanalysis/fslib/filesystem/testfs"
 )
@@ -83,6 +83,10 @@ func teardown(t *testing.T, folders ...string) {
 	for _, folder := range folders {
 		err := os.RemoveAll(folder)
 		if err != nil {
+			infos, _ := ioutil.ReadDir(folder)
+			for _, info := range infos {
+				log.Println(info.Name())
+			}
 			t.Fatal(err)
 		}
 	}
@@ -104,8 +108,6 @@ func TestCollect(t *testing.T) {
 	hashmap := map[string]interface{}{"SHA-1": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"}
 
 	type args struct {
-		infs     fslib.FS
-		out      string
 		testfile string
 	}
 	tests := []struct {
@@ -116,7 +118,7 @@ func TestCollect(t *testing.T) {
 		wantStorage  []map[string]interface{}
 	}{
 		{
-			true, "Collect simple file", args{sourceFS, "extract", "collect_1.yaml"}, 1,
+			true, "Collect simple file", args{"collect_1.yaml"}, 1,
 			[]map[string]interface{}{
 				{
 					"artifact": "Test1", "type": "file", "name": "foo.txt",
@@ -126,9 +128,9 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			false, "Collect registry dummy", args{sourceFS, "extract", "collect_2.yaml"}, 1, nil},
+			false, "Collect registry dummy", args{"collect_2.yaml"}, 1, nil},
 		{
-			true, "Collect command dummy", args{sourceFS, "extract", "collect_3.yaml"}, 1,
+			true, "Collect command dummy", args{"collect_3.yaml"}, 1,
 			[]map[string]interface{}{
 				{
 					"artifact": "Test3", "type": "process",
@@ -138,12 +140,12 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			true, "Collect directory dummy", args{sourceFS, "extract", "collect_4.yaml"}, 1,
+			true, "Collect directory dummy", args{"collect_4.yaml"}, 1,
 			[]map[string]interface{}{{"artifact": "Test4", "name": "dir", "type": "file", "origin": map[string]interface{}{"path": "/dir"}, "export_path": "extract/Test4/dir"}}},
 		{
-			false, "Collect registry value dummy", args{sourceFS, "extract", "collect_5.yaml"}, 1, nil},
+			false, "Collect registry value dummy", args{"collect_5.yaml"}, 1, nil},
 		{
-			true, "Collect with stars", args{sourceFS, "extract", "collect_6.yaml"}, 1,
+			true, "Collect with stars", args{"collect_6.yaml"}, 1,
 			[]map[string]interface{}{
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/a/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/b/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
@@ -155,25 +157,9 @@ func TestCollect(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			testDir := setup(t)
-			defer teardown(t, testDir)
-
 			if runtime.GOOS == "windows" && !tt.runOnWindows {
 				t.Skip("Test disabled on windows")
 			}
-
-			err := os.MkdirAll(filepath.Join(testDir, tt.args.out), 0755)
-			if err != nil {
-				t.Errorf("Could not make dir %s", err)
-				return
-			}
-
-			_, teardown, err := forensicstore.New(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
-			if err != nil {
-				t.Errorf("Collect() error = %v", err)
-				return
-			}
-			defer teardown()
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
 			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
@@ -182,7 +168,7 @@ func TestCollect(t *testing.T) {
 				return
 			}
 
-			collector := &TestCollector{fs: tt.args.infs}
+			collector := &TestCollector{fs: sourceFS}
 
 			for _, artifactDefinition := range artifactDefinitions {
 				for _, source := range artifactDefinition.Sources {
@@ -210,13 +196,6 @@ func TestCollect(t *testing.T) {
 					t.Errorf("Did not collect test file")
 				}
 			*/
-
-			// test log file
-			f, err := os.Open(filepath.Join(testDir, tt.args.out, "ac.forensicstore"))
-			if err != nil {
-				t.Errorf("Could not open forensicstore %s", err)
-			}
-			f.Close()
 
 			/*
 				dec := json.NewDecoder(f)

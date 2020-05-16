@@ -172,10 +172,10 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	for _, artifactDefinition := range filteredArtifactDefinitions {
 		startArtifact := time.Now()
 		bar.Set("artifact", artifactDefinition.Name)
-		bar.Increment()
 		for _, source := range artifactDefinition.Sources {
 			collector.Collect(artifactDefinition.Name, source)
 		}
+		bar.Increment()
 		log.Printf("Collected %s in %.1f seconds\n", artifactDefinition.Name, time.Since(startArtifact).Seconds())
 	}
 
