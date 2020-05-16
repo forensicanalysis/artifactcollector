@@ -19,6 +19,12 @@ cd artifactcollector
 go install .
 ```
 
+### Get artifacts & process forensicstores
+
+If you want to extract the raw artifacts or process the collected data have a look at
+
+### [🕵️ elementary](https://github.com/forensicanalysis/elementary)
+
 ### Build your own artifactcollector
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
@@ -61,6 +67,9 @@ CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
 ```
 
+## Limitations
+
+- Currently only files that are smaller than 1GB when compressed can be collected. This can be circumvented by [using a zip archive](https://github.com/forensicanalysis/custom-collector#zip-collector) for artifact collection.
 {{if .Examples}}
 ### Usage
 {{ range $key, $value := .Examples }}

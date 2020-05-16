@@ -19,7 +19,7 @@ The artifactcollector offers the following features
 - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
 - 🛍️ Can extract files, directories, registry entries, command and WMI output.
 - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
-- 💾 Creates [structured output](https://github.com/forensicanalysis/forensicstore)
+- 💾 Creates a forensicstore as [structured output](https://github.com/forensicanalysis/forensicstore)
 - 🕊️ It's open source
 
 ### Installation
@@ -31,6 +31,12 @@ git clone https://github.com/forensicanalysis/artifactcollector
 cd artifactcollector
 go install .
 ```
+
+### Get artifacts & process forensicstores
+
+If you want to extract the raw artifacts or process the collected data have a look at
+
+### [🕵️ elementary](https://github.com/forensicanalysis/elementary)
 
 ### Build your own artifactcollector
 
@@ -74,6 +80,9 @@ CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
 ```
 
+## Limitations
+
+- Currently only files that are smaller than 1GB when compressed can be collected. This can be circumvented by [using a zip archive](https://github.com/forensicanalysis/custom-collector#zip-collector) for artifact collection.
 
 ## Contact
 
