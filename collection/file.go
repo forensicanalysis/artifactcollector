@@ -48,7 +48,7 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *forensicstore.File) { //nolint:funlen
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *forensicstore.File) { //nolint:funlen,gocyclo,gocognit
 	file := forensicstore.NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
