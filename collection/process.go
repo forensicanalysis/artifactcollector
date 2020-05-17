@@ -22,7 +22,9 @@
 package collection
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path"
@@ -42,18 +44,13 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 		process.CommandLine += " " + arg
 	}
 
-	stdoutpath, stdoutfile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
+	// setup output destinations
+	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
-	defer stdoutfile.Close()
-	process.StdoutPath = filepath.ToSlash(stdoutpath)
-	stderrpath, stderrfile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
-	if err != nil {
-		return process.AddError(err.Error())
-	}
-	defer stderrfile.Close()
-	process.StderrPath = filepath.ToSlash(stderrpath)
+	process.StdoutPath = filepath.ToSlash(stdoutPath)
+	stderrBuf := &bytes.Buffer{}
 
 	// run command
 	execution := exec.Command(filepath.Join(c.TempDir, "pack", "bin", cmd), args...) // #nosec
@@ -61,11 +58,30 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 		process.AddError(fmt.Sprintf("%s is not bundled into artifactcollector, try execution from path", cmd))
 		execution = exec.Command(cmd, args...) // #nosec
 	}
-	execution.Stdout = stdoutfile
-	execution.Stderr = stderrfile
+	execution.Stdout = stdoutFile
+	execution.Stderr = stderrBuf
 	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
 	if err = execution.Run(); err != nil {
+		process.AddError(err.Error())
+	}
+
+	// write output file
+	if err := stdoutFile.Close(); err != nil {
+		process.AddError(err.Error())
+	}
+
+	// write to stderr
+	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
+	if err != nil {
 		return process.AddError(err.Error())
 	}
+	if _, err := io.Copy(stderrFile, stderrBuf); err != nil {
+		process.AddError(err.Error())
+	}
+	if err := stderrFile.Close(); err != nil {
+		process.AddError(err.Error())
+	}
+	process.StderrPath = filepath.ToSlash(stderrPath)
+
 	return process
 }
