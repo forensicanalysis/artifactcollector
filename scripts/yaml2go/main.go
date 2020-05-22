@@ -23,7 +23,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/forensicanalysis/artifactsgo"
 	"io"
 	"io/ioutil"
 	"log"
@@ -36,6 +35,7 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactsgo"
 )
 
 func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefinition, error) {
