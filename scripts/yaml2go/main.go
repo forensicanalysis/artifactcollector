@@ -23,7 +23,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/forensicanalysis/artifactsgo"
 	"io"
 	"io/ioutil"
 	"log"
@@ -36,13 +35,14 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactsgo"
 )
 
 func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefinition, error) {
 	var artifactDefinitions []goartifacts.ArtifactDefinition
 	for _, artifactDefinitionFile := range artifactDefinitionFiles {
 		// parse artifact definition yaml
-		data, err := os.Open(artifactDefinitionFile)
+		data, err := os.Open(artifactDefinitionFile) // #nosec
 		if err != nil {
 			return nil, err
 		}
@@ -62,12 +62,11 @@ func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefin
 		}
 	}
 	return artifactDefinitions, nil
-
 }
 
 func createGoFile(pkg, name string, objects interface{}) error {
 	// write go code to assets go
-	err := os.MkdirAll(pkg, 0777)
+	err := os.MkdirAll(pkg, 0750)
 	if err != nil {
 		return err
 	}
@@ -83,13 +82,13 @@ func createGoFile(pkg, name string, objects interface{}) error {
 	}
 
 	// add imports
-	cmd := exec.Command("goimports", "-w", filepath.Join(pkg, name+".generated.go"))
+	cmd := exec.Command("goimports", "-w", filepath.Join(pkg, name+".generated.go")) // #nosec
 	return cmd.Run()
 }
 
 func main() {
 	configFile := os.Args[1]
-	configYaml, err := ioutil.ReadFile(configFile)
+	configYaml, err := ioutil.ReadFile(configFile) // #nosec
 	if err != nil {
 		log.Fatal(err)
 	}
