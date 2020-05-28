@@ -36,6 +36,7 @@ import (
 	"time"
 
 	"crawshaw.io/sqlite"
+
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore"
