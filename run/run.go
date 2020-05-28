@@ -36,7 +36,6 @@ import (
 	"time"
 
 	"crawshaw.io/sqlite"
-	"github.com/cheggaaa/pb/v3"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -163,24 +162,18 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		return nil
 	}
 
-	// setup bar
-	tmpl := `Collecting {{string . "artifact"}} ({{counters . }} {{bar . }})`
-	bar := pb.ProgressBarTemplate(tmpl).Start(len(filteredArtifactDefinitions))
-	bar.SetRefreshRate(time.Second)
+	i, total := 1, len(filteredArtifactDefinitions)
 
 	// collect artifacts
 	for _, artifactDefinition := range filteredArtifactDefinitions {
 		startArtifact := time.Now()
-		bar.Set("artifact", artifactDefinition.Name)
+		logPrint(fmt.Sprintf("Collecting %s (%d/%d)", artifactDefinition.Name, i, total))
+		i++
 		for _, source := range artifactDefinition.Sources {
 			collector.Collect(artifactDefinition.Name, source)
 		}
-		bar.Increment()
 		log.Printf("Collected %s in %.1f seconds\n", artifactDefinition.Name, time.Since(startArtifact).Seconds())
 	}
-
-	// finish bar
-	bar.Finish()
 
 	log.Printf("Collected artifacts in %.1f seconds\n", time.Since(start).Seconds())
 
