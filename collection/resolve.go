@@ -114,10 +114,11 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 		return nil, err
 	}
 	// TODO check if exists
-	f, err := c.Store.LoadFile(process.StdoutPath)
+	f, teardown, err := c.Store.LoadFile(process.StdoutPath)
 	if err != nil {
 		return nil, err
 	}
+	defer teardown()
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if provide.Regex != "" {
@@ -144,7 +145,7 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 
 	for _, file := range files {
 		// TODO check if exists
-		f, err := c.Store.LoadFile(file.ExportPath)
+		f, teardown, err := c.Store.LoadFile(file.ExportPath)
 		if err != nil {
 			return nil, err
 		}
@@ -162,7 +163,7 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 			}
 		}
 
-		err = f.Close()
+		err = teardown()
 		if err != nil {
 			return nil, err
 		}

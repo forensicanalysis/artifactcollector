@@ -90,13 +90,13 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			if err != nil {
 				hostname = ""
 			}
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+			dstpath, storeFile, storeFileTeardown, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
 			if err != nil {
 				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
 			defer func() {
 				// this writes the file to the database
-				if err := storeFile.Close(); err != nil {
+				if err := storeFileTeardown(); err != nil {
 					f = file.AddError(fmt.Errorf("write error: %w", err).Error())
 				}
 			}()
@@ -135,7 +135,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 						if err := storeFile.Close(); err != nil {
 							log.Println(err)
 						}
-						dstpath, storeFile, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+						dstpath, storeFile, storeFileTeardown, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
 						if err != nil {
 							return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 						}
