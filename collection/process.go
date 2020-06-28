@@ -49,7 +49,7 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	if err != nil {
 		return process.AddError(err.Error())
 	}
-	defer stdoutFileTeardown()
+	defer stdoutFileTeardown() // nolint: errcheck
 	process.StdoutPath = filepath.ToSlash(stdoutPath)
 	stderrBuf := &bytes.Buffer{}
 
@@ -76,7 +76,7 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	if err != nil {
 		return process.AddError(err.Error())
 	}
-	defer stderrFileTeardown()
+	defer stderrFileTeardown() // nolint: errcheck
 	if _, err := io.Copy(stderrFile, stderrBuf); err != nil {
 		process.AddError(err.Error())
 	}

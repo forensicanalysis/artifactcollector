@@ -118,7 +118,7 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 	if err != nil {
 		return nil, err
 	}
-	defer teardown()
+	defer teardown() // nolint: errcheck
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if provide.Regex != "" {
