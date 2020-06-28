@@ -30,7 +30,7 @@ import (
 )
 
 func TestLiveCollector_createProcess(t *testing.T) {
-	store, teardown, err := forensicstore.New(":memory:")
+	store, teardown, err := forensicstore.New("file::memory:?mode=memory")
 	if err != nil {
 		t.Fatal(err)
 	}

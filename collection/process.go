@@ -45,10 +45,11 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	}
 
 	// setup output destinations
-	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
+	stdoutPath, stdoutFile, stdoutFileTeardown, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
+	defer stdoutFileTeardown() // nolint: errcheck
 	process.StdoutPath = filepath.ToSlash(stdoutPath)
 	stderrBuf := &bytes.Buffer{}
 
@@ -71,10 +72,11 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	}
 
 	// write to stderr
-	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
+	stderrPath, stderrFile, stderrFileTeardown, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
+	defer stderrFileTeardown() // nolint: errcheck
 	if _, err := io.Copy(stderrFile, stderrBuf); err != nil {
 		process.AddError(err.Error())
 	}
