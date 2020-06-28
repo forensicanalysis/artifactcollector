@@ -65,7 +65,7 @@ jobs:
           go install .
 
       - name: Install forensicstore
-        run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.16.5
+        run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.0
       - name: Windows bats test
         run: bats test/bats/artifactcollector.windows.bats
         if: matrix.os == 'windows-latest'
