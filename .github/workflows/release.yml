@@ -72,4 +72,4 @@ jobs:
           asset_path: ./${{ matrix.os }}.zip
           asset_name: linux.zip
           asset_content_type: application/zip
-        if: matrix.os == 'linux-latest'
+        if: matrix.os == 'ubuntu-latest'
