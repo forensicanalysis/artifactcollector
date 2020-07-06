@@ -28,11 +28,11 @@ jobs:
         run: go build .
 
       - name: Pack UNIX
-        run: zip -r ${{ matrix.os }}.zip artifactcollector*
+        run: zip -r ${{ matrix.os }}.zip artifactcollector
         shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
-        run: 7z a ${{ matrix.os }}.zip artifactcollector*
+        run: 7z a windows.zip artifactcollector.exe
         shell: bash
         if: matrix.os == 'windows-latest'
 
@@ -40,13 +40,36 @@ jobs:
         shell: bash
         id: release
 
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Windows
+        id: upload-windows-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./windows.zip
+          asset_name: windows.zip
+          asset_content_type: application/zip
+        if: matrix.os == 'windows-latest'
+      - name: Upload macOS
+        id: upload-macos-release-asset
         uses: actions/upload-release-asset@v1.0.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: ./${{ matrix.os }}.zip
-          asset_name: ${{ matrix.os }}.zip
+          asset_name: macos.zip
           asset_content_type: application/zip
+        if: matrix.os == 'macos-latest'
+      - name: Upload Linux
+        id: upload-linux-release-asset
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./${{ matrix.os }}.zip
+          asset_name: linux.zip
+          asset_content_type: application/zip
+        if: matrix.os == 'linux-latest'
