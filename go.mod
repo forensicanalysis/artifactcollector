@@ -14,3 +14,9 @@ require (
 	golang.org/x/sys v0.0.0-20200413165638-669c56c373c4
 	gopkg.in/yaml.v2 v2.2.8
 )
+
+replace github.com/forensicanalysis/artifactlib => ../artifactlib
+
+replace github.com/forensicanalysis/fslib => ../fslib
+
+replace github.com/forensicanalysis/go-vss => ../go-vss

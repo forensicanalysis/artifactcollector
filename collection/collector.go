@@ -26,6 +26,7 @@ package collection
 import (
 	"fmt"
 	"log"
+	"runtime"
 	"strings"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -41,6 +42,7 @@ type LiveCollector struct {
 	registryfs fslib.FS
 	Store      *forensicstore.ForensicStore
 	TempDir    string
+	prefixes   []string
 
 	providesMap   map[string][]goartifacts.Source
 	knowledgeBase map[string][]string
@@ -71,14 +73,29 @@ func NewCollector(store *forensicstore.ForensicStore, tempDir string, definition
 		return nil, fmt.Errorf("system fs creation failed: %w", err)
 	}
 
-	return &LiveCollector{
+	c := &LiveCollector{
 		SourceFS:      sourceFS,
 		registryfs:    registryfs.New(),
 		Store:         store,
 		TempDir:       tempDir,
 		providesMap:   providesMap,
 		knowledgeBase: map[string][]string{},
-	}, nil
+	}
+
+	if runtime.GOOS == "windows" {
+		root, err := sourceFS.Open("/")
+		if err != nil {
+			return nil, fmt.Errorf("system fs creation failed: %w", err)
+		}
+		names, err := root.Readdirnames(0)
+		if err != nil {
+			return nil, fmt.Errorf("system fs creation failed: %w", err)
+		}
+
+		c.prefixes = names
+	}
+
+	return c, nil
 }
 
 // FS returns the used FileSystem.
@@ -91,9 +108,9 @@ func (c *LiveCollector) Registry() fslib.FS {
 	return c.registryfs
 }
 
-// AddPartitions returns if partitions should be added to Windows paths.
-func (c *LiveCollector) AddPartitions() bool {
-	return true
+// Prefixes returns if partitions should be added to Windows paths.
+func (c *LiveCollector) Prefixes() []string {
+	return c.prefixes
 }
 
 // Collect dispatches specific collection functions for different sources.
