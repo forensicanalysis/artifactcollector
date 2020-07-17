@@ -113,7 +113,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 				}
 				defer teardown()
 
-				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
+				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot}, false)
 				if err != nil {
 					t.Errorf("NewCollector() error = %v", err)
 					return

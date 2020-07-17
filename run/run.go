@@ -156,7 +156,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		log.SetOutput(storeLogger)
 	}
 
-	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
+	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions, config.VSS)
 	if err != nil {
 		logPrint(fmt.Errorf("LiveCollector creation failed: %w", err))
 		return nil

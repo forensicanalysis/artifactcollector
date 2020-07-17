@@ -50,7 +50,7 @@ type LiveCollector struct {
 
 // NewCollector creates a new LiveCollector that collects the given
 // ArtifactDefinitions.
-func NewCollector(store *forensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
+func NewCollector(store *forensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition, vss bool) (*LiveCollector, error) {
 	providesMap := map[string][]goartifacts.Source{}
 
 	definitions = goartifacts.FilterOS(definitions)
@@ -68,7 +68,13 @@ func NewCollector(store *forensicstore.ForensicStore, tempDir string, definition
 		}
 	}
 
-	sourceFS, err := systemfs.New()
+	var err error
+	var sourceFS fslib.FS
+	if vss {
+		sourceFS, err = systemfs.NewVSS()
+	} else {
+		sourceFS, err = systemfs.New()
+	}
 	if err != nil {
 		return nil, fmt.Errorf("system fs creation failed: %w", err)
 	}

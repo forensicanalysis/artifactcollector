@@ -30,4 +30,5 @@ type Configuration struct {
 	Case      string   `yaml:"case"`
 	OutputDir string   `yaml:"output_dir"`
 	FS        afero.Fs `yaml:"-"`
+	VSS       bool     `yaml:"vss"`
 }
