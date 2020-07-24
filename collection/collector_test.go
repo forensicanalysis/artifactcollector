@@ -57,8 +57,8 @@ func (r *TestCollector) Registry() fslib.FS {
 	return r.fs
 }
 
-func (r *TestCollector) AddPartitions() bool {
-	return false
+func (r *TestCollector) Prefixes() []string {
+	return nil
 }
 
 func (r *TestCollector) Resolve(s string) ([]string, error) {
