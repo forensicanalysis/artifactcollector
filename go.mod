@@ -12,5 +12,5 @@ require (
 	github.com/spf13/afero v1.3.2
 	github.com/tidwall/pretty v1.0.1 // indirect
 	golang.org/x/sys v0.0.0-20200724161237-0e2f3a69832c
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.3.0
 )
