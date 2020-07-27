@@ -1,0 +1,9 @@
+{
+    "extends": [
+        "config:base",
+        ":preserveSemverRanges",
+        "schedule:earlyMondays"
+    ],
+    "groupName": "all",
+    "gomodTidy": true
+}
