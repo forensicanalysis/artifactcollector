@@ -3,7 +3,7 @@ module github.com/forensicanalysis/artifactcollector
 go 1.13
 
 require (
-	crawshaw.io/sqlite v0.2.5
+	crawshaw.io/sqlite v0.3.2
 	github.com/forensicanalysis/artifactlib v0.14.0
 	github.com/forensicanalysis/artifactsgo v0.6.6
 	github.com/forensicanalysis/forensicstore v0.17.1
