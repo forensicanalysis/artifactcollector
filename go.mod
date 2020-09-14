@@ -11,6 +11,6 @@ require (
 	github.com/go-ole/go-ole v1.2.4
 	github.com/spf13/afero v1.3.5
 	github.com/tidwall/pretty v1.0.1 // indirect
-	golang.org/x/sys v0.0.0-20200905004654-be1d3432aa8f
+	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009
 	gopkg.in/yaml.v2 v2.3.0
 )
