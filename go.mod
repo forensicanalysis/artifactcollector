@@ -9,8 +9,8 @@ require (
 	github.com/forensicanalysis/forensicstore v0.17.1
 	github.com/forensicanalysis/fslib v0.14.5
 	github.com/go-ole/go-ole v1.2.4
-	github.com/spf13/afero v1.3.5
+	github.com/spf13/afero v1.4.0
 	github.com/tidwall/pretty v1.0.1 // indirect
-	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009
+	golang.org/x/sys v0.0.0-20200918174421-af09f7315aff
 	gopkg.in/yaml.v2 v2.3.0
 )
