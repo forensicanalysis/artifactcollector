@@ -4,8 +4,9 @@
         ":automergeMinor",
         ":automergePr"
     ],
-    "groupName": "all",
-    "gomodTidy": true,
+    "postUpdateOptions": [
+        "gomodTidy"
+    ],
     "labels": [
         "Type: Maintenance"
     ],
