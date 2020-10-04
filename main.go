@@ -27,10 +27,11 @@
 //
 // The artifactcollector offers the following features
 //    - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
-//    - 🛍️ Can extract files, directories, registry entries, command and WMI output.
+//    - 🛍️ Can extract files, directories, registry entries, command and WMI output
 //    - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
 //    - 💾 Creates a forensicstore as [structured output](https://github.com/forensicanalysis/forensicstore)
 //    - 🕊️ It's open source
+//    - 🆓 Free for everyone (including commercial use)
 package main
 
 import (
