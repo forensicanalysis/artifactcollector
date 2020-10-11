@@ -12,5 +12,8 @@
     ],
     "assignees": [
         "cugu"
+    ],
+    "ignoreDeps": [
+        "golang.org/x/sys"
     ]
 }
