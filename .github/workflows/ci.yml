@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-go@v2
         with: {go-version: '1.14'}
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Download dependencies
         run: go mod download
 
@@ -107,6 +107,6 @@ jobs:
       - run: go get -u github.com/cugu/godoc2readme
 
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - run: godoc2readme --template docs/readme-template.md . > README2.md
       - run: diff README.md README2.md
