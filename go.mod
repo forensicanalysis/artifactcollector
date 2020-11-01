@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	crawshaw.io/sqlite v0.3.2
-	github.com/forensicanalysis/artifactlib v0.14.0
+	github.com/forensicanalysis/artifactlib v0.14.1
 	github.com/forensicanalysis/artifactsgo v0.6.6
 	github.com/forensicanalysis/forensicstore v0.17.1
 	github.com/forensicanalysis/fslib v0.14.7
