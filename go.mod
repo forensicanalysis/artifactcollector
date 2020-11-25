@@ -11,5 +11,5 @@ require (
 	github.com/go-ole/go-ole v1.2.4
 	github.com/spf13/afero v1.4.1
 	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d
-	gopkg.in/yaml.v2 v2.3.0
+	gopkg.in/yaml.v2 v2.4.0
 )
