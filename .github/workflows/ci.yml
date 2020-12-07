@@ -69,7 +69,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
       - name: Build 32bit Windows
         run: |
-          apt-get install mingw-w64
+          sudo apt-get install mingw-w64
           CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollector32.exe .
         if: matrix.os == 'ubuntu-latest'
 
