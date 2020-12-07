@@ -65,7 +65,9 @@ jobs:
           go install .
 
       - name: Add Windows 32bit syso File
-        run: mv resources/artifactcollector32.syso artifactcollector.syso
+        run: |
+          rm artifactcollector.syso
+          mv resources/artifactcollector32.syso artifactcollector.syso
         if: matrix.os == 'windows-latest'
       - name: Build
         run: GOARCH=386 go build -o artifactcollector32.exe .
