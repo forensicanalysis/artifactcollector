@@ -72,6 +72,7 @@ jobs:
       - name: Build
         run: GOARCH=386 go build -o artifactcollector32.exe .
         if: matrix.os == 'windows-latest'
+        shell: bash
 
       - name: Install forensicstore
         run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.2
