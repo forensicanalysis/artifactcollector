@@ -64,6 +64,13 @@ jobs:
           go build .
           go install .
 
+      - name: Add Windows 32bit syso File
+        run: mv resources/resources/artifactcollector32.syso artifactcollector.syso
+        if: matrix.os == 'windows-latest'
+      - name: Build
+        run: GOARCH=386 go build -o artifactcollector32.exe .
+        if: matrix.os == 'windows-latest'
+
       - name: Install forensicstore
         run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.2
       - name: Windows bats test
