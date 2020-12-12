@@ -27,12 +27,21 @@ jobs:
       - name: Build
         run: go build .
 
+      - name: Add Windows 32bit syso File
+        run: mv resources/resources/artifactcollector32.syso artifactcollector.syso
+        if: matrix.os == 'windows-latest'
+      - name: Build
+        run: GOARCH=386 go build -o artifactcollector32.exe .
+        if: matrix.os == 'windows-latest'
+
       - name: Pack UNIX
         run: zip -r ${{ matrix.os }}.zip artifactcollector
         shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
-        run: 7z a windows.zip artifactcollector.exe
+        run: |
+          7z a windows.zip artifactcollector.exe
+          7z a windows32.zip artifactcollector32.exe
         shell: bash
         if: matrix.os == 'windows-latest'
 
@@ -49,6 +58,17 @@ jobs:
           upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: ./windows.zip
           asset_name: windows.zip
+          asset_content_type: application/zip
+        if: matrix.os == 'windows-latest'
+      - name: Upload Windows (32bit)
+        id: upload-windows-release-asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./windows32.zip
+          asset_name: windows32.zip
           asset_content_type: application/zip
         if: matrix.os == 'windows-latest'
       - name: Upload macOS

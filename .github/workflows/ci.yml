@@ -64,6 +64,15 @@ jobs:
           go build .
           go install .
 
+      - name: Add Windows 32bit syso File
+        run: mv resources/artifactcollector32.syso artifactcollector.syso
+        if: matrix.os == 'ubuntu-latest'
+      - name: Build 32bit Windows
+        run: |
+          sudo apt-get install mingw-w64
+          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollector32.exe .
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Install forensicstore
         run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.2
       - name: Windows bats test
@@ -77,8 +86,21 @@ jobs:
 
       - name: Remove Windows syso File
         run: rm artifactcollector.syso
-        if: matrix.os == 'windows-latest'
+        if: (matrix.os == 'windows-latest') || (matrix.os == 'ubuntu-latest')
         shell: bash
+
+      - name: Move 32bit Binary
+        run: |
+          mkdir bin32
+          mv artifactcollector32.exe bin32
+        if: matrix.os == 'ubuntu-latest'
+      - name: Upload artifactcollector32
+        uses: actions/upload-artifact@master
+        with:
+          name: artifactcollector win32
+          path: bin32
+        if: matrix.os == 'ubuntu-latest'
+
       - name: Move Binary
         run: |
           mkdir bin store
