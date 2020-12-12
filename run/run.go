@@ -22,7 +22,6 @@
 package run
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -72,8 +71,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	case config.OutputDir != "":
 	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
 		fmt.Println("Running from zip, results will be available on Desktop")
-		homedir, _ := homeDir()
-		config.OutputDir = filepath.Join(homedir, "Desktop")
+		config.OutputDir = filepath.Join(homeDir(), "Desktop")
 	default:
 		config.OutputDir = "" // current directory
 	}
@@ -195,16 +193,11 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 }
 
-func homeDir() (string, error) {
-	env, enverr := "HOME", "$HOME"
-	switch runtime.GOOS {
-	case "windows":
-		env, enverr = "USERPROFILE", "%userprofile%"
+func homeDir() string {
+	if runtime.GOOS == "windows" {
+		os.Getenv("USERPROFILE")
 	}
-	if v := os.Getenv(env); v != "" {
-		return v, nil
-	}
-	return "", errors.New(enverr + " is not defined")
+	return os.Getenv("HOME")
 }
 
 func unpack(embedded map[string][]byte) (tempDir string, err error) {

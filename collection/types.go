@@ -1,8 +1,9 @@
 package collection
 
 import (
-	"github.com/google/uuid"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 // File implements a STIX 2.1 File Object
@@ -128,4 +129,3 @@ func (i *Process) AddError(err string) *Process {
 	i.Errors = append(i.Errors, err)
 	return i
 }
-

@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-// +build !windows
+// +build !windows !go1.8
 
 package collection
 
