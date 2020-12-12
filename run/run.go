@@ -22,7 +22,7 @@
 package run
 
 import (
-	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -34,8 +34,6 @@ import (
 	"runtime"
 	"runtime/debug"
 	"time"
-
-	"crawshaw.io/sqlite"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
@@ -74,7 +72,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	case config.OutputDir != "":
 	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
 		fmt.Println("Running from zip, results will be available on Desktop")
-		homedir, _ := os.UserHomeDir()
+		homedir, _ := homeDir()
 		config.OutputDir = filepath.Join(homedir, "Desktop")
 	default:
 		config.OutputDir = "" // current directory
@@ -91,7 +89,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	collectionName := fmt.Sprintf("%s_%s", hostname, time.Now().UTC().Format("2006-01-02T15-04-05"))
 
 	// setup logging
-	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	logfilePath := filepath.Join(config.OutputDir, collectionName+".log")
 	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if logfileError != nil {
@@ -195,6 +193,18 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		Name: collectionName,
 		Path: storeName,
 	}
+}
+
+func homeDir() (string, error) {
+	env, enverr := "HOME", "$HOME"
+	switch runtime.GOOS {
+	case "windows":
+		env, enverr = "USERPROFILE", "%userprofile%"
+	}
+	if v := os.Getenv(env); v != "" {
+		return v, nil
+	}
+	return "", errors.New(enverr + " is not defined")
 }
 
 func unpack(embedded map[string][]byte) (tempDir string, err error) {

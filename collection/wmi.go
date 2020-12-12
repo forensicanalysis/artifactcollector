@@ -23,12 +23,10 @@ package collection
 
 import (
 	"time"
-
-	"github.com/forensicanalysis/forensicstore"
 )
 
-func (c *LiveCollector) createWMI(definitonName, query string) *forensicstore.Process {
-	process := forensicstore.NewProcess()
+func (c *LiveCollector) createWMI(definitonName, query string) *Process {
+	process := NewProcess()
 	process.Artifact = definitonName
 	process.CommandLine = query
 	process.Name = "WMI"

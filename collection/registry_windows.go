@@ -28,11 +28,9 @@ import (
 	"time"
 
 	"golang.org/x/sys/windows/registry"
-
-	"github.com/forensicanalysis/forensicstore"
 )
 
-func (c *LiveCollector) createRegistryKey(definitionName, key string) *forensicstore.RegistryKey {
+func (c *LiveCollector) createRegistryKey(definitionName, key string) *RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -44,7 +42,7 @@ func (c *LiveCollector) createRegistryKey(definitionName, key string) *forensics
 	return rk
 }
 
-func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *forensicstore.RegistryKey {
+func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -52,7 +50,7 @@ func (c *LiveCollector) createRegistryValue(definitionName, key, valueName strin
 	if err != nil {
 		rk.AddError(err.Error())
 	} else {
-		rk.Values = []forensicstore.RegistryValue{value}
+		rk.Values = []RegistryValue{value}
 	}
 
 	return rk
@@ -80,10 +78,10 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 	return key, &k, nil
 }
 
-func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *forensicstore.RegistryKey) {
-	rk := forensicstore.NewRegistryKey()
+func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *RegistryKey) {
+	rk := NewRegistryKey()
 	rk.Artifact = name
-	rk.Values = []forensicstore.RegistryValue{}
+	rk.Values = []RegistryValue{}
 	// get registry key
 	cleankey, k, err := getRegistryKey(fskey)
 	rk.Key = cleankey
@@ -101,7 +99,7 @@ func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*regi
 	return k, rk
 }
 
-func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.RegistryValue, valueErrors []error) {
+func (c *LiveCollector) getValues(k *registry.Key) (values []RegistryValue, valueErrors []error) {
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
@@ -127,7 +125,7 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []forensicstore.Regis
 	return values, valueErrors
 }
 
-func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value forensicstore.RegistryValue, err error) {
+func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value RegistryValue, err error) {
 	dataType, _, _, stringData, err := valueData(k, valueName)
 	if err != nil {
 		return value, fmt.Errorf("could not parse registry data: %w", err)
@@ -135,7 +133,7 @@ func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value foren
 	if valueName == "" {
 		valueName = "(Default)"
 	}
-	return forensicstore.RegistryValue{Name: valueName, Data: stringData, DataType: dataType}, nil
+	return RegistryValue{Name: valueName, Data: stringData, DataType: dataType}, nil
 }
 
 func valueData(rk *registry.Key, name string) (dataType string, bytesData []byte, data interface{}, stringData string, err error) {

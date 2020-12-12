@@ -66,8 +66,8 @@ github.com/forensicanalysis/artifactcollector v0.13.3-0.20200514200812-b362001db
 github.com/forensicanalysis/artifactlib v0.12.2/go.mod h1:sYvEmDCBeij/3tTD9TcQA6ztKdaaGVR/chR7Asv4oUw=
 github.com/forensicanalysis/artifactlib v0.13.1/go.mod h1:FdiGzYLnTKZy+uIXBuQIzFRuK0nGlGycH/7Ss9MNdHg=
 github.com/forensicanalysis/artifactlib v0.13.3/go.mod h1:Ff5eslnDDuG/v5M5cSfqRrJM2O++lkCJuTco+e05zuY=
-github.com/forensicanalysis/artifactlib v0.14.2 h1:nk2ooNv8Zw96HrSKv6A7SNTWhrht/UjPnygeYe9IXb8=
-github.com/forensicanalysis/artifactlib v0.14.2/go.mod h1:cQMIT+lQV38v7GqCza9OA9cemHPEA+Egti663ohsLBs=
+github.com/forensicanalysis/artifactlib v0.14.3 h1:cYP1RodIYLcgNtt8W7wbjWFE/TU2s0uc3jUy2y/zJHk=
+github.com/forensicanalysis/artifactlib v0.14.3/go.mod h1:cQMIT+lQV38v7GqCza9OA9cemHPEA+Egti663ohsLBs=
 github.com/forensicanalysis/artifactsgo v0.1.1/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
 github.com/forensicanalysis/artifactsgo v0.6.6 h1:rMI7pJ7BD5+qGQywtpyWGqGO3fdYYRDvJruj2hJ/48M=
 github.com/forensicanalysis/artifactsgo v0.6.6/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
@@ -81,8 +81,9 @@ github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.13.1/go.mod h1:VfD1k6bSBa1IS/fhAfWBnIPhDi1uZP0+ryD8D8BwsZI=
 github.com/forensicanalysis/fslib v0.14.0/go.mod h1:VfD1k6bSBa1IS/fhAfWBnIPhDi1uZP0+ryD8D8BwsZI=
-github.com/forensicanalysis/fslib v0.14.8 h1:pr/4a7/v8l+O6FTPw655to8W8rs+QPoMkbMe42DwEl0=
 github.com/forensicanalysis/fslib v0.14.8/go.mod h1:NUTzwx+QvyMDNmApTc094Jwhf5jJJsos6yLBghPT95s=
+github.com/forensicanalysis/fslib v0.14.9 h1:3Hd0G+/oYywaDtOImpQaAecQx02Jks135ZZRc7MBsdo=
+github.com/forensicanalysis/fslib v0.14.9/go.mod h1:NUTzwx+QvyMDNmApTc094Jwhf5jJJsos6yLBghPT95s=
 github.com/forensicanalysis/stixgo v0.1.0/go.mod h1:0Lr/Rs373qJDVUguJXiLRd7N78nkkTbkd4h92OBXUkg=
 github.com/forensicanalysis/stixgo v0.1.1 h1:17XY2BD8b0wrYTCi+ekxVIFfWoKOw+HwvmN5YJtkoRY=
 github.com/forensicanalysis/stixgo v0.1.1/go.mod h1:0Lr/Rs373qJDVUguJXiLRd7N78nkkTbkd4h92OBXUkg=

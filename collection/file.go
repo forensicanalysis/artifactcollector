@@ -34,7 +34,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/forensicanalysis/forensicstore"
 	"github.com/forensicanalysis/fslib/filesystem/systemfs"
 )
 
@@ -47,8 +46,8 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *forensicstore.File) { //nolint:funlen,gocyclo,gocognit
-	file := forensicstore.NewFile()
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *File) { //nolint:funlen,gocyclo,gocognit
+	file := NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
 	file.Origin = map[string]interface{}{"path": srcpath}
@@ -167,7 +166,7 @@ type Resetter interface {
 func resetFile(storeFile io.WriteCloser) bool {
 	reset := false
 	if seeker, ok := storeFile.(io.Seeker); ok {
-		_, err := seeker.Seek(0, io.SeekCurrent)
+		_, err := seeker.Seek(0, os.SEEK_CUR)
 		if err != nil {
 			reset = true
 		}

@@ -33,3 +33,7 @@ type storeLogger struct{}
 func newStoreLogger(store collection.Store) (*storeLogger, error) {
 	return nil, errors.New("Not a forensicstore")
 }
+
+func (s *storeLogger) Write(b []byte) (int, error) {
+	return len(b), nil
+}

@@ -3,10 +3,11 @@
 package run
 
 import (
-	"crawshaw.io/sqlite"
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"crawshaw.io/sqlite"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
