@@ -66,7 +66,7 @@ jobs:
           set CGO_ENABLED=0
           ./make.bat
           cd $GITHUB_WORKSPACE
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
         shell: bash
 
   win2k:
@@ -103,7 +103,8 @@ jobs:
           sudo apt-get install curl git mercurial make binutils bison gcc build-essential
           bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
           source /home/runner/.gvm/scripts/gvm
-          GOOS=windows GOARCH=386 gvm install go1.2.2
+          GOOS=windows GOARCH=386 gvm install go1.2.2 || cat /home/runner/.gvm/logs/go-go1.2.2-compile.log
+          GOOS=windows GOARCH=386 gvm install -B go1.2.2
           # cd go1.2.2/go/src
           # CGO_ENABLED=0 GOOS=windows GOARCH=386 ./make.bash
           # cd $GITHUB_WORKSPACE
