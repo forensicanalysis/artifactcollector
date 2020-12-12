@@ -6,7 +6,7 @@ require (
 	crawshaw.io/sqlite v0.3.2
 	github.com/forensicanalysis/artifactlib v0.14.1
 	github.com/forensicanalysis/artifactsgo v0.6.6
-	github.com/forensicanalysis/forensicstore v0.17.2
+	github.com/forensicanalysis/forensicstore v0.17.3
 	github.com/forensicanalysis/fslib v0.14.8
 	github.com/go-ole/go-ole v1.2.4
 	github.com/spf13/afero v1.4.1
