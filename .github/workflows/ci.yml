@@ -62,7 +62,7 @@ jobs:
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
           cd go1.2.2/go/src
-          GOARCH=386 CGO_ENABLED=0 ./make.bat
+          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 CGO_ENABLED=0 ./make.bat
         shell: bash
       - name: Build 386 with go 1.2.2
         run: GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
@@ -106,8 +106,8 @@ jobs:
           # GOOS=windows GOARCH=386 gvm install go1.2.2 || cat /home/runner/.gvm/logs/go-go1.2.2-compile.log
           # GOOS=windows GOARCH=386 gvm install go1.2.2 -B
 
-          GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go tool dist install -v pkg/runtime
-          GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go install -v -a std
+          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go tool dist install -v pkg/runtime
+          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go install -v -a std
 
           # cd go1.2.2/go/src
           # CGO_ENABLED=0 GOOS=windows GOARCH=386 ./make.bash
