@@ -43,7 +43,7 @@ func newStoreLogger(store collection.Store) (*storeLogger, error) {
 	)`)
 		return &storeLogger{store: fstore}, err
 	}
-	return nil, errors.New("Not a forensicstore")
+	return nil, errors.New("not a forensicstore")
 }
 
 func (s *storeLogger) Write(b []byte) (int, error) {

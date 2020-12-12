@@ -25,7 +25,6 @@ import (
 	"crypto/md5"  // #nosec
 	"crypto/sha1" // #nosec
 	"crypto/sha256"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -114,34 +113,35 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 			if err != nil {
 				// Copy failed, try NTFS copy
-				var errno syscall.Errno
 				// is a lock violation
 				errorLockViolation := 33
-				if systemFS, ok := c.SourceFS.(*systemfs.FS); ok && errors.As(err, &errno) && int(errno) == errorLockViolation {
-					log.Println("copy error because of a lock violation, try low level copy")
+				if systemFS, ok := c.SourceFS.(*systemfs.FS); ok {
+					if errno, ok := err.(syscall.Errno); ok && int(errno) == errorLockViolation {
+						log.Println("copy error because of a lock violation, try low level copy")
 
-					ntfsSrcFile, teardown, oerr := systemFS.NTFSOpen(srcpath)
-					if oerr != nil {
-						return file.AddError(fmt.Errorf("error opening NTFS file: %w", oerr).Error())
+						ntfsSrcFile, teardown, oerr := systemFS.NTFSOpen(srcpath)
+						if oerr != nil {
+							return file.AddError(fmt.Errorf("error opening NTFS file: %w", oerr).Error())
+						}
+						defer func() {
+							if terr := teardown(); terr != nil {
+								log.Println(terr)
+							}
+						}()
+
+						// reset file or open a new store file
+						if !resetFile(storeFile) {
+							if err := storeFile.Close(); err != nil {
+								log.Println(err)
+							}
+							dstpath, storeFile, storeFileTeardown, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+							if err != nil {
+								return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
+							}
+						}
+
+						size, hashes, err = hashCopy(storeFile, ntfsSrcFile)
 					}
-					defer func() {
-						if terr := teardown(); terr != nil {
-							log.Println(terr)
-						}
-					}()
-
-					// reset file or open a new store file
-					if !resetFile(storeFile) {
-						if err := storeFile.Close(); err != nil {
-							log.Println(err)
-						}
-						dstpath, storeFile, storeFileTeardown, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
-						if err != nil {
-							return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
-						}
-					}
-
-					size, hashes, err = hashCopy(storeFile, ntfsSrcFile)
 				}
 				if err != nil {
 					return file.AddError(fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err).Error())

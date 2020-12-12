@@ -1,8 +1,10 @@
-// +build !go1.7
+// +build go1.7
 
 package run
 
 import (
+	"crawshaw.io/sqlite"
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -43,4 +45,26 @@ func createStore(collectionName string, config *collection.Configuration, defini
 	}
 
 	return storeName, store, teardown, nil
+}
+
+func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
+	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
+	if err != nil {
+		return err
+	}
+
+	b, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	stmt.SetText("$key", key)
+	stmt.SetText("$value", string(b))
+
+	_, err = stmt.Step()
+	if err != nil {
+		return err
+	}
+
+	return stmt.Finalize()
 }

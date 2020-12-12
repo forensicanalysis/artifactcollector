@@ -68,7 +68,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 		"HKEY_PERFORMANCE_DATA": registry.PERFORMANCE_DATA,
 	}
 	key = strings.Trim(key, "/")
-	key = strings.ReplaceAll(key, "/", `\`)
+	key = strings.Replace(key, "/", `\`, -1)
 	keyparts := strings.SplitN(key, `\`, 2)
 	if len(keyparts) != 2 { //nolint:gomnd
 		return key, nil, fmt.Errorf("wrong number of keyparts %s", keyparts)

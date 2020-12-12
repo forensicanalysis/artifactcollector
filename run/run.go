@@ -235,28 +235,6 @@ func enforceAdmin(forceAdmin bool) error {
 	}
 }
 
-func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
-	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
-	if err != nil {
-		return err
-	}
-
-	b, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	stmt.SetText("$key", key)
-	stmt.SetText("$value", string(b))
-
-	_, err = stmt.Step()
-	if err != nil {
-		return err
-	}
-
-	return stmt.Finalize()
-}
-
 func logPrint(a ...interface{}) {
 	log.Println(a...)
 	fmt.Println(a...)
