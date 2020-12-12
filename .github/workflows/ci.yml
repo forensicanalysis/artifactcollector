@@ -61,6 +61,10 @@ jobs:
           curl -Lso go1.2.2.windows-amd64.zip https://golang.org/dl/go1.2.2.windows-amd64.zip
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
+          cd go1.2.2/go/src
+          set GOARCH=386
+          ./make.bat
+          cd $GITHUB_WORKSPACE
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
         shell: bash
 
