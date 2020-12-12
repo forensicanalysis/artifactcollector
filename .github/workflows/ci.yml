@@ -31,7 +31,7 @@ jobs:
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/fslib/replace/context path/src
+          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
         shell: bash
       - name: Build with go 1.9.7
