@@ -77,6 +77,8 @@ github.com/forensicanalysis/fslib v0.12.0/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV
 github.com/forensicanalysis/fslib v0.12.1/go.mod h1:yIYvtYTjSqsFKYobw9TrIXy3glZV/wXBaRMagLnwDvU=
 github.com/forensicanalysis/fslib v0.14.8 h1:pr/4a7/v8l+O6FTPw655to8W8rs+QPoMkbMe42DwEl0=
 github.com/forensicanalysis/fslib v0.14.8/go.mod h1:NUTzwx+QvyMDNmApTc094Jwhf5jJJsos6yLBghPT95s=
+github.com/forensicanalysis/fslib v0.14.9 h1:3Hd0G+/oYywaDtOImpQaAecQx02Jks135ZZRc7MBsdo=
+github.com/forensicanalysis/fslib v0.14.9/go.mod h1:NUTzwx+QvyMDNmApTc094Jwhf5jJJsos6yLBghPT95s=
 github.com/forensicanalysis/stixgo v0.1.1 h1:17XY2BD8b0wrYTCi+ekxVIFfWoKOw+HwvmN5YJtkoRY=
 github.com/forensicanalysis/stixgo v0.1.1/go.mod h1:0Lr/Rs373qJDVUguJXiLRd7N78nkkTbkd4h92OBXUkg=
 github.com/frankban/quicktest v1.6.0/go.mod h1:jaStnuzAqU1AJdCO0l53JDCJrVDKcS03DbaAcR7Ks/o=
@@ -279,6 +281,7 @@ github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXf
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5cxcmMvtA=
+github.com/stretchr/testify v1.6.1 h1:hDPOHmpOpP40lSULcqw7IrRb/u7w6RpDC9399XyoNd0=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tidwall/gjson v1.6.4 h1:JKsCsJqRVFz8eYCsQ5E/ANRbK6CanAtA9IUvGsXklyo=
@@ -440,6 +443,7 @@ gopkg.in/yaml.v2 v2.3.0 h1:clyUAQHOM3G0M3f5vQj7LuJrETvjVot3Z5el9nffUtU=
 gopkg.in/yaml.v2 v2.3.0/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.4.0 h1:D8xgwECY7CYvx+Y2n4sBz93Jn9JRvxdiyyo8CTfuKaY=
 gopkg.in/yaml.v2 v2.4.0/go.mod h1:RDklbk79AGWmwhnvt/jBztapEOGDOx6ZbXqjP6csGnQ=
+gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c h1:dUUwHk2QECo/6vqA44rthZ8ie2QXMNeKRTHCNY2nXvo=
 gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
