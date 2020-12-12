@@ -94,12 +94,15 @@ jobs:
           mkdir -p go1.2.2
           curl -s https://dl.google.com/go/go1.2.2.linux-amd64.tar.gz | tar xz -C go1.2.2
           sudo apt-get install mingw-w64
+          cd go1.2.2/go/src
+          GOOS=windows GOARCH=386 ./make.bash
+          cd $GITHUB_WORKSPACE
           CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
             $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
       - name: Upload artifactcollector
         uses: actions/upload-artifact@master
         with:
-          name: artifactcollector  (Windows 2000, 32bit)
+          name: artifactcollector (Windows 2000, 32bit)
           path: artifactcollector2k.exe
 
   winxp:
