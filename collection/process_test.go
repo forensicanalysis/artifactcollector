@@ -46,12 +46,12 @@ func TestLiveCollector_createProcess(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *forensicstore.Process
+		want *Process
 	}{
 		{
 			"hostname",
 			args{"test", "hostname", nil},
-			&forensicstore.Process{
+			&Process{
 				Name:        "hostname",
 				Artifact:    "test",
 				Type:        "process",
