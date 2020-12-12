@@ -63,6 +63,53 @@ jobs:
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector/...
         shell: bash
 
+  win2k:
+    name: win2k
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go 1.14
+        uses: actions/setup-go@v2
+        with: {go-version: 1.14}
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: repo
+      - name: Load Modules
+        run: |
+          go mod download
+          go mod vendor
+        working-directory: repo
+      - name: Move packages
+        run: |
+          mkdir -p path
+          mv repo/vendor path/src
+          mkdir -p path/src/github.com/forensicanalysis
+          mv repo path/src/github.com/forensicanalysis/artifactcollector
+          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
+      - name: Setup Build
+        run: go generate
+      - name: Add Windows 32bit syso File
+        run: mv resources/artifactcollector32.syso artifactcollector.syso
+        if: matrix.os == 'ubuntu-latest'
+      - name: Build with go 1.2.2
+        run: |
+          mkdir -p go1.2.2
+          curl -Lso go1.2.2.linux-amd64.tar.gz https://golang.org/dl/go1.2.2.linux-amd64.tar.gz
+          tar xfz go1.2.2.linux-amd64.tar.gz -C go1.2.2
+          sudo apt-get install mingw-w64
+          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
+            $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector/...
+      - name: Move Binary
+        run: |
+          mkdir bin
+          mv artifactcollector2k.exe bin
+      - name: Upload artifactcollector
+        uses: actions/upload-artifact@master
+        with:
+          name: artifactcollector  (Windows 2000, 32bit)
+          path: bin
+
   artifactcollector:
     name: artifactcollector
     runs-on: ${{ matrix.os }}
@@ -125,7 +172,7 @@ jobs:
       - name: Build 32bit Windows
         run: |
           sudo apt-get install mingw-w64
-          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollector32.exe .
+          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe .
         if: matrix.os == 'ubuntu-latest'
 
       - name: Install forensicstore
@@ -147,12 +194,12 @@ jobs:
       - name: Move 32bit Binary
         run: |
           mkdir bin32
-          mv artifactcollector32.exe bin32
+          mv artifactcollectorxp.exe bin32
         if: matrix.os == 'ubuntu-latest'
-      - name: Upload artifactcollector32
+      - name: Upload artifactcollector (XP, 32bit)
         uses: actions/upload-artifact@master
         with:
-          name: artifactcollector win32
+          name: artifactcollector (Windows XP, 32bit)
           path: bin32
         if: matrix.os == 'ubuntu-latest'
 
