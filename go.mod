@@ -7,7 +7,7 @@ require (
 	github.com/forensicanalysis/artifactlib v0.14.1
 	github.com/forensicanalysis/artifactsgo v0.6.6
 	github.com/forensicanalysis/forensicstore v0.17.2
-	github.com/forensicanalysis/fslib v0.14.7
+	github.com/forensicanalysis/fslib v0.14.8
 	github.com/go-ole/go-ole v1.2.4
 	github.com/spf13/afero v1.4.1
 	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d
