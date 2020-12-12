@@ -8,6 +8,59 @@ on:
 
 jobs:
 
+  legacy:
+    name: legacy
+    runs-on: windows-latest
+    steps:
+      - name: Setup go 1.14
+        uses: actions/setup-go@v2
+        with: {go-version: 1.14}
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: repo
+      - name: Load Modules
+        run: |
+          go mod download
+          go mod vendor
+        shell: bash
+        working-directory: repo
+      - name: Move packages
+        run: |
+          mkdir -p path
+          mv repo/vendor path/src
+          mkdir -p path/src/github.com/forensicanalysis
+          mv repo path/src/github.com/forensicanalysis/artifactcollector
+        shell: bash
+      - name: Build with go 1.9.7
+        run: |
+          mkdir -p go1.9.7
+          curl -Lso go1.9.7.windows-amd64.zip https://golang.org/dl/go1.9.7.windows-amd64.zip
+          unzip -q go1.9.7.windows-amd64.zip -d go1.9.7
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.9.7/go go1.9.7/go/bin/go build github.com/forensicanalysis/artifactcollector/...
+        shell: bash
+      - name: Build with go 1.7.6
+        run: |
+          mkdir -p go1.7.6
+          curl -Lso go1.7.6.windows-amd64.zip https://golang.org/dl/go1.7.6.windows-amd64.zip
+          unzip -q go1.7.6.windows-amd64.zip -d go1.7.6
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.7.6/go go1.7.6/go/bin/go build github.com/forensicanalysis/artifactcollector/...
+        shell: bash
+      - name: Build with go 1.5.4
+        run: |
+          mkdir -p go1.5.4
+          curl -Lso go1.5.4.windows-amd64.zip https://golang.org/dl/go1.5.4.windows-amd64.zip
+          unzip -q go1.5.4.windows-amd64.zip -d go1.5.4
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.5.4/go $GITHUB_WORKSPACE/go1.5.4/go/bin/go build github.com/forensicanalysis/artifactcollector/...
+        shell: bash
+      - name: Build with go 1.2.2
+        run: |
+          mkdir -p go1.2.2
+          curl -Lso go1.2.2.windows-amd64.zip https://golang.org/dl/go1.2.2.windows-amd64.zip
+          unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector/...
+        shell: bash
+
   artifactcollector:
     name: artifactcollector
     runs-on: ${{ matrix.os }}

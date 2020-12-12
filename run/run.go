@@ -39,7 +39,6 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -141,7 +140,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	if config.FS != nil {
-		store.Fs = config.FS
+		store.SetFS(config.FS)
 	}
 
 	// add store as log writer
@@ -234,40 +233,6 @@ func enforceAdmin(forceAdmin bool) error {
 	default:
 		return nil
 	}
-}
-
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, func() error, error) {
-	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, teardown, err := forensicstore.New(storeName)
-	if err != nil {
-		return "", nil, teardown, err
-	}
-
-	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
-		key TEXT NOT NULL,
-		value TEXT
-	);`)
-	if err != nil {
-		return "", nil, teardown, err
-	}
-
-	conn := store.Connection()
-
-	// insert configuration into store
-	err = addConfig(conn, "config", config)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// insert artifact definitions into store
-	for _, artifact := range definitions {
-		err = addConfig(conn, "artifact:"+artifact.Name, artifact)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-	return storeName, store, teardown, nil
 }
 
 func addConfig(conn *sqlite.Conn, key string, value interface{}) error {

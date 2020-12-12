@@ -1,4 +1,4 @@
-// +build go1.7
+// +build !go1.7
 
 // Copyright (c) 2019 Siemens AG
 //
@@ -25,42 +25,11 @@ package run
 
 import (
 	"errors"
-	"time"
-
 	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/forensicanalysis/forensicstore"
 )
 
-type storeLogger struct {
-	store *forensicstore.ForensicStore
-}
+type storeLogger struct{}
 
 func newStoreLogger(store collection.Store) (*storeLogger, error) {
-	if fstore, ok := store.(*forensicstore.ForensicStore); ok {
-		_, err := fstore.Query(`CREATE TABLE IF NOT EXISTS logs (
-		msg TEXT NOT NULL,
-		insert_time TEXT NOT NULL
-	)`)
-		return &storeLogger{store: fstore}, err
-	}
 	return nil, errors.New("Not a forensicstore")
-}
-
-func (s *storeLogger) Write(b []byte) (int, error) {
-	conn := s.store.Connection()
-
-	stmt, err := conn.Prepare("INSERT INTO `logs` (msg, insert_time) VALUES ($msg, $time)")
-	if err != nil {
-		return len(b), err
-	}
-
-	stmt.SetText("$msg", string(b))
-	stmt.SetText("$time", time.Now().UTC().Format(time.RFC3339Nano))
-
-	_, err = stmt.Step()
-	if err != nil {
-		return len(b), err
-	}
-
-	return len(b), stmt.Finalize()
 }

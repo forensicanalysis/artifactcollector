@@ -25,9 +25,12 @@ package collection
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"runtime"
 	"strings"
+
+	"github.com/spf13/afero"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/forensicstore"
@@ -40,7 +43,7 @@ import (
 type LiveCollector struct {
 	SourceFS   fslib.FS
 	registryfs fslib.FS
-	Store      *forensicstore.ForensicStore
+	Store      Store
 	TempDir    string
 
 	providesMap   map[string][]goartifacts.Source
@@ -48,9 +51,16 @@ type LiveCollector struct {
 	prefixes      []string
 }
 
+type Store interface {
+	SetFS(fs afero.Fs)
+	InsertStruct(element interface{}) (string, error)
+	StoreFile(filePath string) (storePath string, file io.WriteCloser, teardown func() error, err error)
+	LoadFile(filePath string) (file io.ReadCloser, teardown func() error, err error)
+}
+
 // NewCollector creates a new LiveCollector that collects the given
 // ArtifactDefinitions.
-func NewCollector(store *forensicstore.ForensicStore, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
+func NewCollector(store Store, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
 	providesMap := map[string][]goartifacts.Source{}
 
 	definitions = goartifacts.FilterOS(definitions)
