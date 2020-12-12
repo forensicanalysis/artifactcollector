@@ -41,20 +41,20 @@ jobs:
           unzip -q go1.9.7.windows-amd64.zip -d go1.9.7
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.9.7/go go1.9.7/go/bin/go build github.com/forensicanalysis/artifactcollector
         shell: bash
-      - name: Build with go 1.7.6
-        run: |
-          mkdir -p go1.7.6
-          curl -Lso go1.7.6.windows-amd64.zip https://golang.org/dl/go1.7.6.windows-amd64.zip
-          unzip -q go1.7.6.windows-amd64.zip -d go1.7.6
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.7.6/go go1.7.6/go/bin/go build github.com/forensicanalysis/artifactcollector
-        shell: bash
-      - name: Build with go 1.5.4
-        run: |
-          mkdir -p go1.5.4
-          curl -Lso go1.5.4.windows-amd64.zip https://golang.org/dl/go1.5.4.windows-amd64.zip
-          unzip -q go1.5.4.windows-amd64.zip -d go1.5.4
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.5.4/go $GITHUB_WORKSPACE/go1.5.4/go/bin/go build github.com/forensicanalysis/artifactcollector
-        shell: bash
+      # - name: Build with go 1.7.6
+      #   run: |
+      #     mkdir -p go1.7.6
+      #     curl -Lso go1.7.6.windows-amd64.zip https://golang.org/dl/go1.7.6.windows-amd64.zip
+      #     unzip -q go1.7.6.windows-amd64.zip -d go1.7.6
+      #     GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.7.6/go go1.7.6/go/bin/go build github.com/forensicanalysis/artifactcollector
+      #   shell: bash
+      # - name: Build with go 1.5.4
+      #   run: |
+      #     mkdir -p go1.5.4
+      #     curl -Lso go1.5.4.windows-amd64.zip https://golang.org/dl/go1.5.4.windows-amd64.zip
+      #     unzip -q go1.5.4.windows-amd64.zip -d go1.5.4
+      #     GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.5.4/go $GITHUB_WORKSPACE/go1.5.4/go/bin/go build github.com/forensicanalysis/artifactcollector
+      #   shell: bash
       - name: Build with go 1.2.2
         run: |
           mkdir -p go1.2.2
@@ -63,6 +63,7 @@ jobs:
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
           cd go1.2.2/go/src
           set GOARCH=386
+          set CGO_ENABLED=0
           ./make.bat
           cd $GITHUB_WORKSPACE
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
@@ -99,11 +100,16 @@ jobs:
           mkdir -p go1.2.2
           curl -s https://dl.google.com/go/go1.2.2.linux-amd64.tar.gz | tar xz -C go1.2.2
           sudo apt-get install mingw-w64
-          cd go1.2.2/go/src
-          GOOS=windows GOARCH=386 ./make.bash
-          cd $GITHUB_WORKSPACE
-          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
-            $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
+          sudo apt-get install curl git mercurial make binutils bison gcc build-essential
+          bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+          GOOS=windows GOARCH=386 gvm install go1.2.2
+          # cd go1.2.2/go/src
+          # CGO_ENABLED=0 GOOS=windows GOARCH=386 ./make.bash
+          # cd $GITHUB_WORKSPACE
+          # CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
+          #   $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
+          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path \
+                      $GOROOT/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
       - name: Upload artifactcollector
         uses: actions/upload-artifact@master
         with:
