@@ -1,3 +1,5 @@
+// +build go1.7
+
 // Copyright (c) 2019 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -22,8 +24,10 @@
 package run
 
 import (
+	"errors"
 	"time"
 
+	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/forensicstore"
 )
 
@@ -31,12 +35,15 @@ type storeLogger struct {
 	store *forensicstore.ForensicStore
 }
 
-func newStoreLogger(store *forensicstore.ForensicStore) (*storeLogger, error) {
-	_, err := store.Query(`CREATE TABLE IF NOT EXISTS logs (
+func newStoreLogger(store collection.Store) (*storeLogger, error) {
+	if fstore, ok := store.(*forensicstore.ForensicStore); ok {
+		_, err := fstore.Query(`CREATE TABLE IF NOT EXISTS logs (
 		msg TEXT NOT NULL,
 		insert_time TEXT NOT NULL
 	)`)
-	return &storeLogger{store: store}, err
+		return &storeLogger{store: fstore}, err
+	}
+	return nil, errors.New("not a forensicstore")
 }
 
 func (s *storeLogger) Write(b []byte) (int, error) {

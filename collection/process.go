@@ -30,12 +30,10 @@ import (
 	"path"
 	"path/filepath"
 	"time"
-
-	"github.com/forensicanalysis/forensicstore"
 )
 
-func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *forensicstore.Process {
-	process := forensicstore.NewProcess()
+func (c *LiveCollector) createProcess(definitionName, cmd string, args []string) *Process {
+	process := NewProcess()
 	process.Artifact = definitionName
 	process.CommandLine = cmd
 	process.Name = cmd

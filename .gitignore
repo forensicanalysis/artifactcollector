@@ -34,4 +34,6 @@ pack/artifacts/
 *.forensicstore-shm
 *.forensicstore.zip
 
-ac
+artifactcollector
+vendor
+go1.2.2

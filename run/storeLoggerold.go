@@ -1,3 +1,5 @@
+// +build !go1.7
+
 // Copyright (c) 2019 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,27 +21,19 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package run
 
 import (
-	"time"
+	"errors"
+	"github.com/forensicanalysis/artifactcollector/collection"
 )
 
-func (c *LiveCollector) createWMI(definitonName, query string) *Process {
-	process := NewProcess()
-	process.Artifact = definitonName
-	process.CommandLine = query
-	process.Name = "WMI"
-	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
+type storeLogger struct{}
 
-	results, err := WMIQuery(query)
-	if err != nil {
-		return process.AddError(err.Error())
-	}
+func newStoreLogger(store collection.Store) (*storeLogger, error) {
+	return nil, errors.New("Not a forensicstore")
+}
 
-	for _, result := range results {
-		process.WMI = append(process.WMI, result)
-	}
-
-	return process
+func (s *storeLogger) Write(b []byte) (int, error) {
+	return len(b), nil
 }

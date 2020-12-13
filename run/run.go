@@ -22,7 +22,6 @@
 package run
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -35,11 +34,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"crawshaw.io/sqlite"
-
 	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -75,8 +71,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	case config.OutputDir != "":
 	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
 		fmt.Println("Running from zip, results will be available on Desktop")
-		homedir, _ := os.UserHomeDir()
-		config.OutputDir = filepath.Join(homedir, "Desktop")
+		config.OutputDir = filepath.Join(homeDir(), "Desktop")
 	default:
 		config.OutputDir = "" // current directory
 	}
@@ -92,7 +87,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	collectionName := fmt.Sprintf("%s_%s", hostname, time.Now().UTC().Format("2006-01-02T15-04-05"))
 
 	// setup logging
-	log.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	logfilePath := filepath.Join(config.OutputDir, collectionName+".log")
 	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if logfileError != nil {
@@ -141,7 +136,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 
 	if config.FS != nil {
-		store.Fs = config.FS
+		store.SetFS(config.FS)
 	}
 
 	// add store as log writer
@@ -198,6 +193,13 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	}
 }
 
+func homeDir() string {
+	if runtime.GOOS == "windows" {
+		os.Getenv("USERPROFILE")
+	}
+	return os.Getenv("HOME")
+}
+
 func unpack(embedded map[string][]byte) (tempDir string, err error) {
 	tempDir, err = ioutil.TempDir("", "ac")
 	if err != nil {
@@ -234,62 +236,6 @@ func enforceAdmin(forceAdmin bool) error {
 	default:
 		return nil
 	}
-}
-
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *forensicstore.ForensicStore, func() error, error) {
-	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, teardown, err := forensicstore.New(storeName)
-	if err != nil {
-		return "", nil, teardown, err
-	}
-
-	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
-		key TEXT NOT NULL,
-		value TEXT
-	);`)
-	if err != nil {
-		return "", nil, teardown, err
-	}
-
-	conn := store.Connection()
-
-	// insert configuration into store
-	err = addConfig(conn, "config", config)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// insert artifact definitions into store
-	for _, artifact := range definitions {
-		err = addConfig(conn, "artifact:"+artifact.Name, artifact)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
-	return storeName, store, teardown, nil
-}
-
-func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
-	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
-	if err != nil {
-		return err
-	}
-
-	b, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	stmt.SetText("$key", key)
-	stmt.SetText("$value", string(b))
-
-	_, err = stmt.Step()
-	if err != nil {
-		return err
-	}
-
-	return stmt.Finalize()
 }
 
 func logPrint(a ...interface{}) {
