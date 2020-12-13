@@ -46,7 +46,7 @@ jobs:
           mkdir -p go1.2.2
           curl -Lso go1.2.2.windows-amd64.zip https://golang.org/dl/go1.2.2.windows-amd64.zip
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
         shell: bash
 
   win2k:
@@ -60,14 +60,14 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: repo
-      - name: Setup build
+      - name: Setup Build
         run: |
           go mod download
           go mod vendor
           go generate
           mv resources/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
-      - name: Move packages
+      - name: Build
         run: |
           mkdir -p path
           mv repo/vendor path/src
@@ -80,11 +80,11 @@ jobs:
             -v $PWD/path/src:/go/src \
             -w /go/src/github.com/forensicanalysis/artifactcollector \
             xgo \
-            go build -v -o ac.exe .
+            go build -v -o artifactcollector2k.exe .
       - uses: actions/upload-artifact@v2
         with:
-          name: ac.exe
-          path: path/src/github.com/forensicanalysis/artifactcollector/ac.exe
+          name: artifactcollector (Windows 2000, 32bit)
+          path: path/src/github.com/forensicanalysis/artifactcollector/artifactcollector2k.exe
 
   winxp:
     name: artifactcollector (winxp)
@@ -95,25 +95,20 @@ jobs:
         with: {go-version: '1.14'}
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Download dependencies
-        run: go mod download
       - name: Setup Build
-        run: go generate
-      - name: Add Windows 32bit syso File
-        run: mv resources/artifactcollector32.syso artifactcollector.syso
-      - name: Build 32bit Windows
+        run: |
+          go mod download
+          go generate
+          mv resources/artifactcollector32.syso artifactcollector.syso
+      - name: Build
         run: |
           sudo apt-get install mingw-w64
           CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe .
-      - name: Move 32bit Binary
-        run: |
-          mkdir bin
-          mv artifactcollectorxp.exe bin
       - name: Upload artifactcollector (XP, 32bit)
         uses: actions/upload-artifact@master
         with:
           name: artifactcollector (Windows XP, 32bit)
-          path: bin
+          path: artifactcollectorxp.exe
 
   artifactcollector:
     name: artifactcollector
