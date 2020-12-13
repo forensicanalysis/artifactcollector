@@ -41,40 +41,17 @@ jobs:
           unzip -q go1.9.7.windows-amd64.zip -d go1.9.7
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.9.7/go go1.9.7/go/bin/go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
         shell: bash
-      # - name: Build with go 1.7.6
-      #   run: |
-      #     mkdir -p go1.7.6
-      #     curl -Lso go1.7.6.windows-amd64.zip https://golang.org/dl/go1.7.6.windows-amd64.zip
-      #     unzip -q go1.7.6.windows-amd64.zip -d go1.7.6
-      #     GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.7.6/go go1.7.6/go/bin/go build github.com/forensicanalysis/artifactcollector
-      #   shell: bash
-      # - name: Build with go 1.5.4
-      #   run: |
-      #     mkdir -p go1.5.4
-      #     curl -Lso go1.5.4.windows-amd64.zip https://golang.org/dl/go1.5.4.windows-amd64.zip
-      #     unzip -q go1.5.4.windows-amd64.zip -d go1.5.4
-      #     GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.5.4/go $GITHUB_WORKSPACE/go1.5.4/go/bin/go build github.com/forensicanalysis/artifactcollector
-      #   shell: bash
       - name: Build with go 1.2.2
         run: |
           mkdir -p go1.2.2
           curl -Lso go1.2.2.windows-amd64.zip https://golang.org/dl/go1.2.2.windows-amd64.zip
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
-            $GITHUB_WORKSPACE/go1.2.2/go/bin/go build github.com/forensicanalysis/artifactcollector
-          cd go1.2.2/go/src
-          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 CGO_ENABLED=0 ./make.bat
-        shell: bash
-      - name: Build 386 with go 1.2.2
-        run: |
-          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOARCH=386 \
-            $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
+          GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
         shell: bash
 
-  gopath:
-    name: gopath
+  win2k:
+    name: artifactcollector (win2k)
     runs-on: ubuntu-latest
-    # container: golang:1.2.2
     steps:
       - name: Setup go 1.14
         uses: actions/setup-go@v2
@@ -108,107 +85,6 @@ jobs:
         with:
           name: ac.exe
           path: path/src/github.com/forensicanalysis/artifactcollector/ac.exe
-      #- name: Build with go 1.2.2
-      #  run: |
-      #    mkdir -p go1.2.2
-      #    curl -s https://dl.google.com/go/go1.2.2.linux-amd64.tar.gz | tar xz -C go1.2.2
-      #    sudo apt-get install mingw-w64
-      #
-      #    # sudo apt-get install curl git mercurial make binutils bison gcc build-essential
-      #    # bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-      #    # source /home/runner/.gvm/scripts/gvm
-      #    # GOOS=windows GOARCH=386 gvm install go1.2.2 || cat /home/runner/.gvm/logs/go-go1.2.2-compile.log
-      #    # GOOS=windows GOARCH=386 gvm install go1.2.2 -B
-      #
-      #    GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go tool dist install -v pkg/runtime
-      #    GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go install -v -a std
-      #
-      #    # cd go1.2.2/go/src
-      #    # CGO_ENABLED=0 GOOS=windows GOARCH=386 ./make.bash
-      #    # cd $GITHUB_WORKSPACE
-      #    CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
-      #      $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
-      #    # CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path \
-      #    #            $GOROOT/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
-#  buildwin2k:
-#    name: collection artifactcollector (win2k)
-#    runs-on: ubuntu-latest
-#    container: golang:1.2.2
-#    needs: gopath
-#    steps:
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: gopath
-#          path: /go/src
-#      - name: asd
-#        run: |
-#          apt-key adv --keyserver keyserver.ubuntu.com --recv-keys
-#          apt-key adv --keyserver keyserver.ubuntu.com --recv-keys
-#          apt-key adv --keyserver keyserver.ubuntu.com --recv-keys
-#          apt update
-#          apt install -y mingw-w64
-#          GOOS=windows GOARCH=386 CC=gcc cd /usr/src/go/src && bash make.bash
-#          cd /go/src/github.com/forensicanalysis/artifactcollector
-#          GOOS=windows GOARCH=386 CC=i686-w64-mingw32-gcc CGO_ENABLED=1 go build -v -o artifactcollector2k.exe .
-#      - name: Upload artifactcollector
-#        uses: actions/upload-artifact@master
-#        with:
-#          name: artifactcollector (Windows 2000, 32bit)
-#          path: artifactcollector2k.exe
-
-  win2k:
-    name: artifactcollector (win2k)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup go 1.14
-        uses: actions/setup-go@v2
-        with: {go-version: 1.14}
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: repo
-      - name: Setup build
-        run: |
-          go mod download
-          go mod vendor
-          go generate
-          mv resources/artifactcollector32.syso artifactcollector.syso
-        working-directory: repo
-      - name: Move packages
-        run: |
-          mkdir -p path
-          mv repo/vendor path/src
-          mkdir -p path/src/github.com/forensicanalysis
-          mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
-          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
-      - name: Build with go 1.2.2
-        run: |
-          mkdir -p go1.2.2
-          curl -s https://dl.google.com/go/go1.2.2.linux-amd64.tar.gz | tar xz -C go1.2.2
-          sudo apt-get install mingw-w64
-
-          # sudo apt-get install curl git mercurial make binutils bison gcc build-essential
-          # bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-          # source /home/runner/.gvm/scripts/gvm
-          # GOOS=windows GOARCH=386 gvm install go1.2.2 || cat /home/runner/.gvm/logs/go-go1.2.2-compile.log
-          # GOOS=windows GOARCH=386 gvm install go1.2.2 -B
-
-          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go tool dist install -v pkg/runtime
-          GOROOT=$GITHUB_WORKSPACE/go1.2.2/go GOOS=windows GOARCH=386 $GITHUB_WORKSPACE/go1.2.2/go/bin/go install -v -a std
-
-          # cd go1.2.2/go/src
-          # CGO_ENABLED=0 GOOS=windows GOARCH=386 ./make.bash
-          # cd $GITHUB_WORKSPACE
-          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go \
-            $GITHUB_WORKSPACE/go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
-          # CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 GOPATH=$GITHUB_WORKSPACE/path \
-          #            $GOROOT/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
-      - name: Upload artifactcollector
-        uses: actions/upload-artifact@master
-        with:
-          name: artifactcollector (Windows 2000, 32bit)
-          path: artifactcollector2k.exe
 
   winxp:
     name: artifactcollector (winxp)
