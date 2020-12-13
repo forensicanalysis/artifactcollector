@@ -74,7 +74,7 @@ jobs:
   gopath:
     name: gopath
     runs-on: ubuntu-latest
-    container: golang:1.2.2
+    # container: golang:1.2.2
     steps:
       - name: Setup go 1.14
         uses: actions/setup-go@v2
