@@ -150,7 +150,7 @@ jobs:
         shell: bash
 
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with: {node-version: '10.x'}
       - name: Install bats
         run: npm install -g bats@1.1.0
