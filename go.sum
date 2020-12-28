@@ -69,8 +69,8 @@ github.com/forensicanalysis/artifactlib v0.13.3/go.mod h1:Ff5eslnDDuG/v5M5cSfqRr
 github.com/forensicanalysis/artifactlib v0.14.3 h1:cYP1RodIYLcgNtt8W7wbjWFE/TU2s0uc3jUy2y/zJHk=
 github.com/forensicanalysis/artifactlib v0.14.3/go.mod h1:cQMIT+lQV38v7GqCza9OA9cemHPEA+Egti663ohsLBs=
 github.com/forensicanalysis/artifactsgo v0.1.1/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
-github.com/forensicanalysis/artifactsgo v0.6.6 h1:rMI7pJ7BD5+qGQywtpyWGqGO3fdYYRDvJruj2hJ/48M=
-github.com/forensicanalysis/artifactsgo v0.6.6/go.mod h1:MMPrG+vF07jjm7GWgVF1E2l3T0l/71Tza/4IdwyzdEM=
+github.com/forensicanalysis/artifactsgo v0.6.7 h1:vnmGXS6z0FQ8RRZbQJ03cGeUbKO190b5SNOQVcti4Q4=
+github.com/forensicanalysis/artifactsgo v0.6.7/go.mod h1:byDLH6tAhXe/SwPnOgsJTgrAXpFIQwEnzhwCreoPjh4=
 github.com/forensicanalysis/custom-collector v0.1.0 h1:UokYtMIv02c3+tRelihdBMh98BCT5L4DCLVXkfd+hyU=
 github.com/forensicanalysis/custom-collector v0.1.0/go.mod h1:SGTI/zcXENLBp98SQHKmgBgGy4XYNoawQ9auzK5hneE=
 github.com/forensicanalysis/forensicstore v0.12.1/go.mod h1:t/xpmXXSOLIriXM7NrrnT/5KTo6R7L9+9psIMgzcMEo=
