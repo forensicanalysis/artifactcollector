@@ -108,7 +108,7 @@ jobs:
             go build -v -o artifactcollector2k.exe .
 
       - name: Pack
-        run: zip -r artifactcollector2k.zip artifactcollector2k.exe
+        run: zip -r artifactcollector2k.zip path/src/github.com/forensicanalysis/artifactcollector/artifactcollector2k.exe
         shell: bash
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
