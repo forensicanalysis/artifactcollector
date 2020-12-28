@@ -39,9 +39,7 @@ jobs:
         shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
-        run: |
-          7z a windows.zip artifactcollector.exe
-          7z a windows32.zip artifactcollector32.exe
+        run: 7z a windows.zip artifactcollector.exe
         shell: bash
         if: matrix.os == 'windows-latest'
 
@@ -58,17 +56,6 @@ jobs:
           upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: ./windows.zip
           asset_name: windows.zip
-          asset_content_type: application/zip
-        if: matrix.os == 'windows-latest'
-      - name: Upload Windows (32bit)
-        id: upload-windows-release-asset
-        uses: actions/upload-release-asset@v1.0.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_path: ./windows32.zip
-          asset_name: windows32.zip
           asset_content_type: application/zip
         if: matrix.os == 'windows-latest'
       - name: Upload macOS
@@ -93,3 +80,91 @@ jobs:
           asset_name: linux.zip
           asset_content_type: application/zip
         if: matrix.os == 'ubuntu-latest'
+
+  win2k:
+    name: artifactcollector (win2k)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go 1.14
+        uses: actions/setup-go@v2
+        with: { go-version: 1.14 }
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          path: repo
+      - name: Setup Build
+        run: |
+          go mod download
+          go mod vendor
+          go generate
+          mv resources/artifactcollector32.syso artifactcollector.syso
+        working-directory: repo
+      - name: Build
+        run: |
+          mkdir -p path
+          mv repo/vendor path/src
+          mkdir -p path/src/github.com/forensicanalysis
+          mv repo path/src/github.com/forensicanalysis/artifactcollector
+          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
+          docker build -t xgo path/src/github.com/forensicanalysis/artifactcollector
+          docker run --rm \
+            -v $PWD/path/src:/go/src \
+            -w /go/src/github.com/forensicanalysis/artifactcollector \
+            xgo \
+            go build -v -o artifactcollector2k.exe .
+
+      - name: Pack
+        run: zip -r artifactcollector.zip artifactcollector
+        shell: bash
+
+      - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
+        shell: bash
+        id: release
+
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./windows2000.zip
+          asset_name: windows2000.zip
+          asset_content_type: application/zip
+
+  winxp:
+    name: artifactcollector (winxp)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup go 1.14
+        uses: actions/setup-go@v2
+        with: {go-version: '1.14'}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Build
+        run: |
+          go mod download
+          go generate
+          mv resources/artifactcollector32.syso artifactcollector.syso
+      - name: Build
+        run: |
+          sudo apt-get install mingw-w64
+          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe .
+
+      - name: Pack
+        run: zip -r artifactcollector.zip artifactcollector
+        shell: bash
+
+      - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
+        shell: bash
+        id: release
+
+      - name: Upload
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.release.outputs.upload_url }}
+          asset_path: ./windowsxp.zip
+          asset_name: windowsxp.zip
+          asset_content_type: application/zip
