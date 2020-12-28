@@ -27,13 +27,6 @@ jobs:
       - name: Build
         run: go build .
 
-      - name: Add Windows 32bit syso File
-        run: mv resources/resources/artifactcollector32.syso artifactcollector.syso
-        if: matrix.os == 'windows-latest'
-      - name: Build
-        run: GOARCH=386 go build -o artifactcollector32.exe .
-        if: matrix.os == 'windows-latest'
-
       - name: Pack UNIX
         run: zip -r ${{ matrix.os }}.zip artifactcollector
         shell: bash
@@ -115,7 +108,7 @@ jobs:
             go build -v -o artifactcollector2k.exe .
 
       - name: Pack
-        run: zip -r artifactcollector.zip artifactcollector
+        run: zip -r artifactcollector2k.zip artifactcollector2k.exe
         shell: bash
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
@@ -128,7 +121,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_path: ./windows2000.zip
+          asset_path: ./artifactcollector2k.zip
           asset_name: windows2000.zip
           asset_content_type: application/zip
 
@@ -152,7 +145,7 @@ jobs:
           CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe .
 
       - name: Pack
-        run: zip -r artifactcollector.zip artifactcollector
+        run: zip -r artifactcollectorxp.zip artifactcollectorxp.exe
         shell: bash
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
@@ -165,6 +158,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
-          asset_path: ./windowsxp.zip
+          asset_path: ./artifactcollectorxp.zip
           asset_name: windowsxp.zip
           asset_content_type: application/zip
