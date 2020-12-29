@@ -137,6 +137,7 @@ jobs:
       - name: Setup Build
         run: |
           go mod download
+          go mod vendor
           go generate
           mv resources/artifactcollector32.syso artifactcollector.syso
 
