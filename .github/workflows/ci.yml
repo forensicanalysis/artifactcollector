@@ -95,21 +95,28 @@ jobs:
         with: {go-version: '1.14'}
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: repo
       - name: Setup Build
         run: |
           go mod download
           go mod vendor
           go generate
           mv resources/artifactcollector32.syso artifactcollector.syso
-
+        working-directory: repo
+      - name: Move packages
+        run: |
+          mkdir -p path
+          mv repo/vendor path/src
+          mkdir -p path/src/github.com/forensicanalysis
+          mv repo path/src/github.com/forensicanalysis/artifactcollector
       - name: Setup go 1.9.7
         uses: actions/setup-go@v2
         with: {go-version: '1.9.7'}
-
       - name: Build
         run: |
           sudo apt-get install mingw-w64
-          CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe .
+          GOPATH=$GITHUB_WORKSPACE/path CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
       - name: Upload artifactcollector (XP, 32bit)
         uses: actions/upload-artifact@master
         with:
