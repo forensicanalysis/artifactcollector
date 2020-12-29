@@ -139,6 +139,11 @@ jobs:
           go mod download
           go generate
           mv resources/artifactcollector32.syso artifactcollector.syso
+
+      - name: Setup go 1.9.7
+        uses: actions/setup-go@v2
+        with: {go-version: '1.9.7'}
+
       - name: Build
         run: |
           sudo apt-get install mingw-w64
