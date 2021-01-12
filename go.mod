@@ -10,7 +10,7 @@ require (
 	github.com/forensicanalysis/custom-collector v0.1.0
 	github.com/forensicanalysis/forensicstore v0.17.3
 	github.com/forensicanalysis/fslib v0.14.9
-	github.com/go-ole/go-ole v1.2.4
+	github.com/go-ole/go-ole v1.2.5
 	github.com/google/uuid v1.1.4
 	github.com/spf13/afero v1.4.1
 	github.com/stoewer/go-strcase v1.2.0
