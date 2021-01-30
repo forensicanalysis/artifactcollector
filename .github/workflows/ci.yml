@@ -214,15 +214,16 @@ jobs:
         run: |
           go build .
           go install .
-
-      - name: Install forensicstore
-        run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.2
       - name: Windows bats test
-        run: bats test/bats/artifactcollector.windows.bats
+        run: |
+          curl -Lso $(go env GOPATH)/bin/forensicstore.exe https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          bats test/bats/artifactcollector.windows.bats
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: UNIX bats test
-        run: bats test/bats/artifactcollector.unix.bats
+        run: |
+          curl -Lso $(go env GOPATH)/bin/forensicstore https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          bats test/bats/artifactcollector.unix.bats
         if: matrix.os != 'windows-latest'
         shell: bash
 
