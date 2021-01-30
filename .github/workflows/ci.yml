@@ -35,6 +35,15 @@ jobs:
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
         shell: bash
       - name: Build with go 1.9.7
         run: |
@@ -78,6 +87,16 @@ jobs:
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
+
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
           docker build -t xgo path/src/github.com/forensicanalysis/artifactcollector
           docker run --rm \
@@ -116,6 +135,15 @@ jobs:
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
       - name: Setup go 1.9.7
         uses: actions/setup-go@v2
         with: {go-version: '1.9.7'}
