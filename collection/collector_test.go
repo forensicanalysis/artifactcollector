@@ -23,20 +23,20 @@ package collection
 
 import (
 	"errors"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+	"testing/fstest"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/fslib"
-	"github.com/forensicanalysis/fslib/filesystem/testfs"
 )
 
 type TestCollector struct {
-	fs        fslib.FS
+	fs        fs.FS
 	Collected map[string][]goartifacts.Source
 }
 
@@ -49,11 +49,11 @@ func (r *TestCollector) Collect(name string, source goartifacts.Source) {
 	r.Collected[name] = append(r.Collected[name], source)
 }
 
-func (r *TestCollector) FS() fslib.FS {
+func (r *TestCollector) FS() fs.FS {
 	return r.fs
 }
 
-func (r *TestCollector) Registry() fslib.FS {
+func (r *TestCollector) Registry() fs.FS {
 	return r.fs
 }
 
@@ -94,15 +94,10 @@ func teardown(t *testing.T, folders ...string) {
 
 func TestCollect(t *testing.T) {
 	// prepare in fs
-	sourceFS := &testfs.FS{}
-	content := []byte("test")
-	dirs := []string{"/dir/a/a/", "/dir/a/b/", "/dir/b/a/", "/dir/b/b/"}
-	for _, dir := range dirs {
-		sourceFS.CreateDir(dir)
-	}
+	sourceFS := fstest.MapFS{}
 	files := []string{"/foo.txt", "/dir/a/a/foo.txt", "/dir/bar", "/dir/baz", "/dir/a/a/foo.txt", "/dir/a/b/foo.txt", "/dir/b/a/foo.txt", "/dir/b/b/foo.txt"}
 	for _, file := range files {
-		sourceFS.CreateFile(file, content)
+		sourceFS[file] = &fstest.MapFile{Data: []byte("test")}
 	}
 
 	hashmap := map[string]interface{}{"SHA-1": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"}

@@ -26,6 +26,7 @@ package collection
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"runtime"
 	"strings"
@@ -33,15 +34,14 @@ import (
 	"github.com/spf13/afero"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/fslib"
-	"github.com/forensicanalysis/fslib/filesystem/registryfs"
-	"github.com/forensicanalysis/fslib/filesystem/systemfs"
+	"github.com/forensicanalysis/fslib/registryfs"
+	"github.com/forensicanalysis/fslib/systemfs"
 )
 
 // The LiveCollector can resolve and collect artifact on live systems.
 type LiveCollector struct {
-	SourceFS   fslib.FS
-	registryfs fslib.FS
+	SourceFS   fs.FS
+	registryfs fs.FS
 	Store      Store
 	TempDir    string
 
@@ -92,13 +92,13 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 	}
 
 	if runtime.GOOS == "windows" {
-		root, err := sourceFS.Open("/")
+		var names []string
+		entries, err := fs.ReadDir(sourceFS, ".")
 		if err != nil {
 			return nil, err
 		}
-		names, err := root.Readdirnames(0)
-		if err != nil {
-			return nil, err
+		for _, entry := range entries {
+			names = append(names, entry.Name())
 		}
 		lc.prefixes = names
 	}
@@ -107,12 +107,12 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 }
 
 // FS returns the used FileSystem.
-func (c *LiveCollector) FS() fslib.FS {
+func (c *LiveCollector) FS() fs.FS {
 	return c.SourceFS
 }
 
 // Registry returns the used Registry.
-func (c *LiveCollector) Registry() fslib.FS {
+func (c *LiveCollector) Registry() fs.FS {
 	return c.registryfs
 }
 
