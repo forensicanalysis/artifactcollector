@@ -12,9 +12,11 @@ jobs:
     name: Backwards Compatibility
     runs-on: windows-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: 1.14}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -53,9 +55,11 @@ jobs:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: { go-version: 1.14 }
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -90,9 +94,11 @@ jobs:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -131,9 +137,11 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Download dependencies
@@ -212,17 +220,3 @@ jobs:
         with:
           name: store ${{ matrix.os }}
           path: store
-
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup go 1.14
-        uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
-      - run: go get -u github.com/cugu/godoc2readme
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - run: godoc2readme --template docs/readme-template.md . > README2.md
-      - run: diff README.md README2.md
