@@ -172,6 +172,14 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 	return process, nil
 }
 
+func fsPath(s string) string {
+	s = strings.TrimLeft(s, "/")
+	if s == "" {
+		return "."
+	}
+	return s
+}
+
 // collectFile collects a FILE source to the forensicstore.
 func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*File, error) {
 	source := goartifacts.ExpandSource(osource, c)
@@ -182,7 +190,7 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 	var files []*File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToTitle(source.Type), path)
-		file := c.createFile(name, true, path, name)
+		file := c.createFile(name, true, fsPath(path), name)
 		files = append(files, file)
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
@@ -204,7 +212,7 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 	var files []*File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToLower(source.Type), path)
-		file := c.createFile(name, false, path, name)
+		file := c.createFile(name, false, fsPath(path), name)
 		files = append(files, file)
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
