@@ -216,14 +216,18 @@ jobs:
           go install .
       - name: Windows bats test
         run: |
-          curl -Lso $(go env GOPATH)/bin/forensicstore.exe https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          unzip forensicstore.zip
+          mv forensicstore.exe $(go env GOPATH)/bin/forensicstore.exe
           chmod +x $(go env GOPATH)/bin/forensicstore.exe
           bats test/bats/artifactcollector.windows.bats
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: UNIX bats test
         run: |
-          curl -Lso $(go env GOPATH)/bin/forensicstore https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          unzip forensicstore.zip
+          mv forensicstore $(go env GOPATH)/bin/forensicstore
           chmod +x $(go env GOPATH)/bin/forensicstore
           bats test/bats/artifactcollector.unix.bats
         if: matrix.os != 'windows-latest'

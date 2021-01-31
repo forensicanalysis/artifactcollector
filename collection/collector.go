@@ -236,7 +236,7 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 		log.Printf("Collect Path %s", path)
 		directory := NewDirectory()
 		directory.Artifact = name
-		directory.Path = path
+		directory.Path = fsPath(path)
 		directories = append(directories, directory)
 		_, err := c.Store.InsertStruct(directory)
 		if err != nil {
@@ -256,7 +256,7 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 	var keys []*RegistryKey
 	for _, key := range source.Attributes.Keys {
 		log.Printf("Collect Registry Key %s", key)
-		k := c.createRegistryKey(name, key)
+		k := c.createRegistryKey(name, fsPath(key))
 		keys = append(keys, k)
 		_, err := c.Store.InsertStruct(k)
 		if err != nil {
@@ -276,7 +276,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 	var keys []*RegistryKey
 	for _, kvpair := range source.Attributes.KeyValuePairs {
 		log.Printf("Collect Registry Value %s %s", kvpair.Key, kvpair.Value)
-		key := c.createRegistryValue(name, kvpair.Key, kvpair.Value)
+		key := c.createRegistryValue(name, fsPath(kvpair.Key), kvpair.Value)
 		keys = append(keys, key)
 		_, err := c.Store.InsertStruct(key)
 		if err != nil {
