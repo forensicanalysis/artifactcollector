@@ -1,4 +1,4 @@
-FROM golang:1.2.2
+FROM golang:1.15.8
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys AA8E81B4331F7F50
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9D6D8F6BC857C906
