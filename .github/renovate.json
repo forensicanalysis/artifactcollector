@@ -15,5 +15,8 @@
     ],
     "ignoreDeps": [
         "golang.org/x/sys"
+    ],
+    "ignorePaths": [
+        "Dockerfile"
     ]
 }
