@@ -12,7 +12,7 @@ require (
 	github.com/forensicanalysis/fslib v0.14.9
 	github.com/go-ole/go-ole v1.2.4
 	github.com/google/uuid v1.2.0
-	github.com/spf13/afero v1.4.1
+	github.com/spf13/afero v1.5.1
 	github.com/stoewer/go-strcase v1.2.0
 	golang.org/x/sys v0.0.0-20200923182605-d9f96fdee20d
 	gopkg.in/yaml.v2 v2.4.0
