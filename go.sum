@@ -52,8 +52,8 @@ github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5Kwzbycv
 github.com/fatih/structs v1.1.0 h1:Q7juDM0QtcnhCpeyLGQKyg4TOIghuNXrkL32pHAUMxo=
 github.com/fatih/structs v1.1.0/go.mod h1:9NiDSp5zOcgEDl+j00MP/WkGVPOlPRLejGD8Ga6PJ7M=
 github.com/forensicanalysis/artifactlib v0.14.3/go.mod h1:cQMIT+lQV38v7GqCza9OA9cemHPEA+Egti663ohsLBs=
-github.com/forensicanalysis/artifactlib v0.14.4-0.20210130164610-4b504f02e776 h1:AgwzoVwlCn4H9nEqunbux5gNw8MivjEcLQuYVswsRJQ=
-github.com/forensicanalysis/artifactlib v0.14.4-0.20210130164610-4b504f02e776/go.mod h1:P+0sTo0AXoMcjua440Meb5RxmTXFQdZOQjh39z81uPM=
+github.com/forensicanalysis/artifactlib v0.14.4-0.20210207181759-0f61b02ae9e9 h1:QEgxthvSzWe1sJsJNfXC9QCglkqsa2TP3ofRCmwkdFM=
+github.com/forensicanalysis/artifactlib v0.14.4-0.20210207181759-0f61b02ae9e9/go.mod h1:P+0sTo0AXoMcjua440Meb5RxmTXFQdZOQjh39z81uPM=
 github.com/forensicanalysis/artifactsgo v0.6.7 h1:vnmGXS6z0FQ8RRZbQJ03cGeUbKO190b5SNOQVcti4Q4=
 github.com/forensicanalysis/artifactsgo v0.6.7/go.mod h1:byDLH6tAhXe/SwPnOgsJTgrAXpFIQwEnzhwCreoPjh4=
 github.com/forensicanalysis/forensicstore v0.17.4-0.20210130190914-97972d2386bf h1:15y9YXJ1AdFNZJPpJ2E3vmkBcUug2BS9KlEwxRRvL6k=
