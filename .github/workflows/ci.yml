@@ -12,9 +12,11 @@ jobs:
     name: Backwards Compatibility
     runs-on: windows-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: 1.14}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -33,6 +35,15 @@ jobs:
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
         shell: bash
       - name: Build with go 1.9.7
         run: |
@@ -53,9 +64,11 @@ jobs:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: { go-version: 1.14 }
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -74,6 +87,16 @@ jobs:
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
+
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
           docker build -t xgo path/src/github.com/forensicanalysis/artifactcollector
           docker run --rm \
@@ -90,9 +113,11 @@ jobs:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -110,6 +135,15 @@ jobs:
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
+
+          mkdir -p path/src/io path/src/internal
+          cp -r $(go env GOROOT)/src/io/fs path/src/io
+          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
+          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
+          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
+          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
       - name: Setup go 1.9.7
         uses: actions/setup-go@v2
         with: {go-version: '1.9.7'}
@@ -131,9 +165,11 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
       fail-fast: false
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with:
+          stable: false
+          go-version: 1.16.0-rc1
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Download dependencies
@@ -178,15 +214,22 @@ jobs:
         run: |
           go build .
           go install .
-
-      - name: Install forensicstore
-        run: go get github.com/forensicanalysis/forensicstore/cmd/forensicstore@v0.17.2
       - name: Windows bats test
-        run: bats test/bats/artifactcollector.windows.bats
+        run: |
+          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          unzip forensicstore.zip
+          mv forensicstore.exe $(go env GOPATH)/bin/forensicstore.exe
+          chmod +x $(go env GOPATH)/bin/forensicstore.exe
+          bats test/bats/artifactcollector.windows.bats
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: UNIX bats test
-        run: bats test/bats/artifactcollector.unix.bats
+        run: |
+          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
+          unzip forensicstore.zip
+          mv forensicstore $(go env GOPATH)/bin/forensicstore
+          chmod +x $(go env GOPATH)/bin/forensicstore
+          bats test/bats/artifactcollector.unix.bats
         if: matrix.os != 'windows-latest'
         shell: bash
 
@@ -212,17 +255,3 @@ jobs:
         with:
           name: store ${{ matrix.os }}
           path: store
-
-  docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup go 1.14
-        uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
-      - run: go get -u github.com/cugu/godoc2readme
-
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - run: godoc2readme --template docs/readme-template.md . > README2.md
-      - run: diff README.md README2.md

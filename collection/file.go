@@ -27,6 +27,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"os"
 	"path"
@@ -34,7 +35,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/forensicanalysis/fslib/filesystem/systemfs"
+	"github.com/forensicanalysis/fslib/systemfs"
 )
 
 func getString(m map[string]interface{}, key string) string {
@@ -54,7 +55,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 	if !strings.Contains(srcpath, "*") && !strings.Contains(srcpath, "%%") { //nolint: nestif
 		// exists
-		srcInfo, err := c.SourceFS.Stat(srcpath)
+		srcInfo, err := fs.Stat(c.SourceFS, srcpath)
 		if err != nil {
 			if os.IsNotExist(err) || strings.Contains(strings.ToLower(err.Error()), "not found") {
 				return nil
@@ -143,7 +144,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 					}
 				}
 				if err != nil {
-					return file.AddError(fmt.Errorf("copy error %s %s -> store %s: %w", c.SourceFS.Name(), srcpath, dstpath, err).Error())
+					return file.AddError(fmt.Errorf("copy error %T %s -> store %s: %w", c.SourceFS, srcpath, dstpath, err).Error())
 				}
 			}
 			if size != srcInfo.Size() {

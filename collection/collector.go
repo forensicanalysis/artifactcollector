@@ -26,6 +26,7 @@ package collection
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"runtime"
 	"strings"
@@ -33,15 +34,14 @@ import (
 	"github.com/spf13/afero"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/fslib"
-	"github.com/forensicanalysis/fslib/filesystem/registryfs"
-	"github.com/forensicanalysis/fslib/filesystem/systemfs"
+	"github.com/forensicanalysis/fslib/registryfs"
+	"github.com/forensicanalysis/fslib/systemfs"
 )
 
 // The LiveCollector can resolve and collect artifact on live systems.
 type LiveCollector struct {
-	SourceFS   fslib.FS
-	registryfs fslib.FS
+	SourceFS   fs.FS
+	registryfs fs.FS
 	Store      Store
 	TempDir    string
 
@@ -92,13 +92,13 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 	}
 
 	if runtime.GOOS == "windows" {
-		root, err := sourceFS.Open("/")
+		var names []string
+		entries, err := fs.ReadDir(sourceFS, ".")
 		if err != nil {
 			return nil, err
 		}
-		names, err := root.Readdirnames(0)
-		if err != nil {
-			return nil, err
+		for _, entry := range entries {
+			names = append(names, entry.Name())
 		}
 		lc.prefixes = names
 	}
@@ -107,12 +107,12 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 }
 
 // FS returns the used FileSystem.
-func (c *LiveCollector) FS() fslib.FS {
+func (c *LiveCollector) FS() fs.FS {
 	return c.SourceFS
 }
 
 // Registry returns the used Registry.
-func (c *LiveCollector) Registry() fslib.FS {
+func (c *LiveCollector) Registry() fs.FS {
 	return c.registryfs
 }
 
@@ -172,6 +172,14 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 	return process, nil
 }
 
+func fsPath(s string) string {
+	s = strings.TrimLeft(s, "/")
+	if s == "" {
+		return "."
+	}
+	return s
+}
+
 // collectFile collects a FILE source to the forensicstore.
 func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*File, error) {
 	source := goartifacts.ExpandSource(osource, c)
@@ -182,7 +190,7 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 	var files []*File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToTitle(source.Type), path)
-		file := c.createFile(name, true, path, name)
+		file := c.createFile(name, true, fsPath(path), name)
 		files = append(files, file)
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
@@ -204,7 +212,7 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 	var files []*File
 	for _, path := range source.Attributes.Paths {
 		log.Printf("Collect %s %s", strings.ToLower(source.Type), path)
-		file := c.createFile(name, false, path, name)
+		file := c.createFile(name, false, fsPath(path), name)
 		files = append(files, file)
 		if file != nil {
 			_, err := c.Store.InsertStruct(file)
@@ -228,7 +236,7 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 		log.Printf("Collect Path %s", path)
 		directory := NewDirectory()
 		directory.Artifact = name
-		directory.Path = path
+		directory.Path = fsPath(path)
 		directories = append(directories, directory)
 		_, err := c.Store.InsertStruct(directory)
 		if err != nil {
@@ -248,7 +256,7 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 	var keys []*RegistryKey
 	for _, key := range source.Attributes.Keys {
 		log.Printf("Collect Registry Key %s", key)
-		k := c.createRegistryKey(name, key)
+		k := c.createRegistryKey(name, fsPath(key))
 		keys = append(keys, k)
 		_, err := c.Store.InsertStruct(k)
 		if err != nil {
@@ -268,7 +276,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 	var keys []*RegistryKey
 	for _, kvpair := range source.Attributes.KeyValuePairs {
 		log.Printf("Collect Registry Value %s %s", kvpair.Key, kvpair.Value)
-		key := c.createRegistryValue(name, kvpair.Key, kvpair.Value)
+		key := c.createRegistryValue(name, fsPath(kvpair.Key), kvpair.Value)
 		keys = append(keys, key)
 		_, err := c.Store.InsertStruct(key)
 		if err != nil {

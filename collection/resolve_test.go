@@ -94,7 +94,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 		wantErr      bool
 		os           string
 	}{
-		{"Resolve test", args{"environ_systemroot"}, []string{`/C/Windows`, `C:\windows`}, false, "windows"},
+		{"Resolve test", args{"environ_systemroot"}, []string{`C/Windows`, `C:\windows`}, false, "windows"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
