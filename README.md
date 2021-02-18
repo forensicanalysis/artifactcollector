@@ -1,9 +1,7 @@
 <h1 align="center">artifactcollector</h1>
 
 <p  align="center">
- <a href="https://github.com/forensicanalysis/artifactcollector/actions"><img src="https://github.com/forensicanalysis/artifactcollector/workflows/CI/badge.svg" alt="build" /></a>
  <a href="https://codecov.io/gh/forensicanalysis/artifactcollector"><img src="https://codecov.io/gh/forensicanalysis/artifactcollector/branch/master/graph/badge.svg" alt="coverage" /></a>
- <a href="https://goreportcard.com/report/github.com/forensicanalysis/artifactcollector"><img src="https://goreportcard.com/badge/github.com/forensicanalysis/artifactcollector" alt="report" /></a>
  <a href="https://godocs.io/github.com/forensicanalysis/artifactcollector"><img src="https://godocs.io/github.com/forensicanalysis/artifactcollector?status.svg" alt="doc" /></a>
 </p>
 
@@ -87,8 +85,3 @@ CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
 ## Contact
 
 For feedback, questions and discussions you can use the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
-
-## Acknowledgment
-
-The development of this software was partially sponsored by Siemens CERT, but
-is not an official Siemens product.
