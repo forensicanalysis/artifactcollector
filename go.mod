@@ -9,7 +9,7 @@ require (
 	github.com/forensicanalysis/artifactsgo v0.6.7
 	github.com/forensicanalysis/forensicstore v0.18.0
 	github.com/forensicanalysis/fslib v0.15.0
-	github.com/go-ole/go-ole v1.2.4
+	github.com/go-ole/go-ole v1.2.5
 	github.com/google/uuid v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/afero v1.4.1
