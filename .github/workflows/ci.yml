@@ -4,7 +4,7 @@ on:
     branches: [ master ]
   pull_request:
   schedule:
-    - cron:  '0 0 * * *'
+    - cron: '0 0 * * *'
 
 jobs:
 
@@ -143,7 +143,7 @@ jobs:
           echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
       - name: Setup go 1.9.7
         uses: actions/setup-go@v2
-        with: {go-version: '1.9.7'}
+        with: { go-version: '1.9.7' }
       - name: Build
         run: |
           sudo apt-get install mingw-w64
@@ -159,7 +159,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
       fail-fast: false
     steps:
       - name: Setup go 1.16
@@ -196,7 +196,7 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v2
-        with: {node-version: '10.x'}
+        with: { node-version: '10.x' }
       - name: Install bats
         run: npm install -g bats@1.1.0
 
