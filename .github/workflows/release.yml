@@ -12,9 +12,9 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with: {go-version: '1.16'}
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -78,9 +78,9 @@ jobs:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: { go-version: 1.14 }
+        with: { go-version: 1.16 }
       - name: Checkout code
         uses: actions/checkout@v2
         with:
@@ -129,9 +129,9 @@ jobs:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.14
+      - name: Setup go 1.16
         uses: actions/setup-go@v2
-        with: {go-version: '1.14'}
+        with: {go-version: '1.16'}
       - name: Checkout code
         uses: actions/checkout@v2
         with:
