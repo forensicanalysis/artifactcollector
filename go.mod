@@ -1,6 +1,6 @@
 module github.com/forensicanalysis/artifactcollector
 
-go 1.13
+go 1.16
 
 require (
 	crawshaw.io/sqlite v0.3.2
