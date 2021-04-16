@@ -33,6 +33,7 @@ import (
 
 // Resolve returns a list of values that can be used for the placeholder parameter.
 func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
+	parameter = strings.ToLower(parameter)
 	parameter = strings.TrimPrefix(parameter, "environ_")
 
 	providingSources, ok := c.providesMap[parameter]
