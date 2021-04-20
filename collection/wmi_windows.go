@@ -1,5 +1,6 @@
 // Copyright (c) 2013 Stack Exchange
 // Copyright (c) 2019 Siemens AG
+// Copyright (c) 2021 Jonas Plum
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -25,37 +26,56 @@ package collection
 
 import (
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/go-ole/go-ole"
 	"github.com/go-ole/go-ole/oleutil"
 )
 
 // WMIQuery runs a WMI query and returns the result as a map.
-func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,funlen
+func WMIQuery(q string) ([]map[string]interface{}, error) {
+	resultsChan := make(chan []map[string]interface{}, 1)
+	errChan := make(chan error, 1)
+	go wmiRun(resultsChan, errChan, q)
+
+	select {
+	case result := <-resultsChan:
+		return result, nil
+	case err := <-errChan:
+		return nil, err
+	case <-time.After(10 * time.Second): //nolint:gomnd
+		return nil, fmt.Errorf("timeout")
+	}
+}
+
+func wmiRun(resultsChan chan []map[string]interface{}, errChan chan error, q string) { //nolint:funlen
 	// init COM, oh yeah
 	err := ole.CoInitialize(0)
 	if err != nil {
-		return nil, err
+		errChan <- err
+		return
 	}
 	defer ole.CoUninitialize()
 
 	unknown, err := oleutil.CreateObject("WbemScripting.SWbemLocator")
 	if err != nil {
-		log.Panic(err)
+		errChan <- err
+		return
 	}
 	defer unknown.Release()
 
 	wmi, err := unknown.QueryInterface(ole.IID_IDispatch)
 	if err != nil {
-		log.Panic(err)
+		errChan <- err
+		return
 	}
 	defer wmi.Release()
 
 	// service is a SWbemServices
 	serviceRaw, err := oleutil.CallMethod(wmi, "ConnectServer")
 	if err != nil {
-		return nil, err
+		errChan <- err
+		return
 	}
 	service := serviceRaw.ToIDispatch()
 	defer service.Release()
@@ -63,7 +83,8 @@ func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,fun
 	// result is a SWBemObjectSet
 	resultRaw, err := oleutil.CallMethod(service, "ExecQuery", q)
 	if err != nil {
-		return nil, err
+		errChan <- err
+		return
 	}
 	result := resultRaw.ToIDispatch()
 	defer result.Release()
@@ -71,61 +92,72 @@ func WMIQuery(q string) ([]map[string]interface{}, error) { //nolint:gocyclo,fun
 	// list of results
 	enumProperty, err := oleutil.GetProperty(result, "_NewEnum")
 	if err != nil {
-		return nil, err
+		errChan <- err
+		return
 	}
 	defer enumProperty.Clear() //nolint:errcheck
 
 	enum, err := enumProperty.ToIUnknown().IEnumVARIANT(ole.IID_IEnumVariant)
 	if err != nil {
-		return nil, err
+		errChan <- err
+		return
 	}
 	if enum == nil {
-		log.Fatal(fmt.Errorf("can't get IEnumVARIANT, enum is nil"))
+		errChan <- fmt.Errorf("can't get IEnumVARIANT, enum is nil")
+		return
 	}
 	defer enum.Release()
 
 	i := 0
 	// iterate results
-	var wmiResult []map[string]interface{}
+	var wmiResults []map[string]interface{}
 	for elementRaw, length, err := enum.Next(1); length > 0; elementRaw, length, err = enum.Next(1) {
 		if err != nil {
-			log.Fatal(err)
+			errChan <- err
+			return
 		}
-		wmiResult = append(wmiResult, map[string]interface{}{})
-
-		// element is a SWbemObject, but really a Win32_Process
-		element := elementRaw.ToIDispatch()
-		defer element.Release()
-
-		// get properties of result
-		rawProperties, err := oleutil.GetProperty(element, "Properties_")
+		wmiResult, err := parseElement(elementRaw)
 		if err != nil {
-			return wmiResult, err
+			errChan <- err
+			return
 		}
-		properties := rawProperties.ToIDispatch()
-		defer properties.Release()
-
-		err = oleutil.ForEach(properties, func(v *ole.VARIANT) error {
-			propertyName, err := oleutil.GetProperty(v.ToIDispatch(), "Name")
-			if err != nil {
-				return err
-			}
-			property, err := oleutil.GetProperty(element, propertyName.ToString())
-			if err != nil {
-				return err
-			}
-			value := ""
-			if property.Value() != nil {
-				value = fmt.Sprint(property.Value())
-			}
-			wmiResult[i][propertyName.ToString()] = value
-			return nil
-		})
-		if err != nil {
-			return wmiResult, err
-		}
+		wmiResults = append(wmiResults, wmiResult)
 
 		i++
 	}
-	return wmiResult, nil
+	resultsChan <- wmiResults
+}
+
+func parseElement(elementRaw ole.VARIANT) (map[string]interface{}, error) {
+	wmiResult := map[string]interface{}{}
+
+	// element is a SWbemObject, but really a Win32_Process
+	element := elementRaw.ToIDispatch()
+	defer element.Release()
+
+	// get properties of result
+	rawProperties, err := oleutil.GetProperty(element, "Properties_")
+	if err != nil {
+		return nil, err
+	}
+	properties := rawProperties.ToIDispatch()
+	defer properties.Release()
+
+	err = oleutil.ForEach(properties, func(v *ole.VARIANT) error {
+		propertyName, err := oleutil.GetProperty(v.ToIDispatch(), "Name")
+		if err != nil {
+			return err
+		}
+		property, err := oleutil.GetProperty(element, propertyName.ToString())
+		if err != nil {
+			return err
+		}
+		value := ""
+		if property.Value() != nil {
+			value = fmt.Sprint(property.Value())
+		}
+		wmiResult[propertyName.ToString()] = value
+		return nil
+	})
+	return wmiResult, err
 }
