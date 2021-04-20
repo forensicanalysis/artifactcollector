@@ -43,12 +43,12 @@ func WMIQuery(q string) ([]map[string]interface{}, error) {
 		return result, nil
 	case err := <-errChan:
 		return nil, err
-	case <-time.After(10 * time.Second): //nolint:mnd
+	case <-time.After(10 * time.Second): //nolint:gomnd
 		return nil, fmt.Errorf("timeout")
 	}
 }
 
-func wmiRun(resultsChan chan []map[string]interface{}, errChan chan error, q string) {
+func wmiRun(resultsChan chan []map[string]interface{}, errChan chan error, q string) { //nolint:funlen
 	// init COM, oh yeah
 	err := ole.CoInitialize(0)
 	if err != nil {
