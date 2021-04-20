@@ -43,7 +43,7 @@ func WMIQuery(q string) ([]map[string]interface{}, error) {
 		return result, nil
 	case err := <-errChan:
 		return nil, err
-	case <-time.After(10 * time.Second):
+	case <-time.After(10 * time.Second): //nolint:mnd
 		return nil, fmt.Errorf("timeout")
 	}
 }
@@ -126,7 +126,6 @@ func wmiRun(resultsChan chan []map[string]interface{}, errChan chan error, q str
 		i++
 	}
 	resultsChan <- wmiResults
-	return
 }
 
 func parseElement(elementRaw ole.VARIANT) (map[string]interface{}, error) {
