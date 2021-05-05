@@ -7,7 +7,7 @@ require (
 	github.com/fatih/structs v1.1.0
 	github.com/forensicanalysis/artifactlib v0.15.2
 	github.com/forensicanalysis/artifactsgo v0.6.7
-	github.com/forensicanalysis/forensicstore v0.18.0
+	github.com/forensicanalysis/forensicstore v0.18.1
 	github.com/forensicanalysis/fslib v0.15.0
 	github.com/go-ole/go-ole v1.2.4
 	github.com/google/uuid v1.2.0
