@@ -58,7 +58,8 @@ func (s *storeSeeker) Seek(offset int64, whence int) (int64, error) {
 func Test_getString(t *testing.T) {
 
 	testMap := map[string]interface{}{
-		"test": "I'm a string",
+		"test":         "I'm a string",
+		"not a string": 1,
 	}
 
 	type args struct {
@@ -77,6 +78,14 @@ func Test_getString(t *testing.T) {
 				key: "test",
 			},
 			want: "I'm a string",
+		},
+		{
+			name: "key exists, not a string",
+			args: args{
+				m:   testMap,
+				key: "not a string",
+			},
+			want: "",
 		},
 	}
 	for _, tt := range tests {
