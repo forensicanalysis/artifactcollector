@@ -22,22 +22,37 @@
 package collection
 
 import (
+	"bytes"
 	"io"
+	"reflect"
 	"testing"
 )
 
-type storeWriterCloser struct{}
+type storeResetter struct{}
 
-func (s *storeWriterCloser) Seek(offset int64, whence int) (int64, error) {
+func (s *storeResetter) Write(_ []byte) (int, error) {
 	return 0, nil
 }
 
-func (s *storeWriterCloser) Write(_ []byte) (int, error) {
-	return 0, nil
-}
-
-func (s *storeWriterCloser) Close() error {
+func (s *storeResetter) Close() error {
 	return nil
+}
+
+func (s *storeResetter) Reset() {}
+
+type storeSeeker struct{}
+
+func (s *storeSeeker) Write(_ []byte) (int, error) {
+	return 0, nil
+}
+
+func (s *storeSeeker) Close() error {
+	return nil
+}
+
+// Seek(offset int64, whence int) (int64, error)
+func (s *storeSeeker) Seek(offset int64, whence int) (int64, error) {
+	return 0, nil
 }
 
 func Test_getString(t *testing.T) {
@@ -73,7 +88,7 @@ func Test_getString(t *testing.T) {
 	}
 }
 
-func Test_resetFile(t *testing.T) {
+func Test_resetFile_seeker(t *testing.T) {
 	type args struct {
 		storeFile io.WriteCloser
 	}
@@ -85,15 +100,70 @@ func Test_resetFile(t *testing.T) {
 		{
 			name: "io.Seeker",
 			args: args{
-				storeFile: &storeWriterCloser{},
+				storeFile: &storeSeeker{},
 			},
 			want: false,
+		},
+		{
+			name: "Resetter",
+			args: args{
+				storeFile: &storeResetter{},
+			},
+			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := resetFile(tt.args.storeFile); got != tt.want {
 				t.Errorf("resetFile() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_hashCopy(t *testing.T) {
+	type args struct {
+		src io.Reader
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    int64
+		want1   map[string]interface{}
+		wantDst string
+		wantErr bool
+	}{
+		{
+			name: "empty string",
+			args: args{
+				src: bytes.NewBuffer([]byte("")),
+			},
+			want: 0,
+			want1: map[string]interface{}{
+				"MD5":     "d41d8cd98f00b204e9800998ecf8427e",
+				"SHA-1":   "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+				"SHA-256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			},
+			wantDst: "",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dst := &bytes.Buffer{}
+			got, got1, err := hashCopy(dst, tt.args.src)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("hashCopy() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("hashCopy() got = %v, want %v", got, tt.want)
+			}
+			if !reflect.DeepEqual(got1, tt.want1) {
+				t.Errorf("hashCopy() got1 = %v, want %v", got1, tt.want1)
+			}
+			if gotDst := dst.String(); gotDst != tt.wantDst {
+				t.Errorf("hashCopy() gotDst = %v, want %v", gotDst, tt.wantDst)
 			}
 		})
 	}
