@@ -14,6 +14,6 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/afero v1.4.1
 	github.com/stoewer/go-strcase v1.2.0
-	golang.org/x/sys v0.0.0-20210218155724-8ebf48af031b
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007
 	gopkg.in/yaml.v2 v2.4.0
 )
