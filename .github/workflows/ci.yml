@@ -73,8 +73,8 @@ jobs:
           path: repo
       - name: Setup Build
         run: |
-          go mod download
           go mod vendor
+          go mod download
           go generate -mod=vendor
           mv resources/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
@@ -121,8 +121,8 @@ jobs:
           path: repo
       - name: Setup Build
         run: |
-          go mod download
           go mod vendor
+          go mod download
           go generate -mod=vendor
           mv resources/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
