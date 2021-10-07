@@ -72,8 +72,10 @@ jobs:
         with:
           path: repo
       - run: go mod vendor
+        working-directory: repo
       # - run: go mod download
       - run: go generate -mod=vendor
+        working-directory: repo
       - run: mv resources/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
       - name: Build
@@ -118,8 +120,10 @@ jobs:
         with:
           path: repo
       - run: go mod vendor
+        working-directory: repo
       # - run: go mod download
       - run: go generate -mod=vendor
+        working-directory: repo
       - run: mv resources/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
       - name: Move packages
