@@ -43,8 +43,7 @@ import (
 	"github.com/forensicanalysis/artifactsgo"
 )
 
-//go:generate go get golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources@v0.3.0 github.com/akavel/rsrc
-//go:generate go mod tidy
+//go:generate go install golang.org/x/tools/cmd/goimports github.com/cugu/go-resources/cmd/resources@v0.3.0 github.com/akavel/rsrc
 //go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
 //go:generate resources -package assets -output assets/bin.generated.go pack/bin/*
 //go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.syso
