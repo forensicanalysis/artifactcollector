@@ -57,8 +57,8 @@ github.com/forensicanalysis/artifactlib v0.15.2 h1:s4OyM97pa706/y1d9ielqrJOrN4RD
 github.com/forensicanalysis/artifactlib v0.15.2/go.mod h1:qgZmk9Hb6+WNoJ4TjNDHI0Q9D6Q/lxy1Yr7dMaaaB3k=
 github.com/forensicanalysis/artifactsgo v0.6.7 h1:vnmGXS6z0FQ8RRZbQJ03cGeUbKO190b5SNOQVcti4Q4=
 github.com/forensicanalysis/artifactsgo v0.6.7/go.mod h1:byDLH6tAhXe/SwPnOgsJTgrAXpFIQwEnzhwCreoPjh4=
-github.com/forensicanalysis/forensicstore v0.18.1 h1:tRVT3Q4mCtD5cqBHVfwMxCHYPltlGsMBjcNvSd3oj+s=
-github.com/forensicanalysis/forensicstore v0.18.1/go.mod h1:BBu7G5M+J7IFeqBCAwNw8zALmEEeHA8j4HYI5LJvh/M=
+github.com/forensicanalysis/forensicstore v0.18.2 h1:aaytkMs9yt28oj+khetml/+RyLWk3s7rKE++KLBBkXs=
+github.com/forensicanalysis/forensicstore v0.18.2/go.mod h1:CeY47pfGTlSpJvCvSKublTVMLcmC/+sM/AoCoLWvpfw=
 github.com/forensicanalysis/fsdoublestar v0.1.0 h1:t0SuwumE5FQtrw1ZkkNhxQbaWn8LywqdnCpEBX0n/Fc=
 github.com/forensicanalysis/fsdoublestar v0.1.0/go.mod h1:UpG3oKY5UiFTnbxqp4/1h6WuaDtlPZcL6Hu5yI3DsL0=
 github.com/forensicanalysis/fslib v0.14.8/go.mod h1:NUTzwx+QvyMDNmApTc094Jwhf5jJJsos6yLBghPT95s=
@@ -94,7 +94,6 @@ github.com/google/martian v2.1.0+incompatible/go.mod h1:9I4somxYTbIHy5NJKHRl3wXi
 github.com/google/pprof v0.0.0-20181206194817-3ea8567a2e57/go.mod h1:zfwlbNMJ+OItoe0UupaVj+oy1omPYYDuagoSzA8v9mc=
 github.com/google/pprof v0.0.0-20190515194954-54271f7e092f/go.mod h1:zfwlbNMJ+OItoe0UupaVj+oy1omPYYDuagoSzA8v9mc=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
-github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/googleapis/gax-go/v2 v2.0.4/go.mod h1:0Wqv26UfaUD9n4G6kQubkQ+KchISgw+vpHVxEJEs9eg=
@@ -240,12 +239,12 @@ github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
-github.com/tidwall/gjson v1.7.5 h1:zmAN/xmX7OtpAkv4Ovfso60r/BiCi5IErCDYGNJu+uc=
-github.com/tidwall/gjson v1.7.5/go.mod h1:5/xDoumyyDNerp2U36lyolv46b3uF/9Bu6OfyQ9GImk=
-github.com/tidwall/match v1.0.3 h1:FQUVvBImDutD8wJLN6c5eMzWtjgONK9MwIBCOrUJKeE=
-github.com/tidwall/match v1.0.3/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
-github.com/tidwall/pretty v1.1.0 h1:K3hMW5epkdAVwibsQEfR/7Zj0Qgt4DxtNumTq/VloO8=
-github.com/tidwall/pretty v1.1.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
+github.com/tidwall/gjson v1.9.4 h1:oNis7dk9Rs3dKJNNigXZT1MTOiJeBtpurn+IpCB75MY=
+github.com/tidwall/gjson v1.9.4/go.mod h1:/wbyibRr2FHMks5tjHJ5F8dMZh3AcwJEMf5vlfC0lxk=
+github.com/tidwall/match v1.1.1 h1:+Ho715JplO36QYgwN9PGYNhgZvoUSc9X2c80KVTi+GA=
+github.com/tidwall/match v1.1.1/go.mod h1:eRSPERbgtNPcGhD8UCthc6PmLEQXEWd3PRB5JTxsfmM=
+github.com/tidwall/pretty v1.2.0 h1:RWIZEg2iJ8/g6fDDYzMpobmaoGh5OLl4AXtGUGPcqCs=
+github.com/tidwall/pretty v1.2.0/go.mod h1:ITEVvHYasfjBbM0u2Pg8T2nJnzm8xPwvNhhsoaGGjNU=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xlab/treeprint v1.0.0/go.mod h1:IoImgRak9i3zJyuxOKUP1v4UZd1tMoKkq/Cimt1uhCg=
