@@ -195,7 +195,7 @@ jobs:
         shell: bash
 
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with: { node-version: '10.x' }
       - name: Install bats
         run: npm install -g bats@1.1.0
