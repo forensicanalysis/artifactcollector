@@ -12,8 +12,8 @@ require (
 	github.com/go-ole/go-ole v1.2.4
 	github.com/google/uuid v1.3.0
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/afero v1.4.1
+	github.com/spf13/afero v1.8.2
 	github.com/stoewer/go-strcase v1.2.0
-	golang.org/x/sys v0.0.0-20210510120138-977fb7262007
+	golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1
 	gopkg.in/yaml.v2 v2.4.0
 )
