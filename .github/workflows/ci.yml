@@ -146,7 +146,6 @@ jobs:
         with: { go-version: '1.9.7' }
       - name: Build
         run: |
-          sudo apt-key update
           sudo apt-get install mingw-w64
           GOPATH=$GITHUB_WORKSPACE/path CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
       - name: Upload artifactcollector (XP, 32bit)
