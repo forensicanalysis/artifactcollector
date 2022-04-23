@@ -2,7 +2,8 @@
     "extends": [
         "config:base",
         ":automergeMinor",
-        ":automergePr"
+        ":automergePr",
+        ":disableDependencyDashboard"
     ],
     "postUpdateOptions": [
         "gomodTidy"
