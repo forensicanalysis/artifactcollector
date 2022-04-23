@@ -5,7 +5,7 @@ RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 9D6D8F6BC857C906
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010
 RUN apt-key update
 RUN apt-get update
-RUN apt-get install -y mingw-w64
+RUN apt-get install -y --force-yes mingw-w64
 
 ENV GOOS=windows
 ENV GOARCH=386
