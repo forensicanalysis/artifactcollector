@@ -102,7 +102,7 @@ jobs:
             -w /go/src/github.com/forensicanalysis/artifactcollector \
             xgo \
             go build -v -o artifactcollector2k.exe .
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: artifactcollector (Windows 2000, 32bit)
           path: path/src/github.com/forensicanalysis/artifactcollector/artifactcollector2k.exe
