@@ -121,22 +121,12 @@ func main() {
 	}
 
 	// decode file
-	var flaws []goartifacts.Flaw
 	for _, filename := range artifactDefinitionFiles {
-		ads, typeflaw, err := goartifacts.DecodeFile(filename)
+		ads, _, err := goartifacts.DecodeFile(filename)
 		if err != nil {
 			log.Fatal(err)
 		}
 		artifactDefinitionMap[filename] = ads
-		flaws = append(flaws, typeflaw...)
-	}
-
-	// validate
-	flaws = append(flaws, goartifacts.ValidateArtifactDefinitions(artifactDefinitionMap)...)
-	for _, flaw := range flaws {
-		if flaw.Severity != goartifacts.Common && !strings.Contains(flaw.Message, "Error open default.yaml") {
-			log.Println(flaw.File, flaw.ArtifactDefinition, ":", flaw.Message)
-		}
 	}
 
 	err = createGoFile("assets", "artifacts", artifactDefinitions)
