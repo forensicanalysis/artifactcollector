@@ -7,40 +7,34 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/google/uuid"
+	"strconv"
+	"time"
 
 	"github.com/forensicanalysis/artifactcollector/store/aczip"
 )
 
-type SimpleStore struct {
+type ZipStore struct {
 	w *aczip.Writer
 }
 
-func NewSimpleStore(f *os.File) *SimpleStore {
-	return &SimpleStore{
+func NewSimpleStore(f *os.File) *ZipStore {
+	return &ZipStore{
 		w: aczip.NewWriter(f),
 	}
 }
 
-func (k *SimpleStore) InsertStruct(element interface{}) error {
+func (k *ZipStore) InsertStruct(id string, element interface{}) error {
 	b, err := json.Marshal(element)
 	if err != nil {
 		return err
 	}
 
-	uid := uuid.New()
+	_, err = k.w.WriteFile("artifacts/"+id+".json", b)
 
-	if _, err := k.w.WriteFile("artifacts/"+uid.String()+".json", b); err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
-func (k *SimpleStore) StoreFile(filePath string) (storePath string, file io.Writer, err error) {
-	filePath = "files/" + filePath
-
+func (k *ZipStore) StoreFile(filePath string) (storePath string, file io.Writer, err error) {
 	i := 0
 	ext := filepath.Ext(filePath)
 	remoteStoreFilePath := filePath
@@ -66,7 +60,7 @@ func (k *SimpleStore) StoreFile(filePath string) (storePath string, file io.Writ
 	return remoteStoreFilePath, file, err
 }
 
-func (k *SimpleStore) LoadFile(filePath string) (file io.Reader, err error) {
+func (k *ZipStore) LoadFile(filePath string) (file io.Reader, err error) {
 	b, err := k.w.Read(filePath)
 	if err != nil {
 		return nil, err
@@ -75,12 +69,12 @@ func (k *SimpleStore) LoadFile(filePath string) (file io.Reader, err error) {
 	return bytes.NewReader(b), nil
 }
 
-func (k *SimpleStore) Log(name, msg string) error {
-	_, err := k.w.WriteFile("logs/"+name+".log", []byte(msg))
+func (k *ZipStore) Write(b []byte) (int, error) {
+	name := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 
-	return err
+	return k.w.WriteFile("logs/"+name+".log", b)
 }
 
-func (k *SimpleStore) Close() error {
+func (k *ZipStore) Close() error {
 	return k.w.Close()
 }

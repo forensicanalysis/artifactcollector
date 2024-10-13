@@ -22,7 +22,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
 	"errors"
@@ -33,7 +33,7 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func (c *LiveCollector) createRegistryKey(definitionName, key string) *RegistryKey {
+func (c *Collector) createRegistryKey(definitionName, key string) *RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -45,7 +45,7 @@ func (c *LiveCollector) createRegistryKey(definitionName, key string) *RegistryK
 	return rk
 }
 
-func (c *LiveCollector) createRegistryValue(definitionName, key, valueName string) *RegistryKey {
+func (c *Collector) createRegistryValue(definitionName, key, valueName string) *RegistryKey {
 	k, rk := c.createEmptyRegistryKey(definitionName, key)
 	defer k.Close()
 
@@ -81,7 +81,7 @@ func getRegistryKey(key string) (string, *registry.Key, error) {
 	return key, &k, nil
 }
 
-func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *RegistryKey) {
+func (c *Collector) createEmptyRegistryKey(name string, fskey string) (*registry.Key, *RegistryKey) {
 	rk := NewRegistryKey()
 	rk.Artifact = name
 	rk.Values = []RegistryValue{}
@@ -102,7 +102,7 @@ func (c *LiveCollector) createEmptyRegistryKey(name string, fskey string) (*regi
 	return k, rk
 }
 
-func (c *LiveCollector) getValues(k *registry.Key) (values []RegistryValue, valueErrors []error) {
+func (c *Collector) getValues(k *registry.Key) (values []RegistryValue, valueErrors []error) {
 	// get registry key stats
 	ki, err := k.Stat()
 	if err != nil {
@@ -128,7 +128,7 @@ func (c *LiveCollector) getValues(k *registry.Key) (values []RegistryValue, valu
 	return values, valueErrors
 }
 
-func (c *LiveCollector) getValue(k *registry.Key, valueName string) (value RegistryValue, err error) {
+func (c *Collector) getValue(k *registry.Key, valueName string) (value RegistryValue, err error) {
 	dataType, _, _, stringData, err := valueData(k, valueName)
 	if err != nil {
 		return value, fmt.Errorf("could not parse registry data: %w", err)

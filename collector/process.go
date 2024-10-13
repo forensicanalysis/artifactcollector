@@ -19,27 +19,65 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"os"
+	"os/exec"
+	"path"
+	"path/filepath"
 	"time"
 )
 
-func (c *LiveCollector) createWMI(definitonName, query string) *Process {
+func (c *Collector) createProcess(definitionName, cmd string, args []string) *Process {
 	process := NewProcess()
-	process.Artifact = definitonName
-	process.CommandLine = query
-	process.Name = "WMI"
-	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
+	process.Artifact = definitionName
+	process.CommandLine = cmd
+	process.Name = cmd
 
-	results, err := WMIQuery(query)
+	for _, arg := range args {
+		process.CommandLine += " " + arg
+	}
+
+	// setup output destinations
+	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
 
-	for _, result := range results {
-		process.WMI = append(process.WMI, result)
+	process.StdoutPath = filepath.ToSlash(stdoutPath)
+	stderrBuf := &bytes.Buffer{}
+
+	// run command
+	execution := exec.Command(filepath.Join(c.TempDir, "pack", "bin", cmd), args...) // #nosec
+
+	if _, err := os.Stat(filepath.Join(c.TempDir, "pack", "bin", cmd)); os.IsNotExist(err) {
+		process.AddError(fmt.Sprintf("%s is not bundled into artifactcollector, try execution from path", cmd))
+		execution = exec.Command(cmd, args...) // #nosec
 	}
+
+	execution.Stdout = stdoutFile
+	execution.Stderr = stderrBuf
+	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
+
+	if err = execution.Run(); err != nil {
+		process.AddError(err.Error())
+	}
+
+	// write to stderr
+	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
+	if err != nil {
+		return process.AddError(err.Error())
+	}
+
+	if _, err := io.Copy(stderrFile, stderrBuf); err != nil {
+		process.AddError(err.Error())
+	}
+
+	process.StderrPath = filepath.ToSlash(stderrPath)
 
 	return process
 }

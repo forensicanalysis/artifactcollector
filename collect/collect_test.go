@@ -19,19 +19,19 @@
 //
 // Author(s): Jonas Plum
 
-package run
+package collect
 
 import (
 	"os"
 	"strings"
 	"testing"
 
-	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactcollector/collector"
 	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
-func TestRun(t *testing.T) {
-	config := collection.Configuration{Artifacts: []string{"Test"}, User: true}
+func TestCollect(t *testing.T) {
+	config := collector.Configuration{Artifacts: []string{"Test"}, User: true}
 	definitions := []goartifacts.ArtifactDefinition{{
 		Name: "Test",
 		Sources: []goartifacts.Source{
@@ -51,7 +51,7 @@ func TestRun(t *testing.T) {
 	}
 
 	type args struct {
-		config              *collection.Configuration
+		config              *collector.Configuration
 		artifactDefinitions []goartifacts.ArtifactDefinition
 		embedded            map[string][]byte
 	}
@@ -61,26 +61,29 @@ func TestRun(t *testing.T) {
 		args     args
 		wantHost string
 	}{
-		{"Run artifactcollector", args{&config, definitions, nil}, hostname},
+		{"Collect artifactcollector", args{&config, definitions, nil}, hostname},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Run(tt.args.config, tt.args.artifactDefinitions, tt.args.embedded)
+			got, err := Collect(tt.args.config, tt.args.artifactDefinitions, tt.args.embedded)
+			if err != nil {
+				t.Fatal(err)
+			}
 
 			if !strings.HasPrefix(got.Name, tt.wantHost) {
-				t.Errorf("Run().Name = %v, does not start with %v", got, tt.wantHost)
+				t.Errorf("Collect().Name = %v, does not start with %v", got, tt.wantHost)
 			}
 
-			if !strings.HasPrefix(got.Path, tt.wantHost) {
-				t.Errorf("Run().Path = %v, does not start with %v", got, tt.wantHost)
+			if !strings.HasPrefix(got.StorePath, tt.wantHost) {
+				t.Errorf("Collect().StorePath = %v, does not start with %v", got, tt.wantHost)
 			}
 
-			if _, err := os.Stat(got.Path); os.IsNotExist(err) {
-				t.Errorf("Returned path %s does not exist", got.Path)
+			if _, err := os.Stat(got.StorePath); os.IsNotExist(err) {
+				t.Errorf("Store path %s does not exist", got.StorePath)
 			}
 
-			if _, err := os.Stat(strings.Replace(got.Path, ".forensicstore.zip", ".log", 1)); os.IsNotExist(err) {
-				t.Errorf("Log file %s does not exist", strings.Replace(got.Path, ".zip", ".log", 1))
+			if _, err := os.Stat(got.LogfilePath); os.IsNotExist(err) {
+				t.Errorf("Log file path %s does not exist", got.LogfilePath)
 			}
 		})
 	}

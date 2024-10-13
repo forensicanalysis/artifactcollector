@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 // Configuration defines the parameters of an artifactcollector.
 type Configuration struct {

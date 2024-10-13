@@ -19,15 +19,27 @@
 //
 // Author(s): Jonas Plum
 
-//go:build !windows || !go1.8
-// +build !windows !go1.8
+package collector
 
-package collection
+import (
+	"time"
+)
 
-func (c *LiveCollector) createRegistryValue(definitionName, _, _ string) *RegistryKey {
-	return &RegistryKey{Artifact: definitionName, Type: "empty"}
-}
+func (c *Collector) createWMI(definitonName, query string) *Process {
+	process := NewProcess()
+	process.Artifact = definitonName
+	process.CommandLine = query
+	process.Name = "WMI"
+	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
 
-func (c *LiveCollector) createRegistryKey(definitionName, _ string) *RegistryKey {
-	return &RegistryKey{Artifact: definitionName, Type: "empty"}
+	results, err := WMIQuery(query)
+	if err != nil {
+		return process.AddError(err.Error())
+	}
+
+	for _, result := range results {
+		process.WMI = append(process.WMI, result)
+	}
+
+	return process
 }

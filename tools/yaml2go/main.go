@@ -100,7 +100,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	config := &collection.Configuration{}
+	config := &collector.Configuration{}
 
 	err = yaml.Unmarshal(configYaml, config)
 	if err != nil {

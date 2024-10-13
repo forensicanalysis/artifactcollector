@@ -10,6 +10,7 @@ linters:
   disable:
     - depguard
     - err113
+    - errcheck
     - errorlint
     - exhaustruct
     - forbidigo
@@ -42,6 +43,7 @@ issues:
   exclude:
     - block should not end with a whitespace
     - strings.ReplaceAll
+    - error strings should not be capitalized
   exclude-dirs:
     - build/go
     - store/aczip

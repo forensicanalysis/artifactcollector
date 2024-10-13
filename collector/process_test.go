@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
 	"os"
@@ -71,7 +71,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 				t.Skip()
 			}
 
-			c := &LiveCollector{Store: store}
+			c := &Collector{Store: store}
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
 			got.ID = ""          // unset ID
 			got.CreatedTime = "" // unset created

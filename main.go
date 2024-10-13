@@ -38,8 +38,8 @@ import (
 
 	"github.com/forensicanalysis/artifactcollector/artifactsgo"
 	"github.com/forensicanalysis/artifactcollector/assets"
+	"github.com/forensicanalysis/artifactcollector/collect"
 	"github.com/forensicanalysis/artifactcollector/goartifacts"
-	"github.com/forensicanalysis/artifactcollector/run"
 )
 
 func main() {
@@ -47,8 +47,7 @@ func main() {
 	artifacts = append(artifacts, artifactsgo.Artifacts...)
 	artifacts = append(artifacts, assets.Artifacts...)
 
-	collection := run.Run(assets.Config, artifacts, assets.FS)
-	if collection == nil {
+	if _, err := collect.Collect(assets.Config, artifacts, assets.FS); err != nil {
 		os.Exit(1)
 	}
 }

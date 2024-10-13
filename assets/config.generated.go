@@ -1,5 +1,7 @@
 package assets
 
-import "github.com/forensicanalysis/artifactcollector/collection"
+import (
+	"github.com/forensicanalysis/artifactcollector/collector"
+)
 
-var Config = &collection.Configuration{Artifacts: []string{"DefaultCollection1"}, User: false, Case: "", OutputDir: ""}
+var Config = &collector.Configuration{Artifacts: []string{"DefaultCollection1"}, User: false, Case: "", OutputDir: ""}

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Siemens AG
+// Copyright (c) 2020 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
 // this software and associated documentation files (the "Software"), to deal in
@@ -19,14 +19,40 @@
 //
 // Author(s): Jonas Plum
 
-//go:build !windows
-// +build !windows
+package collector
 
-package collection
+import (
+	"runtime"
+	"strings"
+	"testing"
+)
 
-import "errors"
+func TestWMIQuery(t *testing.T) {
+	type args struct {
+		q string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{"OS", args{"SELECT * from Win32_OperatingSystem"}, "C:\\WINDOWS", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if runtime.GOOS != "windows" {
+				t.Skip()
+			}
 
-// WMIQuery is a dummy function for non windows systems.
-func WMIQuery(_ string) (wmiResult []map[string]interface{}, err error) {
-	return nil, errors.New("WMI calls are not supported")
+			got, err := WMIQuery(tt.args.q)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("WMIQuery() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !strings.EqualFold(got[0]["WindowsDirectory"].(string), tt.want) {
+				t.Errorf("WMIQuery() got = %v, want %v", got[0]["WindowsDirectory"], tt.want)
+			}
+		})
+	}
 }

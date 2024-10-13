@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
 	"bytes"

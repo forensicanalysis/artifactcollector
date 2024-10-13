@@ -19,29 +19,15 @@
 //
 // Author(s): Jonas Plum
 
-package run
+//go:build !windows || !go1.8
+// +build !windows !go1.8
 
-import (
-	"strconv"
-	"time"
+package collector
 
-	"github.com/forensicanalysis/artifactcollector/collection"
-)
-
-type storeLogger struct {
-	store collection.Store
+func (c *Collector) createRegistryValue(definitionName, _, _ string) *RegistryKey {
+	return &RegistryKey{Artifact: definitionName, Type: "empty"}
 }
 
-func newStoreLogger(store collection.Store) *storeLogger {
-	return &storeLogger{store: store}
-}
-
-func (s *storeLogger) Write(b []byte) (int, error) {
-	name := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
-
-	if err := s.store.Log(name, string(b)); err != nil {
-		return 0, err
-	}
-
-	return len(b), nil
+func (c *Collector) createRegistryKey(definitionName, _ string) *RegistryKey {
+	return &RegistryKey{Artifact: definitionName, Type: "empty"}
 }

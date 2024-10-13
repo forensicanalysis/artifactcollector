@@ -42,7 +42,7 @@ build/bin/*
 !build/bin/.keep
 
 ac
-run/*.log
-run/*.zip
+collect/*.log
+collect/*.zip
 
 coverage.out

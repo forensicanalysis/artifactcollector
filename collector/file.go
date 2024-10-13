@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
 	"crypto/md5"  // #nosec
@@ -48,7 +48,7 @@ func getString(m map[string]interface{}, key string) string {
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *File) { //nolint:funlen,gocognit,cyclop
+func (c *Collector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *File) { //nolint:funlen,gocognit,cyclop
 	file := NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)

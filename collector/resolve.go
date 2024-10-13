@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package collection
+package collector
 
 import (
 	"bufio"
@@ -32,7 +32,7 @@ import (
 )
 
 // Resolve returns a list of values that can be used for the placeholder parameter.
-func (c *LiveCollector) Resolve(parameter string) ([]string, error) { //nolint:cyclop,funlen
+func (c *Collector) Resolve(parameter string) ([]string, error) { //nolint:cyclop,funlen
 	parameter = strings.ToLower(parameter)
 	parameter = strings.TrimPrefix(parameter, "environ_")
 
@@ -115,7 +115,7 @@ func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provid
 	return provide, nil
 }
 
-func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveCommand(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// COMMAND The lines of the stdout of the command.
 	process, err := c.collectCommand("", source)
@@ -146,7 +146,7 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 	return resolves, fmt.Errorf("reading standard input: %w", err)
 }
 
-func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveFile(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	// FILE The lines of the file content.
 	files, err := c.collectFile("", source)
 	if err != nil {
@@ -183,7 +183,7 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 	return resolves, nil
 }
 
-func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolvePath(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// PATH The defined paths.
 	directories, err := c.collectPath("", source)
@@ -206,7 +206,7 @@ func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifac
 	return resolves, nil
 }
 
-func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveRegistryKey(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_KEY The key paths.
 	keys, err := c.collectRegistryKey("", source)
@@ -229,7 +229,7 @@ func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide go
 	return resolves, nil
 }
 
-func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveRegistryValue(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_VALUE The registry values.
 	keys, err := c.collectRegistryValue("", source)
@@ -254,7 +254,7 @@ func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide 
 	return resolves, nil
 }
 
-func (c *LiveCollector) resolveWMI(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveWMI(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// WMI The values selected using the wmi_key.
 	wmi, err := c.collectWMI("", source)

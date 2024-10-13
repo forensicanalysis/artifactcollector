@@ -22,7 +22,7 @@
 // This code was adapted from
 // https://github.com/StackExchange/wmi/blob/master/swbemservices.go
 
-package collection
+package collector
 
 import (
 	"fmt"

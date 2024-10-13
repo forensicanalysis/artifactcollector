@@ -19,9 +19,9 @@
 //
 // Author(s): Jonas Plum
 
-// Package collection provides functions to collect forensicartifacts into a
+// Package collector provides functions to collect forensicartifacts into a
 // forensicstore.
-package collection
+package collector
 
 import (
 	"fmt"
@@ -37,8 +37,8 @@ import (
 	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
-// The LiveCollector can resolve and collect artifact on live systems.
-type LiveCollector struct {
+// The Collector can resolve and collect artifact on live systems.
+type Collector struct {
 	SourceFS   fs.FS
 	registryfs fs.FS
 	Store      Store
@@ -50,15 +50,14 @@ type LiveCollector struct {
 }
 
 type Store interface {
-	InsertStruct(element interface{}) error
+	InsertStruct(id string, element interface{}) error
 	StoreFile(filePath string) (storePath string, file io.Writer, err error)
 	LoadFile(filePath string) (file io.Reader, err error)
-	Log(name, msg string) error
 }
 
-// NewCollector creates a new LiveCollector that collects the given
+// NewCollector creates a new Collector that collects the given
 // ArtifactDefinitions.
-func NewCollector(store Store, tempDir string, definitions []goartifacts.ArtifactDefinition) (*LiveCollector, error) {
+func NewCollector(store Store, tempDir string, definitions []goartifacts.ArtifactDefinition) (*Collector, error) {
 	providesMap := map[string][]goartifacts.Source{}
 
 	definitions = goartifacts.FilterOS(definitions)
@@ -81,7 +80,7 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 		return nil, fmt.Errorf("system fs creation failed: %w", err)
 	}
 
-	lc := &LiveCollector{
+	lc := &Collector{
 		SourceFS:      sourceFS,
 		registryfs:    registryfs.New(),
 		Store:         store,
@@ -109,22 +108,22 @@ func NewCollector(store Store, tempDir string, definitions []goartifacts.Artifac
 }
 
 // FS returns the used FileSystem.
-func (c *LiveCollector) FS() fs.FS {
+func (c *Collector) FS() fs.FS {
 	return c.SourceFS
 }
 
 // Registry returns the used Registry.
-func (c *LiveCollector) Registry() fs.FS {
+func (c *Collector) Registry() fs.FS {
 	return c.registryfs
 }
 
 // AddPartitions returns if partitions should be added to Windows paths.
-func (c *LiveCollector) Prefixes() []string {
+func (c *Collector) Prefixes() []string {
 	return c.prefixes
 }
 
 // Collect dispatches specific collection functions for different sources.
-func (c *LiveCollector) Collect(name string, source goartifacts.Source) { //nolint:cyclop
+func (c *Collector) Collect(name string, source goartifacts.Source) { //nolint:cyclop
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Collection for %s failed (%s)", name, r)
@@ -160,7 +159,7 @@ func (c *LiveCollector) Collect(name string, source goartifacts.Source) { //noli
 }
 
 // collectCommand collects a COMMAND source to the forensicstore.
-func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (*Process, error) {
+func (c *Collector) collectCommand(name string, source goartifacts.Source) (*Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Cmd == "" {
@@ -172,7 +171,7 @@ func (c *LiveCollector) collectCommand(name string, source goartifacts.Source) (
 	log.Printf("Collect Command %s %s", source.Attributes.Cmd, source.Attributes.Args)
 	process := c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
 
-	err := c.Store.InsertStruct(process)
+	err := c.Store.InsertStruct(process.ID, process)
 	if err != nil {
 		return nil, fmt.Errorf("could not insert struct: %w", err)
 	}
@@ -190,7 +189,7 @@ func fsPath(s string) string {
 }
 
 // collectFile collects a FILE source to the forensicstore.
-func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]*File, error) {
+func (c *Collector) collectFile(name string, osource goartifacts.Source) ([]*File, error) {
 	source := goartifacts.ExpandSource(osource, c)
 
 	if len(source.Attributes.Paths) == 0 {
@@ -205,7 +204,7 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 		files = append(files, file)
 
 		if file != nil {
-			err := c.Store.InsertStruct(file)
+			err := c.Store.InsertStruct(file.ID, file)
 			if err != nil {
 				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
@@ -216,7 +215,7 @@ func (c *LiveCollector) collectFile(name string, osource goartifacts.Source) ([]
 }
 
 // collectDirectory collects a DIRECTORY source to the forensicstore.
-func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source) ([]*File, error) {
+func (c *Collector) collectDirectory(name string, source goartifacts.Source) ([]*File, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
@@ -231,7 +230,7 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 		files = append(files, file)
 
 		if file != nil {
-			err := c.Store.InsertStruct(file)
+			err := c.Store.InsertStruct(file.ID, file)
 			if err != nil {
 				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
@@ -242,7 +241,7 @@ func (c *LiveCollector) collectDirectory(name string, source goartifacts.Source)
 }
 
 // collectPath collects a PATH source to the forensicstore.
-func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*Directory, error) {
+func (c *Collector) collectPath(name string, source goartifacts.Source) ([]*Directory, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
@@ -259,7 +258,7 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 		directory.Path = fsPath(path)
 		directories = append(directories, directory)
 
-		err := c.Store.InsertStruct(directory)
+		err := c.Store.InsertStruct(directory.ID, directory)
 		if err != nil {
 			return directories, fmt.Errorf("could not insert struct: %w", err)
 		}
@@ -269,7 +268,7 @@ func (c *LiveCollector) collectPath(name string, source goartifacts.Source) ([]*
 }
 
 // collectRegistryKey collects a REGISTRY_KEY source to the forensicstore.
-func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Source) ([]*RegistryKey, error) {
+func (c *Collector) collectRegistryKey(name string, source goartifacts.Source) ([]*RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Keys) == 0 {
@@ -283,7 +282,7 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 		k := c.createRegistryKey(name, fsPath(key))
 		keys = append(keys, k)
 
-		err := c.Store.InsertStruct(k)
+		err := c.Store.InsertStruct(k.ID, k)
 		if err != nil {
 			return keys, err
 		}
@@ -293,7 +292,7 @@ func (c *LiveCollector) collectRegistryKey(name string, source goartifacts.Sourc
 }
 
 // collectRegistryValue collects a REGISTRY_VALUE source to the forensicstore.
-func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Source) ([]*RegistryKey, error) {
+func (c *Collector) collectRegistryValue(name string, source goartifacts.Source) ([]*RegistryKey, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.KeyValuePairs) == 0 {
@@ -307,7 +306,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 		key := c.createRegistryValue(name, fsPath(kvpair.Key), kvpair.Value)
 		keys = append(keys, key)
 
-		err := c.Store.InsertStruct(key)
+		err := c.Store.InsertStruct(key.ID, key)
 		if err != nil {
 			return keys, err
 		}
@@ -317,7 +316,7 @@ func (c *LiveCollector) collectRegistryValue(name string, source goartifacts.Sou
 }
 
 // collectWMI collects a WMI source to the forensicstore.
-func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*Process, error) {
+func (c *Collector) collectWMI(name string, source goartifacts.Source) (*Process, error) {
 	source = goartifacts.ExpandSource(source, c)
 
 	if source.Attributes.Query == "" {
@@ -329,7 +328,7 @@ func (c *LiveCollector) collectWMI(name string, source goartifacts.Source) (*Pro
 	log.Printf("Collect WMI %s", source.Attributes.Query)
 	process := c.createWMI(name, source.Attributes.Query)
 
-	err := c.Store.InsertStruct(process)
+	err := c.Store.InsertStruct(process.ID, process)
 	if err != nil {
 		return nil, fmt.Errorf("could not insert struct: %w", err)
 	}
