@@ -19,14 +19,15 @@
 //
 // Author(s): Jonas Plum
 
+//go:build !windows || !go1.8
 // +build !windows !go1.8
 
 package collection
 
-func (c *LiveCollector) createRegistryValue(definitionName, key, value string) *RegistryKey {
+func (c *LiveCollector) createRegistryValue(definitionName, _, _ string) *RegistryKey {
 	return &RegistryKey{Artifact: definitionName, Type: "empty"}
 }
 
-func (c *LiveCollector) createRegistryKey(definitionName, key string) *RegistryKey {
+func (c *LiveCollector) createRegistryKey(definitionName, _ string) *RegistryKey {
 	return &RegistryKey{Artifact: definitionName, Type: "empty"}
 }

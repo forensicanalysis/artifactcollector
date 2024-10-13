@@ -26,8 +26,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
+
+	"github.com/forensicanalysis/artifactcollector/collection"
 )
 
 func TestRun(t *testing.T) {
@@ -55,6 +56,7 @@ func TestRun(t *testing.T) {
 		artifactDefinitions []goartifacts.ArtifactDefinition
 		embedded            map[string][]byte
 	}
+
 	tests := []struct {
 		name     string
 		args     args
@@ -77,6 +79,7 @@ func TestRun(t *testing.T) {
 			if _, err := os.Stat(got.Path); os.IsNotExist(err) {
 				t.Errorf("Returned path %s does not exist", got.Path)
 			}
+
 			if _, err := os.Stat(strings.Replace(got.Path, ".forensicstore.zip", ".log", 1)); os.IsNotExist(err) {
 				t.Errorf("Log file %s does not exist", strings.Replace(got.Path, ".zip", ".log", 1))
 			}

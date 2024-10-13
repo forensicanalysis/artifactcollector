@@ -1,5 +1,3 @@
-// +build go1.7
-
 // Copyright (c) 2020 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -32,7 +30,8 @@ import (
 	"testing"
 
 	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore"
+
+	"github.com/forensicanalysis/artifactcollector/store"
 )
 
 func Test_collectorResolver_Resolve(t *testing.T) {
@@ -87,6 +86,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 	type args struct {
 		parameter string
 	}
+
 	tests := []struct {
 		name         string
 		args         args
@@ -102,18 +102,19 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 				testDir := setup(t)
 				defer teardown(t)
 
-				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0755)
+				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0o755)
 				if err != nil {
 					t.Errorf("Could not make dir %s", err)
 					return
 				}
 
-				store, teardown, err := forensicstore.New(filepath.Join(testDir, "extract", "ac.forensicstore"))
+				f, err := os.CreateTemp("", "test.zip")
 				if err != nil {
-					t.Errorf("Collect() error = %v", err)
-					return
+					t.Fatal(err)
 				}
-				defer teardown()
+				defer os.Remove(f.Name())
+
+				store := store.NewSimpleStore(f)
 
 				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
 				if err != nil {
@@ -129,9 +130,11 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 
 				sort.Strings(gotResolves)
 				sort.Strings(tt.wantResolves)
+
 				if len(gotResolves) != len(tt.wantResolves) {
 					t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)
 				}
+
 				for i := range gotResolves {
 					if !strings.EqualFold(gotResolves[i], tt.wantResolves[i]) {
 						t.Errorf("Resolve() gotResolves = %v, want %v", gotResolves, tt.wantResolves)

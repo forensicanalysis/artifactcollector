@@ -30,7 +30,7 @@ jobs:
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+          cp -r path/src/github.com/forensicanalysis/artifactcollector/build/go path/src
           echo "package afero" > path/src/github.com/spf13/afero/memmap.go
 
           mkdir -p path/src/io path/src/internal
@@ -61,56 +61,21 @@ jobs:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.17
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.17.0
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: repo
-      - run: go mod vendor
-        working-directory: repo
-      # - run: go mod download
-      - run: go generate -mod=readonly
-        working-directory: repo
-      - run: mv resources/artifactcollector32.syso artifactcollector.syso
-        working-directory: repo
-      - name: Build
-        run: |
-          mkdir -p path
-          mv repo/vendor path/src
-          mkdir -p path/src/github.com/forensicanalysis
-          mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
+      - uses: actions/setup-go@v5
+        with: { go-version: 1.17.0 }
+      - uses: actions/checkout@v4
 
-          mkdir -p path/src/io path/src/internal
-          cp -r $(go env GOROOT)/src/io/fs path/src/io
-          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
-          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
-          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
-
-          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
-          docker build -t xgo path/src/github.com/forensicanalysis/artifactcollector
-          docker run --rm \
-            -v $PWD/path/src:/go/src \
-            -w /go/src/github.com/forensicanalysis/artifactcollector \
-            xgo \
-            go build -v -o artifactcollector2k.exe .
-      - uses: actions/upload-artifact@v3
+      - run: make build-win2k
+      - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows 2000, 32bit)
-          path: path/src/github.com/forensicanalysis/artifactcollector/artifactcollector2k.exe
+          path: build/bin/artifactcollector2k.exe
 
   winxp:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.17
-        uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.17.0
       - name: Checkout code
@@ -119,10 +84,9 @@ jobs:
           path: repo
       - run: go mod vendor
         working-directory: repo
-      # - run: go mod download
       - run: go generate -mod=readonly
         working-directory: repo
-      - run: mv resources/artifactcollector32.syso artifactcollector.syso
+      - run: mv build/win/artifactcollector32.syso artifactcollector.syso
         working-directory: repo
       - name: Move packages
         run: |
@@ -146,11 +110,10 @@ jobs:
         run: |
           sudo apt-get install mingw-w64
           GOPATH=$GITHUB_WORKSPACE/path CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
-      - name: Upload artifactcollector (XP, 32bit)
-        uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows XP, 32bit)
-          path: artifactcollectorxp.exe
+          path: build/bin/artifactcollectorxp.exe
 
   artifactcollector:
     name: artifactcollector
@@ -201,31 +164,13 @@ jobs:
       - name: Setup Build
         run: go generate
       - name: Add Windows syso File
-        run: mv resources/artifactcollector.syso artifactcollector.syso
+        run: mv build/win/artifactcollector.syso artifactcollector.syso
         if: matrix.os == 'windows-latest'
         shell: bash
       - name: Build
         run: |
           go build .
           go install .
-      - name: Windows bats test
-        run: |
-          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
-          unzip forensicstore.zip
-          mv forensicstore.exe $(go env GOPATH)/bin/forensicstore.exe
-          chmod +x $(go env GOPATH)/bin/forensicstore.exe
-          bats test/bats/artifactcollector.windows.bats
-        if: matrix.os == 'windows-latest'
-        shell: bash
-      - name: UNIX bats test
-        run: |
-          curl -Lso forensicstore.zip https://github.com/forensicanalysis/forensicstore/releases/download/v0.17.3/${{ matrix.os }}.zip
-          unzip forensicstore.zip
-          mv forensicstore $(go env GOPATH)/bin/forensicstore
-          chmod +x $(go env GOPATH)/bin/forensicstore
-          bats test/bats/artifactcollector.unix.bats
-        if: matrix.os != 'windows-latest'
-        shell: bash
 
       - name: Remove Windows syso File
         run: rm artifactcollector.syso

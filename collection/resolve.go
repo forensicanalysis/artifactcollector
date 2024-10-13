@@ -32,7 +32,7 @@ import (
 )
 
 // Resolve returns a list of values that can be used for the placeholder parameter.
-func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
+func (c *LiveCollector) Resolve(parameter string) ([]string, error) { //nolint:cyclop,funlen
 	parameter = strings.ToLower(parameter)
 	parameter = strings.TrimPrefix(parameter, "environ_")
 
@@ -46,7 +46,9 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 	}
 
 	var resolves []string
+
 	resolvesSet := map[string]bool{}
+
 	for _, source := range providingSources {
 		provide, err := getProvide(source, parameter)
 		if err != nil {
@@ -59,6 +61,7 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 		}
 
 		var resolve []string
+
 		switch source.Type {
 		case goartifacts.SourceType.Command:
 			resolve, err = c.resolveCommand(source, provide, regex)
@@ -73,6 +76,7 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 		case goartifacts.SourceType.Wmi:
 			resolve, err = c.resolveWMI(source, provide, regex)
 		}
+
 		if err != nil {
 			return nil, err
 		}
@@ -80,6 +84,7 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 		for _, r := range resolve {
 			if _, ok := resolvesSet[r]; !ok {
 				resolvesSet[r] = true
+
 				resolves = append(resolves, r)
 			}
 		}
@@ -94,16 +99,19 @@ func (c *LiveCollector) Resolve(parameter string) ([]string, error) {
 
 func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provide, error) {
 	i := -1
+
 	for index, p := range source.Provides {
 		if strings.TrimPrefix(p.Key, "environ_") == parameter {
 			i = index
 		}
 	}
+
 	if i == -1 {
 		return goartifacts.Provide{}, fmt.Errorf("missing provide")
 	}
 
 	provide := source.Provides[i]
+
 	return provide, nil
 }
 
@@ -115,11 +123,11 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 		return nil, err
 	}
 	// TODO check if exists
-	f, teardown, err := c.Store.LoadFile(process.StdoutPath)
+	f, err := c.Store.LoadFile(process.StdoutPath)
 	if err != nil {
 		return nil, err
 	}
-	defer teardown() // nolint: errcheck
+
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if provide.Regex != "" {
@@ -132,7 +140,9 @@ func (c *LiveCollector) resolveCommand(source goartifacts.Source, provide goarti
 			resolves = append(resolves, scanner.Text())
 		}
 	}
+
 	err = scanner.Err()
+
 	return resolves, fmt.Errorf("reading standard input: %w", err)
 }
 
@@ -142,11 +152,12 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 	if err != nil {
 		return nil, err
 	}
+
 	var resolves []string
 
 	for _, file := range files {
 		// TODO check if exists
-		f, teardown, err := c.Store.LoadFile(file.ExportPath)
+		f, err := c.Store.LoadFile(file.ExportPath)
 		if err != nil {
 			return nil, err
 		}
@@ -164,15 +175,11 @@ func (c *LiveCollector) resolveFile(source goartifacts.Source, provide goartifac
 			}
 		}
 
-		err = teardown()
-		if err != nil {
-			return nil, err
-		}
-
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("reading standard input: %w", err)
 		}
 	}
+
 	return resolves, nil
 }
 
@@ -183,6 +190,7 @@ func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifac
 	if err != nil {
 		return nil, err
 	}
+
 	for _, directory := range directories {
 		if provide.Regex != "" {
 			for _, match := range regex.FindAllStringSubmatch(directory.Path, -1) {
@@ -194,6 +202,7 @@ func (c *LiveCollector) resolvePath(source goartifacts.Source, provide goartifac
 			resolves = append(resolves, directory.Path)
 		}
 	}
+
 	return resolves, nil
 }
 
@@ -204,6 +213,7 @@ func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide go
 	if err != nil {
 		return nil, err
 	}
+
 	for _, key := range keys {
 		if provide.Regex != "" {
 			for _, match := range regex.FindAllStringSubmatch(key.Key, -1) {
@@ -215,6 +225,7 @@ func (c *LiveCollector) resolveRegistryKey(source goartifacts.Source, provide go
 			resolves = append(resolves, key.Key)
 		}
 	}
+
 	return resolves, nil
 }
 
@@ -225,6 +236,7 @@ func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide 
 	if err != nil {
 		return nil, err
 	}
+
 	for _, key := range keys {
 		for _, value := range key.Values {
 			if provide.Regex != "" {
@@ -238,6 +250,7 @@ func (c *LiveCollector) resolveRegistryValue(source goartifacts.Source, provide 
 			}
 		}
 	}
+
 	return resolves, nil
 }
 
@@ -248,6 +261,7 @@ func (c *LiveCollector) resolveWMI(source goartifacts.Source, provide goartifact
 	if err != nil {
 		return nil, err
 	}
+
 	for _, elem := range wmi.WMI {
 		if wmiResult, ok := elem.(map[string]interface{}); ok {
 			if provide.Regex != "" {
@@ -261,5 +275,6 @@ func (c *LiveCollector) resolveWMI(source goartifacts.Source, provide goartifact
 			}
 		}
 	}
+
 	return resolves, nil
 }

@@ -1,3 +1,4 @@
+//go:build go1.8
 // +build go1.8
 
 // Copyright (c) 2019 Siemens AG

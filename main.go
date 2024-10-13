@@ -23,35 +23,26 @@
 // on systems. These artifacts can be used in forensic investigations to understand
 // attacker behavior on compromised computers.
 //
-// Features
+// # Features
 //
 // The artifactcollector offers the following features
-//    - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
-//    - 🛍️ Can extract files, directories, registry entries, command and WMI output
-//    - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
-//    - 💾 Creates a forensicstore as [structured output](https://github.com/forensicanalysis/forensicstore)
-//    - 🕊️ It's open source
-//    - 🆓 Free for everyone (including commercial use)
+//   - ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
+//   - 🛍️ Can extract files, directories, registry entries, command and WMI output
+//   - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
+//   - 💾 Creates a forensicstore as [structured output](https://github.com/forensicanalysis/forensicstore)
+//   - 🕊️ It's open source
+//   - 🆓 Free for everyone (including commercial use)
 package main
 
 import (
 	"os"
 
-	"github.com/forensicanalysis/artifactcollector/assets"
-	"github.com/forensicanalysis/artifactcollector/run"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/artifactsgo"
-)
 
-//go:generate go install golang.org/x/tools/cmd/goimports@v0.1.7
-//go:generate go install github.com/cugu/go-resources/cmd/resources@v0.3.0
-//go:generate go install github.com/akavel/rsrc@v0.10.2
-//go:generate go run scripts/yaml2go/main.go pack/ac.yaml pack/artifacts/*
-//go:generate resources -package assets -output assets/bin.generated.go pack/bin/*
-//go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.syso
-//go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.syso
-//go:generate rsrc -arch amd64 -manifest resources/artifactcollector.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector.user.syso
-//go:generate rsrc -arch 386 -manifest resources/artifactcollector32.exe.user.manifest -ico resources/artifactcollector.ico -o resources/artifactcollector32.user.syso
+	"github.com/forensicanalysis/artifactcollector/assets"
+	"github.com/forensicanalysis/artifactcollector/run"
+)
 
 func main() {
 	var artifacts []goartifacts.ArtifactDefinition

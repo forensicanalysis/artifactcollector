@@ -34,8 +34,9 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/forensicanalysis/artifactcollector/collection"
 	"github.com/forensicanalysis/artifactlib/goartifacts"
+
+	"github.com/forensicanalysis/artifactcollector/collection"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -46,13 +47,15 @@ type Collection struct {
 }
 
 // Run performs the full artifact collection process.
-func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) { //nolint:gocyclo,funlen
+func Run(config *collection.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (c *Collection) { //nolint:funlen,cyclop
 	if len(config.Artifacts) == 0 {
 		fmt.Println("No artifacts selected in config")
+
 		return nil
 	}
 
 	var outputDirFlag string
+
 	flag.StringVar(&outputDirFlag, "o", "", "Output directory for forensicstore and log file")
 	flag.Parse()
 
@@ -71,25 +74,32 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	case config.OutputDir != "":
 	case windowsZipTempDir.MatchString(cwd) || sevenZipTempDir.MatchString(cwd):
 		fmt.Println("Running from zip, results will be available on Desktop")
+
 		config.OutputDir = filepath.Join(homeDir(), "Desktop")
 	default:
 		config.OutputDir = "" // current directory
 	}
+
+	_ = os.MkdirAll(config.OutputDir, 0o700)
 
 	// setup
 	hostname, err := os.Hostname()
 	if err != nil {
 		hostname = "artifactcollector"
 	}
+
 	if config.Case != "" {
 		hostname = config.Case + "-" + hostname
 	}
+
 	collectionName := fmt.Sprintf("%s_%s", hostname, time.Now().UTC().Format("2006-01-02T15-04-05"))
 
 	// setup logging
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	logfilePath := filepath.Join(config.OutputDir, collectionName+".log")
-	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+
+	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
 	if logfileError != nil {
 		log.Printf("Could not open logfile %s\n", logfileError)
 	} else {
@@ -100,18 +110,21 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	defer func() {
 		if r := recover(); r != nil {
 			logPrint("A critical error occurred: ", r, string(debug.Stack()))
+
 			c = nil
 		}
 	}()
 
 	// start running
 	logPrint("Start to collect forensic artifacts. This might take a while.")
+
 	start := time.Now()
 
 	// unpack internal files
 	tempDir, err := unpack(embedded)
 	if err != nil {
 		logPrint(err)
+
 		return nil
 	}
 	defer os.RemoveAll(tempDir) // clean up
@@ -129,31 +142,27 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	// create store
 	collectionPath := filepath.Join(config.OutputDir, collectionName)
+
 	storeName, store, teardown, err := createStore(collectionPath, config, filteredArtifactDefinitions)
 	if err != nil {
 		logPrint(err)
+
 		return nil
 	}
 
-	if config.FS != nil {
-		store.SetFS(config.FS)
-	}
-
 	// add store as log writer
-	storeLogger, storeLoggerError := newStoreLogger(store)
-	if storeLoggerError != nil {
-		log.Printf("Could not setup logging to forensicstore: %s", storeLoggerError)
-	}
-	switch {
-	case logfileError == nil && storeLoggerError == nil:
+	storeLogger := newStoreLogger(store)
+
+	if logfileError == nil {
 		log.SetOutput(io.MultiWriter(logfile, storeLogger))
-	case storeLoggerError == nil:
+	} else {
 		log.SetOutput(storeLogger)
 	}
 
 	collector, err := collection.NewCollector(store, tempDir, artifactDefinitions)
 	if err != nil {
 		logPrint(fmt.Errorf("LiveCollector creation failed: %w", err))
+
 		return nil
 	}
 
@@ -162,11 +171,15 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	// collect artifacts
 	for _, artifactDefinition := range filteredArtifactDefinitions {
 		startArtifact := time.Now()
+
 		logPrint(fmt.Sprintf("Collecting %s (%d/%d)", artifactDefinition.Name, i, total))
+
 		i++
+
 		for _, source := range artifactDefinition.Sources {
 			collector.Collect(artifactDefinition.Name, source)
 		}
+
 		log.Printf("Collected %s in %.1f seconds\n", artifactDefinition.Name, time.Since(startArtifact).Seconds())
 	}
 
@@ -182,6 +195,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 	err = teardown()
 	if err != nil {
 		logPrint(fmt.Sprintf("Close Store failed: %s", err))
+
 		return nil
 	}
 
@@ -197,6 +211,7 @@ func homeDir() string {
 	if runtime.GOOS == "windows" {
 		os.Getenv("USERPROFILE")
 	}
+
 	return os.Getenv("HOME")
 }
 
@@ -207,12 +222,14 @@ func unpack(embedded map[string][]byte) (tempDir string, err error) {
 	}
 
 	for path, content := range embedded {
-		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0700); err != nil {
+		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0o700); err != nil {
 			return tempDir, err
 		}
-		if err := ioutil.WriteFile(filepath.Join(tempDir, path), content, 0644); err != nil {
+
+		if err := ioutil.WriteFile(filepath.Join(tempDir, path), content, 0o644); err != nil {
 			return tempDir, err
 		}
+
 		log.Printf("Unpacking %s", path)
 	}
 
@@ -227,11 +244,14 @@ func enforceAdmin(forceAdmin bool) error {
 		_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
 		if err != nil {
 			logPrint("Need to be windows admin")
+
 			return os.ErrPermission
 		}
+
 		return nil
 	case os.Getgid() != 0:
 		logPrint("need to be root")
+
 		return os.ErrPermission
 	default:
 		return nil

@@ -37,3 +37,8 @@ pack/artifacts/
 artifactcollector
 vendor
 go1.2.2
+
+build/bin/*
+!build/bin/.keep
+
+ac

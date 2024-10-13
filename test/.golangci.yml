@@ -5,80 +5,40 @@ run:
   # include test files or not, default is true
   tests: false
 
-  skip-files:
-    - ".*\\.generated\\.*."
+linters:
+  enable-all: true
+  disable:
+    - depguard
+    - err113
+    - errorlint
+    - exhaustruct
+    - forbidigo
+    - godox
+    - gomnd
+    - gosec
+    - lll
+    - mnd
+    - nilnil
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - staticcheck
+    - tagliatelle
+    - varnamelen
+    - wrapcheck
 
 # all available settings of specific linters
 linters-settings:
-  gocyclo:
-    # minimal code complexity to report
-    min-complexity: 15
-  goimports:
-    # put imports beginning with prefix after 3rd-party packages;
-    # it's a comma-separated list of prefixes
-    local-prefixes: github.com/forensicanalysis
-  misspell:
-    ignore-words:
-      - someword
-  nakedret:
-    # make an issue if func has more lines of code than this setting and it has naked returns; default is 30
-    max-func-lines: 30
-  whitespace:
-    multi-func: true # Enforces newlines (or comments) after every multi-line function
-
-linters:
-  enable:
-    - bodyclose # checks whether HTTP response body is closed successfully
-    - deadcode # Finds unused code
-    - depguard # Go linter that checks if package imports are in a list of acceptable packages
-    - dogsled # Checks assignments with too many blank identifiers (e.g. x, _, _, _, := f())
-    - dupl # Tool for code clone detection
-    - errcheck # Errcheck is a program for checking for unchecked errors in go programs. These unchecked errors can be critical bugs in some cases
-    - funlen # Tool for detection of long functions
-    - gochecknoglobals # Checks that no globals are present in Go code
-    - gochecknoinits # Checks that no init functions are present in Go code
-    - gocognit # Computes and checks the cognitive complexity of functions
-    - goconst # Finds repeated strings that could be replaced by a constant
-    - gocritic # The most opinionated Go source code linter
-    - gocyclo # Computes and checks the cyclomatic complexity of functions
-    - godot # Check if comments end in a period
-    # - godox # Tool for detection of FIXME, TODO and other comment keywords
-    # - gofmt # Gofmt checks whether code was gofmt-ed. By default this tool runs with -s option to check for code simplification
-    # - goimports # Goimports does everything that gofmt does. Additionally it checks unused imports
-    - golint # Golint differs from gofmt. Gofmt reformats Go source code, whereas golint prints out style mistakes
-    - gomnd # An analyzer to detect magic numbers.
-    - gomodguard # Allow and block list linter for direct Go module dependencies.
-    - goprintffuncname # Checks that printf-like functions are named with f at the end
-    - gosec # Inspects source code for security problems
-    - gosimple # Linter for Go source code that specializes in simplifying a code
-    - govet # Vet examines Go source code and reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
-    - ineffassign # Detects when assignments to existing variables are not used
-    - interfacer # Linter that suggests narrower interface types
-    # - lll # Reports long lines
-    - maligned # Tool to detect Go structs that would take less memory if their fields were sorted
-    - misspell # Finds commonly misspelled English words in comments
-    - nakedret # Finds naked returns in functions greater than a specified function length
-    - nestif # Reports deeply nested if statements
-    # - prealloc # Finds slice declarations that could potentially be preallocated
-    - rowserrcheck # checks whether Err of rows is checked successfully
-    - scopelint # Scopelint checks for unpinned variables in go programs
-    - staticcheck # Staticcheck is a go vet on steroids, applying a ton of static analysis checks
-    - structcheck # Finds unused struct fields
-    - stylecheck # Stylecheck is a replacement for golint
-    - testpackage # linter that makes you use a separate _test package
-    - typecheck # Like the front-end of a Go compiler, parses and type-checks Go code
-    - unconvert # Remove unnecessary type conversions
-    - unparam # Reports unused function parameters
-    - unused # Checks Go code for unused constants, variables, functions and types
-    - varcheck # Finds unused global variables and constants
-    - whitespace # Tool for detection of leading and trailing whitespace
-    # - wsl # Whitespace Linter - Forces you to use empty lines!
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/forensicanalysis/artifactcollector)
 
 issues:
-  exclude-use-default: false
-
   exclude:
-    - Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
-    - (comment on exported (method|function|type|const)|should have( a package)? comment|comment should be of the form)
-    - G104
-    - unused
+    - block should not end with a whitespace
+  exclude-files:
+    - ".*\\.generated\\.*."
+    - "store/aczip"
+    - "replace"

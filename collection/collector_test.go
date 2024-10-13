@@ -46,6 +46,7 @@ func (r *TestCollector) Collect(name string, source goartifacts.Source) {
 	if r.Collected == nil {
 		r.Collected = map[string][]goartifacts.Source{}
 	}
+
 	r.Collected[name] = append(r.Collected[name], source)
 }
 
@@ -68,6 +69,7 @@ func (r *TestCollector) Resolve(s string) ([]string, error) {
 	case "faz":
 		return []string{"%foo%"}, nil
 	}
+
 	return nil, errors.New("could not resolve")
 }
 
@@ -76,6 +78,7 @@ func setup(t *testing.T) string {
 	if err != nil {
 		t.Fatal("setup tempdir failed ", err)
 	}
+
 	return dir
 }
 
@@ -87,6 +90,7 @@ func teardown(t *testing.T, folders ...string) {
 			for _, info := range infos {
 				log.Println(info.Name())
 			}
+
 			t.Fatal(err)
 		}
 	}
@@ -96,6 +100,7 @@ func TestCollect(t *testing.T) {
 	// prepare in fs
 	sourceFS := fstest.MapFS{}
 	files := []string{"/foo.txt", "/dir/a/a/foo.txt", "/dir/bar", "/dir/baz", "/dir/a/a/foo.txt", "/dir/a/b/foo.txt", "/dir/b/a/foo.txt", "/dir/b/b/foo.txt"}
+
 	for _, file := range files {
 		sourceFS[file] = &fstest.MapFile{Data: []byte("test")}
 	}
@@ -105,6 +110,7 @@ func TestCollect(t *testing.T) {
 	type args struct {
 		testfile string
 	}
+
 	tests := []struct {
 		runOnWindows bool
 		name         string
@@ -113,7 +119,9 @@ func TestCollect(t *testing.T) {
 		wantStorage  []map[string]interface{}
 	}{
 		{
-			true, "Collect simple file", args{"collect_1.yaml"}, 1,
+			true, "Collect simple file",
+			args{"collect_1.yaml"},
+			1,
 			[]map[string]interface{}{
 				{
 					"artifact": "Test1", "type": "file", "name": "foo.txt",
@@ -123,9 +131,12 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			false, "Collect registry dummy", args{"collect_2.yaml"}, 1, nil},
+			false, "Collect registry dummy", args{"collect_2.yaml"}, 1, nil,
+		},
 		{
-			true, "Collect command dummy", args{"collect_3.yaml"}, 1,
+			true, "Collect command dummy",
+			args{"collect_3.yaml"},
+			1,
 			[]map[string]interface{}{
 				{
 					"artifact": "Test3", "type": "process",
@@ -135,12 +146,18 @@ func TestCollect(t *testing.T) {
 			},
 		},
 		{
-			true, "Collect directory dummy", args{"collect_4.yaml"}, 1,
-			[]map[string]interface{}{{"artifact": "Test4", "name": "dir", "type": "file", "origin": map[string]interface{}{"path": "/dir"}, "export_path": "extract/Test4/dir"}}},
+			true, "Collect directory dummy",
+			args{"collect_4.yaml"},
+			1,
+			[]map[string]interface{}{{"artifact": "Test4", "name": "dir", "type": "file", "origin": map[string]interface{}{"path": "/dir"}, "export_path": "extract/Test4/dir"}},
+		},
 		{
-			false, "Collect registry value dummy", args{"collect_5.yaml"}, 1, nil},
+			false, "Collect registry value dummy", args{"collect_5.yaml"}, 1, nil,
+		},
 		{
-			true, "Collect with stars", args{"collect_6.yaml"}, 1,
+			true, "Collect with stars",
+			args{"collect_6.yaml"},
+			1,
 			[]map[string]interface{}{
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/a/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
 				{"artifact": "Test6", "type": "file", "name": "foo.txt", "origin": map[string]interface{}{"path": "/dir/a/b/foo.txt"}, "export_path": "extract/Test6/foo.txt", "size": 4, "hashes": hashmap},
@@ -157,6 +174,7 @@ func TestCollect(t *testing.T) {
 			}
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
+
 			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
@@ -174,7 +192,6 @@ func TestCollect(t *testing.T) {
 			if len(collector.Collected) != tt.want {
 				t.Errorf("Collect() = %v (%v), want %v", len(collector.Collected), collector.Collected, tt.want)
 			}
-
 			// TODO: test extracted file
 			/*
 				f, err := tt.args.outfs.Open("extract/Test/foo")
@@ -191,7 +208,6 @@ func TestCollect(t *testing.T) {
 					t.Errorf("Did not collect test file")
 				}
 			*/
-
 			/*
 				dec := json.NewDecoder(f)
 				i := &[]map[string]interface{}{}
@@ -210,7 +226,6 @@ func TestCollect(t *testing.T) {
 
 				assert.EqualValuesf(t, tt.wantStorage, *i, "Wrong forensicstore")
 			*/
-
 		})
 	}
 }

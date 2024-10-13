@@ -1,5 +1,3 @@
-// +build go1.7
-
 // Copyright (c) 2020 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,25 +22,29 @@
 package collection
 
 import (
+	"os"
 	"reflect"
 	"runtime"
 	"testing"
 
-	"github.com/forensicanalysis/forensicstore"
+	"github.com/forensicanalysis/artifactcollector/store"
 )
 
 func TestLiveCollector_createProcess(t *testing.T) {
-	store, teardown, err := forensicstore.New("file::memory:?mode=memory")
+	f, err := os.CreateTemp("", "test.zip")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer teardown()
+	defer os.Remove(f.Name())
+
+	store := store.NewSimpleStore(f)
 
 	type args struct {
 		definitionName string
 		cmd            string
 		args           []string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -60,7 +62,8 @@ func TestLiveCollector_createProcess(t *testing.T) {
 				CommandLine: "hostname",
 				ReturnCode:  0,
 				Errors:      []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
-			}},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -72,6 +75,7 @@ func TestLiveCollector_createProcess(t *testing.T) {
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
 			got.ID = ""          // unset ID
 			got.CreatedTime = "" // unset created
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("createProcess() = %#v, want %#v", got, tt.want)
 			}

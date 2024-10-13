@@ -1,71 +1,40 @@
-// +build go1.7
-
 package run
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
-	"crawshaw.io/sqlite"
+	"github.com/forensicanalysis/artifactlib/goartifacts"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-	"github.com/forensicanalysis/forensicstore"
+	"github.com/forensicanalysis/artifactcollector/store"
 )
 
-func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, collection.Store, func() error, error) {
-	storeName := fmt.Sprintf("%s.forensicstore", collectionName)
-	store, teardown, err := forensicstore.New(storeName)
+func createStore(collectionName string, config *collection.Configuration, definitions []goartifacts.ArtifactDefinition) (string, *store.SimpleStore, func() error, error) {
+	storeName := fmt.Sprintf("%s.zip", collectionName)
+
+	f, err := os.Create(storeName)
 	if err != nil {
-		return "", nil, teardown, err
+		log.Fatal(err)
 	}
 
-	_, err = store.Query(`CREATE TABLE IF NOT EXISTS config (
-		key TEXT NOT NULL,
-		value TEXT
-	);`)
-	if err != nil {
-		return "", nil, teardown, err
-	}
-
-	conn := store.Connection()
-
-	// insert configuration into store
-	err = addConfig(conn, "config", config)
-	if err != nil {
-		log.Println(err)
-	}
-
-	// insert artifact definitions into store
-	for _, artifact := range definitions {
-		err = addConfig(conn, "artifact:"+artifact.Name, artifact)
-		if err != nil {
-			log.Println(err)
+	store := store.NewSimpleStore(f)
+	teardown := func() error {
+		if err := store.Close(); err != nil {
+			return err
 		}
+
+		return f.Close()
+	}
+
+	if err := store.InsertStruct(definitions); err != nil {
+		return "", nil, nil, err
+	}
+
+	if err := store.InsertStruct(config.Artifacts); err != nil {
+		return "", nil, nil, err
 	}
 
 	return storeName, store, teardown, nil
-}
-
-func addConfig(conn *sqlite.Conn, key string, value interface{}) error {
-	stmt, err := conn.Prepare("INSERT INTO `config` (key, value) VALUES ($key, $value)")
-	if err != nil {
-		return err
-	}
-
-	b, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	stmt.SetText("$key", key)
-	stmt.SetText("$value", string(b))
-
-	_, err = stmt.Step()
-	if err != nil {
-		return err
-	}
-
-	return stmt.Finalize()
 }

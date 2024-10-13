@@ -56,7 +56,6 @@ func (s *storeSeeker) Seek(offset int64, whence int) (int64, error) {
 }
 
 func Test_getString(t *testing.T) {
-
 	testMap := map[string]interface{}{
 		"test":         "I'm a string",
 		"not a string": 1,
@@ -66,6 +65,7 @@ func Test_getString(t *testing.T) {
 		m   map[string]interface{}
 		key string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -101,6 +101,7 @@ func Test_resetFile_seeker(t *testing.T) {
 	type args struct {
 		storeFile io.WriteCloser
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -134,6 +135,7 @@ func Test_hashCopy(t *testing.T) {
 	type args struct {
 		src io.Reader
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -160,17 +162,21 @@ func Test_hashCopy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			dst := &bytes.Buffer{}
+
 			got, got1, err := hashCopy(dst, tt.args.src)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("hashCopy() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("hashCopy() got = %v, want %v", got, tt.want)
 			}
+
 			if !reflect.DeepEqual(got1, tt.want1) {
 				t.Errorf("hashCopy() got1 = %v, want %v", got1, tt.want1)
 			}
+
 			if gotDst := dst.String(); gotDst != tt.wantDst {
 				t.Errorf("hashCopy() gotDst = %v, want %v", gotDst, tt.wantDst)
 			}

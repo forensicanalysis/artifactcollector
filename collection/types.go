@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// File implements a STIX 2.1 File Object
+// File implements a STIX 2.1 File Object.
 type File struct {
 	ID         string                 `json:"id"`
 	Artifact   string                 `json:"artifact,omitempty"`
@@ -32,6 +32,7 @@ func NewFile() *File {
 func (i *File) AddError(err string) *File {
 	log.Print(err)
 	i.Errors = append(i.Errors, err)
+
 	return i
 }
 
@@ -56,6 +57,7 @@ func NewDirectory() *Directory {
 func (i *Directory) AddError(err string) *Directory {
 	log.Print(err)
 	i.Errors = append(i.Errors, err)
+
 	return i
 }
 
@@ -76,6 +78,7 @@ func NewRegistryValue() *RegistryValue {
 func (i *RegistryValue) AddError(err string) *RegistryValue {
 	log.Print(err)
 	i.Errors = append(i.Errors, err)
+
 	return i
 }
 
@@ -99,10 +102,11 @@ func NewRegistryKey() *RegistryKey {
 func (i *RegistryKey) AddError(err string) *RegistryKey {
 	log.Print(err)
 	i.Errors = append(i.Errors, err)
+
 	return i
 }
 
-// Process implements a STIX 2.1 Process Object
+// Process implements a STIX 2.1 Process Object.
 type Process struct {
 	ID          string        `json:"id"`
 	Artifact    string        `json:"artifact,omitempty"`
@@ -127,5 +131,6 @@ func NewProcess() *Process {
 func (i *Process) AddError(err string) *Process {
 	log.Print(err)
 	i.Errors = append(i.Errors, err)
+
 	return i
 }

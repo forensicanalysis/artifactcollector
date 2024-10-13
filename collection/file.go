@@ -44,10 +44,11 @@ func getString(m map[string]interface{}, key string) string {
 			return valueString
 		}
 	}
+
 	return ""
 }
 
-func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *File) { //nolint:funlen,gocyclo,gocognit
+func (c *LiveCollector) createFile(definitionName string, collectContents bool, srcpath, _ string) (f *File) { //nolint:funlen,gocognit,cyclop
 	file := NewFile()
 	file.Artifact = definitionName
 	file.Name = path.Base(srcpath)
@@ -60,6 +61,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			if os.IsNotExist(err) || strings.Contains(strings.ToLower(err.Error()), "not found") {
 				return nil
 			}
+
 			return file.AddError(err.Error())
 		}
 
@@ -70,6 +72,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 		file.Size = float64(srcInfo.Size())
 		attr := srcInfo.Sys()
+
 		if attributes, ok := attr.(map[string]interface{}); ok {
 			file.Ctime = getString(attributes, "created")
 			file.Mtime = getString(attributes, "modified")
@@ -89,16 +92,11 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			if err != nil {
 				hostname = ""
 			}
-			dstpath, storeFile, storeFileTeardown, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+
+			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
 			if err != nil {
 				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
-			defer func() {
-				// this writes the file to the database
-				if err := storeFileTeardown(); err != nil {
-					f = file.AddError(fmt.Errorf("write error: %w", err).Error())
-				}
-			}()
 
 			srcFile, err := c.SourceFS.Open(srcpath)
 			if err != nil {
@@ -123,6 +121,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 						if oerr != nil {
 							return file.AddError(fmt.Errorf("error opening NTFS file: %w", oerr).Error())
 						}
+
 						defer func() {
 							if terr := teardown(); terr != nil {
 								log.Println(terr)
@@ -131,10 +130,7 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 
 						// reset file or open a new store file
 						if !resetFile(storeFile) {
-							if err := storeFile.Close(); err != nil {
-								log.Println(err)
-							}
-							dstpath, storeFile, storeFileTeardown, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+							dstpath, storeFile, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
 							if err != nil {
 								return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 							}
@@ -143,10 +139,12 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 						size, hashes, err = hashCopy(storeFile, ntfsSrcFile)
 					}
 				}
+
 				if err != nil {
 					return file.AddError(fmt.Errorf("copy error %T %s -> store %s: %w", c.SourceFS, srcpath, dstpath, err).Error())
 				}
 			}
+
 			if size != srcInfo.Size() {
 				file.AddError(fmt.Sprintf("filesize parsed is %d, copied %d bytes", srcInfo.Size(), size))
 			}
@@ -155,8 +153,10 @@ func (c *LiveCollector) createFile(definitionName string, collectContents bool, 
 			file.ExportPath = filepath.ToSlash(dstpath)
 			file.Hashes = hashes
 		}
+
 		return file
 	}
+
 	return file.AddError("path contains unknown expanders")
 }
 
@@ -164,27 +164,33 @@ type Resetter interface {
 	Reset()
 }
 
-func resetFile(storeFile io.WriteCloser) bool {
+func resetFile(storeFile io.Writer) bool {
 	reset := false
+
 	if seeker, ok := storeFile.(io.Seeker); ok {
 		_, err := seeker.Seek(0, os.SEEK_CUR)
 		if err != nil {
 			reset = true
 		}
 	}
+
 	if resetter, ok := storeFile.(Resetter); ok {
 		resetter.Reset()
+
 		reset = true
 	}
+
 	return reset
 }
 
 func hashCopy(dst io.Writer, src io.Reader) (int64, map[string]interface{}, error) {
 	md5hash, sha1hash, sha256hash := md5.New(), sha1.New(), sha256.New() // #nosec
+
 	size, err := io.Copy(io.MultiWriter(dst, sha1hash, md5hash, sha256hash), src)
 	if err != nil {
 		return 0, nil, err
 	}
+
 	return size, map[string]interface{}{
 		"MD5":     fmt.Sprintf("%x", md5hash.Sum(nil)),
 		"SHA-1":   fmt.Sprintf("%x", sha1hash.Sum(nil)),

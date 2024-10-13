@@ -1,5 +1,3 @@
-// +build go1.7
-
 // Copyright (c) 2019 Siemens AG
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -24,43 +22,26 @@
 package run
 
 import (
-	"errors"
+	"strconv"
 	"time"
 
 	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/forensicanalysis/forensicstore"
 )
 
 type storeLogger struct {
-	store *forensicstore.ForensicStore
+	store collection.Store
 }
 
-func newStoreLogger(store collection.Store) (*storeLogger, error) {
-	if fstore, ok := store.(*forensicstore.ForensicStore); ok {
-		_, err := fstore.Query(`CREATE TABLE IF NOT EXISTS logs (
-		msg TEXT NOT NULL,
-		insert_time TEXT NOT NULL
-	)`)
-		return &storeLogger{store: fstore}, err
-	}
-	return nil, errors.New("not a forensicstore")
+func newStoreLogger(store collection.Store) *storeLogger {
+	return &storeLogger{store: store}
 }
 
 func (s *storeLogger) Write(b []byte) (int, error) {
-	conn := s.store.Connection()
+	name := strconv.FormatInt(time.Now().UTC().UnixNano(), 10)
 
-	stmt, err := conn.Prepare("INSERT INTO `logs` (msg, insert_time) VALUES ($msg, $time)")
-	if err != nil {
-		return len(b), err
+	if err := s.store.Log(name, string(b)); err != nil {
+		return 0, err
 	}
 
-	stmt.SetText("$msg", string(b))
-	stmt.SetText("$time", time.Now().UTC().Format(time.RFC3339Nano))
-
-	_, err = stmt.Step()
-	if err != nil {
-		return len(b), err
-	}
-
-	return len(b), stmt.Finalize()
+	return len(b), nil
 }

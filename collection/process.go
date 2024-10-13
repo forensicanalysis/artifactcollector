@@ -43,44 +43,40 @@ func (c *LiveCollector) createProcess(definitionName, cmd string, args []string)
 	}
 
 	// setup output destinations
-	stdoutPath, stdoutFile, stdoutFileTeardown, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
+	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
-	defer stdoutFileTeardown() // nolint: errcheck
+
 	process.StdoutPath = filepath.ToSlash(stdoutPath)
 	stderrBuf := &bytes.Buffer{}
 
 	// run command
 	execution := exec.Command(filepath.Join(c.TempDir, "pack", "bin", cmd), args...) // #nosec
+
 	if _, err := os.Stat(filepath.Join(c.TempDir, "pack", "bin", cmd)); os.IsNotExist(err) {
 		process.AddError(fmt.Sprintf("%s is not bundled into artifactcollector, try execution from path", cmd))
 		execution = exec.Command(cmd, args...) // #nosec
 	}
+
 	execution.Stdout = stdoutFile
 	execution.Stderr = stderrBuf
 	process.CreatedTime = time.Now().UTC().Format(time.RFC3339Nano)
+
 	if err = execution.Run(); err != nil {
 		process.AddError(err.Error())
 	}
 
-	// write output file
-	if err := stdoutFile.Close(); err != nil {
-		process.AddError(err.Error())
-	}
-
 	// write to stderr
-	stderrPath, stderrFile, stderrFileTeardown, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
+	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
-	defer stderrFileTeardown() // nolint: errcheck
+
 	if _, err := io.Copy(stderrFile, stderrBuf); err != nil {
 		process.AddError(err.Error())
 	}
-	if err := stderrFile.Close(); err != nil {
-		process.AddError(err.Error())
-	}
+
 	process.StderrPath = filepath.ToSlash(stderrPath)
 
 	return process
