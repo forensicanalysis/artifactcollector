@@ -19,9 +19,9 @@
 //
 // Author(s): Jonas Plum
 
-// Package goartifacts provides functions for parsing and validating forensic
+// Package artifacts provides functions for parsing and validating forensic
 // artifact definition files.
-package goartifacts
+package artifacts
 
 // A KeyValuePair represents Windows Registry key path and value name that can
 // potentially be collected.

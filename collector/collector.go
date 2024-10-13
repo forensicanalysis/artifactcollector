@@ -34,7 +34,7 @@ import (
 	"github.com/forensicanalysis/fslib/registryfs"
 	"github.com/forensicanalysis/fslib/systemfs"
 
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 )
 
 // The Collector can resolve and collect artifact on live systems.
@@ -44,7 +44,7 @@ type Collector struct {
 	Store      Store
 	TempDir    string
 
-	providesMap   map[string][]goartifacts.Source
+	providesMap   map[string][]artifacts.Source
 	knowledgeBase map[string][]string
 	prefixes      []string
 }
@@ -57,17 +57,17 @@ type Store interface {
 
 // NewCollector creates a new Collector that collects the given
 // ArtifactDefinitions.
-func NewCollector(store Store, tempDir string, definitions []goartifacts.ArtifactDefinition) (*Collector, error) {
-	providesMap := map[string][]goartifacts.Source{}
+func NewCollector(store Store, tempDir string, definitions []artifacts.ArtifactDefinition) (*Collector, error) {
+	providesMap := map[string][]artifacts.Source{}
 
-	definitions = goartifacts.FilterOS(definitions)
+	definitions = artifacts.FilterOS(definitions)
 
 	for _, definition := range definitions {
 		for _, source := range definition.Sources {
 			for _, provide := range source.Provides {
 				key := strings.TrimPrefix(provide.Key, "environ_")
 				if providingSources, ok := providesMap[key]; !ok {
-					providesMap[key] = []goartifacts.Source{source}
+					providesMap[key] = []artifacts.Source{source}
 				} else {
 					providesMap[key] = append(providingSources, source)
 				}
@@ -123,7 +123,7 @@ func (c *Collector) Prefixes() []string {
 }
 
 // Collect dispatches specific collection functions for different sources.
-func (c *Collector) Collect(name string, source goartifacts.Source) { //nolint:cyclop
+func (c *Collector) Collect(name string, source artifacts.Source) { //nolint:cyclop
 	defer func() {
 		if r := recover(); r != nil {
 			log.Printf("Collection for %s failed (%s)", name, r)
@@ -159,8 +159,8 @@ func (c *Collector) Collect(name string, source goartifacts.Source) { //nolint:c
 }
 
 // collectCommand collects a COMMAND source to the forensicstore.
-func (c *Collector) collectCommand(name string, source goartifacts.Source) (*Process, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectCommand(name string, source artifacts.Source) (*Process, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if source.Attributes.Cmd == "" {
 		log.Printf("No collection for %s", name)
@@ -189,8 +189,8 @@ func fsPath(s string) string {
 }
 
 // collectFile collects a FILE source to the forensicstore.
-func (c *Collector) collectFile(name string, osource goartifacts.Source) ([]*File, error) {
-	source := goartifacts.ExpandSource(osource, c)
+func (c *Collector) collectFile(name string, osource artifacts.Source) ([]*File, error) {
+	source := artifacts.ExpandSource(osource, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
@@ -215,8 +215,8 @@ func (c *Collector) collectFile(name string, osource goartifacts.Source) ([]*Fil
 }
 
 // collectDirectory collects a DIRECTORY source to the forensicstore.
-func (c *Collector) collectDirectory(name string, source goartifacts.Source) ([]*File, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectDirectory(name string, source artifacts.Source) ([]*File, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
@@ -241,8 +241,8 @@ func (c *Collector) collectDirectory(name string, source goartifacts.Source) ([]
 }
 
 // collectPath collects a PATH source to the forensicstore.
-func (c *Collector) collectPath(name string, source goartifacts.Source) ([]*Directory, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectPath(name string, source artifacts.Source) ([]*Directory, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Paths) == 0 {
 		log.Printf("No collection for %s", name)
@@ -268,8 +268,8 @@ func (c *Collector) collectPath(name string, source goartifacts.Source) ([]*Dire
 }
 
 // collectRegistryKey collects a REGISTRY_KEY source to the forensicstore.
-func (c *Collector) collectRegistryKey(name string, source goartifacts.Source) ([]*RegistryKey, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectRegistryKey(name string, source artifacts.Source) ([]*RegistryKey, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.Keys) == 0 {
 		log.Printf("No collection for %s", name)
@@ -292,8 +292,8 @@ func (c *Collector) collectRegistryKey(name string, source goartifacts.Source) (
 }
 
 // collectRegistryValue collects a REGISTRY_VALUE source to the forensicstore.
-func (c *Collector) collectRegistryValue(name string, source goartifacts.Source) ([]*RegistryKey, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectRegistryValue(name string, source artifacts.Source) ([]*RegistryKey, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if len(source.Attributes.KeyValuePairs) == 0 {
 		log.Printf("No collection for %s", name)
@@ -316,8 +316,8 @@ func (c *Collector) collectRegistryValue(name string, source goartifacts.Source)
 }
 
 // collectWMI collects a WMI source to the forensicstore.
-func (c *Collector) collectWMI(name string, source goartifacts.Source) (*Process, error) {
-	source = goartifacts.ExpandSource(source, c)
+func (c *Collector) collectWMI(name string, source artifacts.Source) (*Process, error) {
+	source = artifacts.ExpandSource(source, c)
 
 	if source.Attributes.Query == "" {
 		log.Printf("No collection for %s", name)

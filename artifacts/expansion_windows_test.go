@@ -1,4 +1,4 @@
-package goartifacts
+package artifacts
 
 import (
 	"reflect"

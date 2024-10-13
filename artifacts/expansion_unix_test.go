@@ -1,7 +1,7 @@
 //go:build !windows
 // +build !windows
 
-package goartifacts
+package artifacts
 
 import (
 	"reflect"

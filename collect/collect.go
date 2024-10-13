@@ -32,8 +32,8 @@ import (
 	"runtime/debug"
 	"time"
 
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/forensicanalysis/artifactcollector/collector"
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
 	"github.com/forensicanalysis/artifactcollector/store"
 )
 
@@ -42,7 +42,7 @@ var (
 	sevenZipTempDir   = regexp.MustCompile(`(?i)C:\\Users\\.*\\AppData\\Local\\Temp\\.*`)
 )
 
-func Collect(config *collector.Configuration, artifactDefinitions []goartifacts.ArtifactDefinition, embedded map[string][]byte) (run *Run, err error) { //nolint:funlen
+func Collect(config *collector.Configuration, artifactDefinitions []artifacts.ArtifactDefinition, embedded map[string][]byte) (run *Run, err error) { //nolint:funlen
 	defer func() {
 		if r := recover(); r != nil {
 			logPrint("A critical error occurred: ", r, string(debug.Stack()))
@@ -113,11 +113,11 @@ func Collect(config *collector.Configuration, artifactDefinitions []goartifacts.
 	return run, nil
 }
 
-func filterArtifacts(config *collector.Configuration, definitions []goartifacts.ArtifactDefinition) ([]goartifacts.ArtifactDefinition, error) {
+func filterArtifacts(config *collector.Configuration, definitions []artifacts.ArtifactDefinition) ([]artifacts.ArtifactDefinition, error) {
 	filtered := definitions
 
 	if config.Artifacts != nil {
-		filtered = goartifacts.FilterName(config.Artifacts, definitions)
+		filtered = artifacts.FilterName(config.Artifacts, definitions)
 	}
 
 	if len(filtered) == 0 {
@@ -127,7 +127,7 @@ func filterArtifacts(config *collector.Configuration, definitions []goartifacts.
 	return filtered, nil
 }
 
-func collectArtifacts(store *store.ZipStore, tempDir string, artifactDefinitions []goartifacts.ArtifactDefinition, filteredArtifactDefinitions []goartifacts.ArtifactDefinition, start time.Time) error {
+func collectArtifacts(store *store.ZipStore, tempDir string, artifactDefinitions []artifacts.ArtifactDefinition, filteredArtifactDefinitions []artifacts.ArtifactDefinition, start time.Time) error {
 	collector, err := collector.NewCollector(store, tempDir, artifactDefinitions)
 	if err != nil {
 		return fmt.Errorf("Collector creation failed: %w", err)
@@ -145,7 +145,7 @@ func collectArtifacts(store *store.ZipStore, tempDir string, artifactDefinitions
 	return nil
 }
 
-func collectArtifact(collector *collector.Collector, artifactDefinition goartifacts.ArtifactDefinition, i, total int) {
+func collectArtifact(collector *collector.Collector, artifactDefinition artifacts.ArtifactDefinition, i, total int) {
 	defer func() {
 		if r := recover(); r != nil {
 			logPrint("A critical error occurred: ", r, string(debug.Stack()))

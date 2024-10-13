@@ -24,7 +24,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -33,13 +32,12 @@ import (
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/forensicanalysis/artifactcollector/artifactsgo"
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/forensicanalysis/artifactcollector/collector"
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
-func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefinition, error) {
-	var artifactDefinitions []goartifacts.ArtifactDefinition
+func artifacts2go(artifactDefinitionFiles []string) ([]artifacts.ArtifactDefinition, error) {
+	var artifactDefinitions []artifacts.ArtifactDefinition
 
 	for _, artifactDefinitionFile := range artifactDefinitionFiles {
 		// parse artifact definition yaml
@@ -51,7 +49,7 @@ func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefin
 		decoder := yaml.NewDecoder(data)
 
 		for {
-			artifactDefinition := goartifacts.ArtifactDefinition{}
+			artifactDefinition := artifacts.ArtifactDefinition{}
 
 			err := decoder.Decode(&artifactDefinition)
 			if err == io.EOF {
@@ -95,7 +93,7 @@ func createGoFile(pkg, name string, objects interface{}) error {
 func main() {
 	configFile := os.Args[1]
 
-	configYaml, err := ioutil.ReadFile(configFile) // #nosec
+	configYaml, err := os.ReadFile(configFile) // #nosec
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -128,18 +126,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	artifactDefinitionMap := map[string][]goartifacts.ArtifactDefinition{
-		"default.yaml": artifactsgo.Artifacts,
-	}
-
 	// decode file
 	for _, filename := range artifactDefinitionFiles {
-		ads, _, err := goartifacts.DecodeFile(filename)
-		if err != nil {
+		if _, _, err := artifacts.DecodeFile(filename); err != nil {
 			log.Fatal(err)
 		}
-
-		artifactDefinitionMap[filename] = ads
 	}
 
 	err = createGoFile("assets", "artifacts", artifactDefinitions)

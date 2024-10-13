@@ -29,34 +29,34 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/forensicanalysis/artifactcollector/store"
 )
 
 func Test_collectorResolver_Resolve(t *testing.T) {
-	windowsEnvironmentVariableSystemRoot := goartifacts.ArtifactDefinition{
+	windowsEnvironmentVariableSystemRoot := artifacts.ArtifactDefinition{
 		Name: "WindowsEnvironmentVariableSystemRoot",
 		Doc:  `The system root directory path, defined by %SystemRoot%, typically "C:\Windows".`,
-		Sources: []goartifacts.Source{{
+		Sources: []artifacts.Source{{
 			Type: "PATH",
-			Attributes: goartifacts.Attributes{
+			Attributes: artifacts.Attributes{
 				Paths:     []string{`\Windows`, `\WinNT`, `\WINNT35`, `\WTSRV`},
 				Separator: `\`,
 			},
-			Provides: []goartifacts.Provide{
+			Provides: []artifacts.Provide{
 				{Key: "environ_systemroot"},
 				{Key: "environ_windir"},
 				{Key: "environ_systemdrive", Regex: `^(..)`},
 			},
 		}, {
 			Type: "REGISTRY_VALUE",
-			Attributes: goartifacts.Attributes{
-				KeyValuePairs: []goartifacts.KeyValuePair{{
+			Attributes: artifacts.Attributes{
+				KeyValuePairs: []artifacts.KeyValuePair{{
 					Key:   `HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion`,
 					Value: `SystemRoot`,
 				}},
 			},
-			Provides: []goartifacts.Provide{
+			Provides: []artifacts.Provide{
 				{Key: "environ_systemroot"},
 				{Key: "environ_windir"},
 				{Key: "environ_systemdrive", Regex: `^(..)`},
@@ -66,12 +66,12 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 		Urls:        []string{"http://environmentvariables.org/SystemRoot"},
 	}
 
-	windowsSystemEventLogEvtx := goartifacts.ArtifactDefinition{
+	windowsSystemEventLogEvtx := artifacts.ArtifactDefinition{
 		Name: "WindowsSystemEventLogEvtxFile",
 		Doc:  "Windows System Event log for Vista or later systems.",
-		Sources: []goartifacts.Source{{
+		Sources: []artifacts.Source{{
 			Type: "FILE",
-			Attributes: goartifacts.Attributes{
+			Attributes: artifacts.Attributes{
 				Paths:     []string{`%%environ_systemroot%%\System32\winevt\Logs\System.evtx`},
 				Separator: `\`,
 			},
@@ -115,7 +115,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 
 				store := store.NewSimpleStore(f)
 
-				collector, err := NewCollector(store, "", []goartifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
+				collector, err := NewCollector(store, "", []artifacts.ArtifactDefinition{windowsSystemEventLogEvtx, windowsEnvironmentVariableSystemRoot})
 				if err != nil {
 					t.Errorf("NewCollector() error = %v", err)
 					return

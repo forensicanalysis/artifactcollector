@@ -19,7 +19,7 @@
 //
 // Author(s): Jonas Plum
 
-package goartifacts
+package artifacts
 
 import (
 	"runtime"

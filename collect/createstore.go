@@ -4,12 +4,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/forensicanalysis/artifactcollector/collector"
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
 	"github.com/forensicanalysis/artifactcollector/store"
 )
 
-func createStore(storePath string, config *collector.Configuration, definitions []goartifacts.ArtifactDefinition) (*store.ZipStore, func() error, error) {
+func createStore(storePath string, config *collector.Configuration, definitions []artifacts.ArtifactDefinition) (*store.ZipStore, func() error, error) {
 	f, err := os.Create(storePath)
 	if err != nil {
 		log.Fatal(err)

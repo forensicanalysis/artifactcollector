@@ -26,22 +26,22 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/forensicanalysis/artifactcollector/collector"
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 func TestCollect(t *testing.T) {
 	config := collector.Configuration{Artifacts: []string{"Test"}, User: true}
-	definitions := []goartifacts.ArtifactDefinition{{
+	definitions := []artifacts.ArtifactDefinition{{
 		Name: "Test",
-		Sources: []goartifacts.Source{
-			{Type: "FILE", Attributes: goartifacts.Attributes{Paths: []string{`C:\Windows\explorer.exe`}}},
-			{Type: "PATH", Attributes: goartifacts.Attributes{Paths: []string{`\Program Files`}}},
-			{Type: "DIRECTORY", Attributes: goartifacts.Attributes{Paths: []string{`\`}}},
-			{Type: "COMMAND", Attributes: goartifacts.Attributes{Cmd: "hostname"}},
-			{Type: "REGISTRY_KEY", Attributes: goartifacts.Attributes{Keys: []string{`HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Time Zones\*`}}},
-			{Type: "REGISTRY_VALUE", Attributes: goartifacts.Attributes{KeyValuePairs: []goartifacts.KeyValuePair{{Key: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\CodePage`, Value: "ACP"}}}},
-			{Type: "WMI", Attributes: goartifacts.Attributes{Query: "SELECT LastBootUpTime FROM Win32_OperatingSystem"}},
+		Sources: []artifacts.Source{
+			{Type: "FILE", Attributes: artifacts.Attributes{Paths: []string{`C:\Windows\explorer.exe`}}},
+			{Type: "PATH", Attributes: artifacts.Attributes{Paths: []string{`\Program Files`}}},
+			{Type: "DIRECTORY", Attributes: artifacts.Attributes{Paths: []string{`\`}}},
+			{Type: "COMMAND", Attributes: artifacts.Attributes{Cmd: "hostname"}},
+			{Type: "REGISTRY_KEY", Attributes: artifacts.Attributes{Keys: []string{`HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Time Zones\*`}}},
+			{Type: "REGISTRY_VALUE", Attributes: artifacts.Attributes{KeyValuePairs: []artifacts.KeyValuePair{{Key: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Nls\CodePage`, Value: "ACP"}}}},
+			{Type: "WMI", Attributes: artifacts.Attributes{Query: "SELECT LastBootUpTime FROM Win32_OperatingSystem"}},
 		},
 	}}
 
@@ -52,7 +52,7 @@ func TestCollect(t *testing.T) {
 
 	type args struct {
 		config              *collector.Configuration
-		artifactDefinitions []goartifacts.ArtifactDefinition
+		artifactDefinitions []artifacts.ArtifactDefinition
 		embedded            map[string][]byte
 	}
 

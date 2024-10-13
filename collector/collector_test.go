@@ -32,19 +32,19 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 )
 
 type TestCollector struct {
 	fs        fs.FS
-	Collected map[string][]goartifacts.Source
+	Collected map[string][]artifacts.Source
 }
 
-func (r *TestCollector) Collect(name string, source goartifacts.Source) {
-	source = goartifacts.ExpandSource(source, r)
+func (r *TestCollector) Collect(name string, source artifacts.Source) {
+	source = artifacts.ExpandSource(source, r)
 
 	if r.Collected == nil {
-		r.Collected = map[string][]goartifacts.Source{}
+		r.Collected = map[string][]artifacts.Source{}
 	}
 
 	r.Collected[name] = append(r.Collected[name], source)
@@ -175,7 +175,7 @@ func TestCollect(t *testing.T) {
 
 			testFiles := []string{filepath.Join("..", "test", "artifacts", tt.args.testfile)}
 
-			artifactDefinitions, err := goartifacts.DecodeFiles(testFiles)
+			artifactDefinitions, err := artifacts.DecodeFiles(testFiles)
 			if err != nil {
 				t.Errorf("Collect() error = %v", err)
 				return

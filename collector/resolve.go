@@ -28,7 +28,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 )
 
 // Resolve returns a list of values that can be used for the placeholder parameter.
@@ -63,17 +63,17 @@ func (c *Collector) Resolve(parameter string) ([]string, error) { //nolint:cyclo
 		var resolve []string
 
 		switch source.Type {
-		case goartifacts.SourceType.Command:
+		case artifacts.SourceType.Command:
 			resolve, err = c.resolveCommand(source, provide, regex)
-		case goartifacts.SourceType.File:
+		case artifacts.SourceType.File:
 			resolve, err = c.resolveFile(source, provide, regex)
-		case goartifacts.SourceType.Path:
+		case artifacts.SourceType.Path:
 			resolve, err = c.resolvePath(source, provide, regex)
-		case goartifacts.SourceType.RegistryKey:
+		case artifacts.SourceType.RegistryKey:
 			resolve, err = c.resolveRegistryKey(source, provide, regex)
-		case goartifacts.SourceType.RegistryValue:
+		case artifacts.SourceType.RegistryValue:
 			resolve, err = c.resolveRegistryValue(source, provide, regex)
-		case goartifacts.SourceType.Wmi:
+		case artifacts.SourceType.Wmi:
 			resolve, err = c.resolveWMI(source, provide, regex)
 		}
 
@@ -97,7 +97,7 @@ func (c *Collector) Resolve(parameter string) ([]string, error) { //nolint:cyclo
 	return resolves, nil
 }
 
-func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provide, error) {
+func getProvide(source artifacts.Source, parameter string) (artifacts.Provide, error) {
 	i := -1
 
 	for index, p := range source.Provides {
@@ -107,7 +107,7 @@ func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provid
 	}
 
 	if i == -1 {
-		return goartifacts.Provide{}, fmt.Errorf("missing provide")
+		return artifacts.Provide{}, fmt.Errorf("missing provide")
 	}
 
 	provide := source.Provides[i]
@@ -115,7 +115,7 @@ func getProvide(source goartifacts.Source, parameter string) (goartifacts.Provid
 	return provide, nil
 }
 
-func (c *Collector) resolveCommand(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveCommand(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// COMMAND The lines of the stdout of the command.
 	process, err := c.collectCommand("", source)
@@ -146,7 +146,7 @@ func (c *Collector) resolveCommand(source goartifacts.Source, provide goartifact
 	return resolves, fmt.Errorf("reading standard input: %w", err)
 }
 
-func (c *Collector) resolveFile(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveFile(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	// FILE The lines of the file content.
 	files, err := c.collectFile("", source)
 	if err != nil {
@@ -183,7 +183,7 @@ func (c *Collector) resolveFile(source goartifacts.Source, provide goartifacts.P
 	return resolves, nil
 }
 
-func (c *Collector) resolvePath(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolvePath(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// PATH The defined paths.
 	directories, err := c.collectPath("", source)
@@ -206,7 +206,7 @@ func (c *Collector) resolvePath(source goartifacts.Source, provide goartifacts.P
 	return resolves, nil
 }
 
-func (c *Collector) resolveRegistryKey(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveRegistryKey(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_KEY The key paths.
 	keys, err := c.collectRegistryKey("", source)
@@ -229,7 +229,7 @@ func (c *Collector) resolveRegistryKey(source goartifacts.Source, provide goarti
 	return resolves, nil
 }
 
-func (c *Collector) resolveRegistryValue(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveRegistryValue(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_VALUE The registry values.
 	keys, err := c.collectRegistryValue("", source)
@@ -254,7 +254,7 @@ func (c *Collector) resolveRegistryValue(source goartifacts.Source, provide goar
 	return resolves, nil
 }
 
-func (c *Collector) resolveWMI(source goartifacts.Source, provide goartifacts.Provide, regex *regexp.Regexp) ([]string, error) {
+func (c *Collector) resolveWMI(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// WMI The values selected using the wmi_key.
 	wmi, err := c.collectWMI("", source)
