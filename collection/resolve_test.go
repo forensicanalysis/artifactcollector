@@ -101,7 +101,7 @@ func Test_collectorResolver_Resolve(t *testing.T) {
 				testDir := setup(t)
 				defer teardown(t)
 
-				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0o755)
+				err := os.MkdirAll(filepath.Join(testDir, "extract"), 0755)
 				if err != nil {
 					t.Errorf("Could not make dir %s", err)
 					return

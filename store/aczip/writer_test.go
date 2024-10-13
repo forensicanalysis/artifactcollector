@@ -23,27 +23,27 @@ var writeTests = []WriteTest{
 	{
 		Name: "foo",
 		Data: []byte("Rabbits, guinea pigs, gophers, marsupial rats, and quolls."),
-		Mode: 0o666,
+		Mode: 0666,
 	},
 	{
 		Name: "bar",
 		Data: nil, // large data set in the test
-		Mode: 0o644,
+		Mode: 0644,
 	},
 	{
 		Name: "setuid",
 		Data: []byte("setuid file"),
-		Mode: 0o755 | os.ModeSetuid,
+		Mode: 0755 | os.ModeSetuid,
 	},
 	{
 		Name: "setgid",
 		Data: []byte("setgid file"),
-		Mode: 0o755 | os.ModeSetgid,
+		Mode: 0755 | os.ModeSetgid,
 	},
 	{
 		Name: "symlink",
 		Data: []byte("../link/target"),
-		Mode: 0o755 | os.ModeSymlink,
+		Mode: 0755 | os.ModeSymlink,
 	},
 }
 

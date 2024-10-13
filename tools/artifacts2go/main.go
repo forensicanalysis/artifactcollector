@@ -63,7 +63,7 @@ func artifacts2go(artifactDefinitionFiles []string) ([]goartifacts.ArtifactDefin
 
 func createGoFile(pkg, name string, objects interface{}) error {
 	// write go code to assets go
-	err := os.MkdirAll(pkg, 0o777)
+	err := os.MkdirAll(pkg, 0777)
 	if err != nil {
 		return err
 	}
