@@ -43,6 +43,7 @@ func ReadDir(fsys FS, name string) ([]DirEntry, error) {
 
 	list, err := dir.ReadDir(-1)
 	sort.Sort(SortedDir(list))
+
 	return list, err
 }
 
@@ -73,6 +74,7 @@ func FileInfoToDirEntry(info FileInfo) DirEntry {
 	if info == nil {
 		return nil
 	}
+
 	return dirInfo{fileInfo: info}
 }
 

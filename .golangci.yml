@@ -41,7 +41,8 @@ issues:
   exclude:
     - block should not end with a whitespace
     - strings.ReplaceAll
+  exclude-dirs:
+    - build/go
+    - store/aczip
   exclude-files:
     - ".*\\.generated\\.*."
-    - "store/aczip"
-    - "build/go"

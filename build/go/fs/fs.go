@@ -8,7 +8,7 @@
 package fs
 
 import (
-	"internal/oserror"
+	"errors"
 	"time"
 	"unicode/utf8"
 )
@@ -60,13 +60,16 @@ func ValidPath(name string) bool {
 		for i < len(name) && name[i] != '/' {
 			i++
 		}
+
 		elem := name[:i]
 		if elem == "" || elem == "." || elem == ".." {
 			return false
 		}
+
 		if i == len(name) {
 			return true // reached clean ending
 		}
+
 		name = name[i+1:]
 	}
 }
@@ -133,18 +136,18 @@ type ReadDirFile interface {
 // Errors returned by file systems can be tested against these errors
 // using errors.Is.
 var (
-	ErrInvalid    = errInvalid()    // "invalid argument"
-	ErrPermission = errPermission() // "permission denied"
-	ErrExist      = errExist()      // "file already exists"
-	ErrNotExist   = errNotExist()   // "file does not exist"
-	ErrClosed     = errClosed()     // "file already closed"
+	ErrInvalid    = errors.New("invalid argument")
+	ErrPermission = errors.New("permission denied")
+	ErrExist      = errors.New("file already exists")
+	ErrNotExist   = errors.New("file does not exist")
+	ErrClosed     = errors.New("file already closed")
 )
 
-func errInvalid() error    { return oserror.ErrInvalid }
-func errPermission() error { return oserror.ErrPermission }
-func errExist() error      { return oserror.ErrExist }
-func errNotExist() error   { return oserror.ErrNotExist }
-func errClosed() error     { return oserror.ErrClosed }
+func errInvalid() error    { return ErrInvalid }
+func errPermission() error { return ErrPermission }
+func errExist() error      { return ErrExist }
+func errNotExist() error   { return ErrNotExist }
+func errClosed() error     { return ErrClosed }
 
 // A FileInfo describes a file and is returned by Stat.
 type FileInfo interface {
@@ -188,23 +191,28 @@ const (
 	// Mask for the type bits. For regular files, none will be set.
 	ModeType = ModeDir | ModeSymlink | ModeNamedPipe | ModeSocket | ModeDevice | ModeCharDevice | ModeIrregular
 
-	ModePerm FileMode = 0777 // Unix permission bits
+	ModePerm FileMode = 0o777 // Unix permission bits
 )
 
 func (m FileMode) String() string {
 	const str = "dalTLDpSugct?"
+
 	var buf [32]byte // Mode is uint32.
+
 	w := 0
+
 	for i, c := range str {
 		if m&(1<<uint(32-1-i)) != 0 {
 			buf[w] = byte(c)
 			w++
 		}
 	}
+
 	if w == 0 {
 		buf[w] = '-'
 		w++
 	}
+
 	const rwx = "rwxrwxrwx"
 	for i, c := range rwx {
 		if m&(1<<uint(9-1-i)) != 0 {
@@ -212,8 +220,10 @@ func (m FileMode) String() string {
 		} else {
 			buf[w] = '-'
 		}
+
 		w++
 	}
+
 	return string(buf[:w])
 }
 

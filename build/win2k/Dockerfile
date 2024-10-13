@@ -30,7 +30,6 @@ RUN mv /repo/vendor /gopath/src
 
 COPY ./build/go/context/context.go /gopath/src/context/context.go
 COPY ./build/go/fs /gopath/src/io/fs
-COPY ./build/go/oserror /gopath/src/internal/oserror
 
 RUN mv /repo /gopath/src/github.com/forensicanalysis/artifactcollector
 RUN cp -r /gopath/src/github.com/forensicanalysis/artifactcollector/build/go /gopath/src

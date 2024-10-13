@@ -26,6 +26,8 @@ func Stat(fsys FS, name string) (FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer file.Close()
+
 	return file.Stat()
 }

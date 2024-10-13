@@ -41,6 +41,7 @@ func ReadFile(fsys FS, name string) ([]byte, error) {
 	defer file.Close()
 
 	var size int
+
 	if info, err := file.Stat(); err == nil {
 		size64 := info.Size()
 		if int64(int(size64)) == size64 {
@@ -49,17 +50,21 @@ func ReadFile(fsys FS, name string) ([]byte, error) {
 	}
 
 	data := make([]byte, 0, size+1)
+
 	for {
 		if len(data) >= cap(data) {
 			d := append(data[:cap(data)], 0)
 			data = d[:len(data)]
 		}
+
 		n, err := file.Read(data[len(data):cap(data)])
 		data = data[:len(data)+n]
+
 		if err != nil {
 			if err == io.EOF {
 				err = nil
 			}
+
 			return data, err
 		}
 	}
