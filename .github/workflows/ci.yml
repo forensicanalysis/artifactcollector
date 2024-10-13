@@ -5,6 +5,17 @@ on:
   pull_request:
 
 jobs:
+  fmt:
+    name: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
+      - run: go fmt ./...
+      - run: make generate-win
+      - run: git diff --exit-code
+
   lint:
     name: lint
     runs-on: ubuntu-latest
@@ -46,8 +57,10 @@ jobs:
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
           mv repo/build/go/context path/src
-          mv repo/build/go/fs path/src
+          mkdir -p path/src/io
+          mv repo/build/go/fs path/src/io
           mv repo path/src/github.com/forensicanalysis/artifactcollector
+          find path
       - name: Build with go 1.9.7
         run: |
           mkdir -p go1.9.7
@@ -103,13 +116,7 @@ jobs:
         with: { go-version: '1.23' }
       - uses: actions/checkout@v4
 
-      - name: Add Windows syso File
-        run: mv build/win/artifactcollector.syso artifactcollector.syso
-
-      - run: go build .
-
-      - name: Remove Windows syso File
-        run: rm artifactcollector.syso
+      - run: make build-win
 
       - run: ./artifactcollector.exe
 
