@@ -34,7 +34,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/forensicanalysis/artifactcollector/artifactsgo"
-	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactcollector/collector"
 	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
