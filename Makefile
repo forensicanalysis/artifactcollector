@@ -71,8 +71,6 @@ build-darwin: generate
 	@echo "Building for macOS..."
 	GOOS=darwin GOARCH=amd64 go build -o build/bin/artifactcollector-darwin .
 
-
-
 .PHONY: build-win
 build-win: generate-win
 	@echo "Building for Windows..."
