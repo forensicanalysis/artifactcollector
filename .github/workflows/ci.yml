@@ -6,7 +6,7 @@ on:
 
 jobs:
   lint:
-    name: Lint
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
@@ -45,7 +45,8 @@ jobs:
           mkdir -p path
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
-          mv repo/go path/src
+          mv repo/build/go/context path/src
+          mv repo/build/go/fs path/src
           mv repo path/src/github.com/forensicanalysis/artifactcollector
       - name: Build with go 1.9.7
         run: |
