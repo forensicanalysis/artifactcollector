@@ -15,6 +15,7 @@ linters:
     - forbidigo
     - gochecknoglobals
     - godox
+    - gofumpt
     - gomnd
     - gosec
     - ireturn

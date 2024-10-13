@@ -12,23 +12,33 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.23' }
       - uses: actions/checkout@v4
-
       - uses: golangci/golangci-lint-action@v6
         with: { version: 'v1.61' }
+
+  test:
+    name: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest, windows-latest ]
+      fail-fast: false
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
+      - run: make test
 
   backwards-compatibility:
     name: Backwards Compatibility
     runs-on: windows-latest
+    defaults: { run: { shell: bash } }
     steps:
       - uses: actions/setup-go@v5
-        with: { go-version: '1.17' }
+        with: { go-version: '1.23' }
       - uses: actions/checkout@v4
         with: { path: repo }
-      - name: Load Modules
-        run: |
-          go mod download
-          go mod vendor
-        shell: bash
+      - run: go mod vendor
         working-directory: repo
       - name: Move packages
         run: |
@@ -37,32 +47,95 @@ jobs:
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/build/go path/src
-        shell: bash
       - name: Build with go 1.9.7
         run: |
           mkdir -p go1.9.7
           curl -Lso go1.9.7.windows-amd64.zip https://golang.org/dl/go1.9.7.windows-amd64.zip
           unzip -q go1.9.7.windows-amd64.zip -d go1.9.7
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.9.7/go go1.9.7/go/bin/go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
-        shell: bash
       - name: Build with go 1.2.2
         run: |
           mkdir -p go1.2.2
           curl -Lso go1.2.2.windows-amd64.zip https://golang.org/dl/go1.2.2.windows-amd64.zip
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
+
+  unix:
+    name: unix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ macos-latest, ubuntu-latest ]
+      fail-fast: false
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.17' }
+      - uses: actions/checkout@v4
+
+      - run: go build .
+
+      - run: ./artifactcollector
+
+      - name: Move Binary
+        run: |
+          mkdir bin output
+          mv artifactcollector bin
+          mv *.zip output
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifactcollector ${{ matrix.os }}
+          path: bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output ${{ matrix.os }}
+          path: output
+
+  win:
+    name: win
+    runs-on: windows-latest
+    defaults:
+      run:
         shell: bash
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
+
+      - name: Add Windows syso File
+        run: mv build/win/artifactcollector.syso artifactcollector.syso
+
+      - run: go build .
+
+      - name: Remove Windows syso File
+        run: rm artifactcollector.syso
+
+      - run: ./artifactcollector.exe
+
+      - name: Move Binary
+        run: |
+          mkdir bin output
+          mv artifactcollector.exe bin
+          mv *.zip output
+
+      - name: Upload artifactcollector
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifactcollector windows-latest
+          path: bin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output windows-latest
+          path: output
 
   win2k:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
-        with: { go-version: '1.17' }
+        with: { go-version: '1.23' }
       - uses: actions/checkout@v4
-
       - run: make build-win2k
-
       - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows 2000, 32bit)
@@ -73,61 +146,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
-        with: { go-version: '1.17' }
+        with: { go-version: '1.23' }
       - uses: actions/checkout@v4
-        with: { path: repo }
-
       - run: make build-winxp
-
       - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows XP, 32bit)
           path: build/bin/artifactcollectorxp.exe
-
-  artifactcollector:
-    name: artifactcollector
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, windows-latest, ubuntu-latest ]
-      fail-fast: false
-    steps:
-      - uses: actions/setup-go@v5
-        with: { go-version: '1.17' }
-      - uses: actions/checkout@v4
-
-      - run: make test
-        shell: bash
-
-      - name: Add Windows syso File
-        run: mv build/win/artifactcollector.syso artifactcollector.syso
-        if: matrix.os == 'windows-latest'
-        shell: bash
-
-      - run: go build .
-        shell: bash
-      - run: go install .
-        shell: bash
-
-      - name: Remove Windows syso File
-        run: rm artifactcollector.syso
-        if: matrix.os == 'windows-latest'
-        shell: bash
-
-      - name: Move Binary
-        run: |
-          mkdir bin output
-          mv artifactcollector* bin
-          mv *.zip output
-        shell: bash
-
-      - name: Upload artifactcollector
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifactcollector ${{ matrix.os }}
-          path: bin
-      - name: Upload output
-        uses: actions/upload-artifact@v4
-        with:
-          name: output ${{ matrix.os }}
-          path: output
