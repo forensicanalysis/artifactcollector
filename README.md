@@ -33,16 +33,16 @@ On Linux and macOS, you can run the artifactcollector from the terminal: `./arti
 ### Build your own artifactcollector
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
-2. Add artifact definition yaml files as needed in `pack/artifacts`. Do not edit the
+2. Add artifact definition yaml files as needed in `config/artifacts`. Do not edit the
    artifact definitions, as they will be overwritten.
-3. Edit `pack/ac.yaml` and add the artifacts you want to collect.
+3. Edit `config/ac.yaml` and add the artifacts you want to collect.
 4. On windows, you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
    to enable the icon for the executable and the UAC popup.
 5. Run `make build` to generate the artifactcollector binary.
 
 ### Embed binaries
 
-Binaries can be added to `pack/bin` and then included into the artifactcollector
+Binaries can be added to `config/bin` and then included into the artifactcollector
 in the `make build` step. Additionally, a corresponding COMMAND artifact like
 the following is required.
 

@@ -44,8 +44,10 @@ generate:
 	@echo "Generating..."
 	go install golang.org/x/tools/cmd/goimports@v0.1.7
 	go install github.com/forensicanalysis/go-resources/cmd/resources@v0.4.0
-	go run tools/yaml2go/main.go pack/ac.yaml pack/artifacts/*
-	resources -package assets -output assets/bin.generated.go pack/bin/*
+	rm -rf config/artifacts
+	git clone https://github.com/forensicanalysis/artifacts.git config/artifacts
+	go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*.yaml
+	resources -package assets -output assets/bin.generated.go config/bin/*
 
 .PHONY: generate-win
 generate-win: generate

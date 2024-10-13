@@ -36,18 +36,12 @@ package main
 import (
 	"os"
 
-	"github.com/forensicanalysis/artifactcollector/artifactsgo"
 	"github.com/forensicanalysis/artifactcollector/assets"
 	"github.com/forensicanalysis/artifactcollector/collect"
-	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 func main() {
-	var artifacts []goartifacts.ArtifactDefinition
-	artifacts = append(artifacts, artifactsgo.Artifacts...)
-	artifacts = append(artifacts, assets.Artifacts...)
-
-	if _, err := collect.Collect(assets.Config, artifacts, assets.FS); err != nil {
+	if _, err := collect.Collect(assets.Config, assets.Artifacts, assets.FS); err != nil {
 		os.Exit(1)
 	}
 }
