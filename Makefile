@@ -14,10 +14,17 @@ fmt:
 	gofumpt -l -w .
 	wsl -fix ./... || true
 
+.PHONY: vendor
+vendor:
+	@echo "Vendoring..."
+	go mod tidy
+	go mod vendor
+
 .PHONY: lint
 lint:
+	@echo "Linting..."
 	golangci-lint version
-	golangci-lint run --config test/.golangci.yml ./...
+	golangci-lint run --config .golangci.yml ./...
 
 .PHONY: test
 test:
@@ -64,13 +71,13 @@ build-darwin: generate
 	GOOS=darwin GOARCH=amd64 go build -o build/bin/artifactcollector-darwin .
 
 .PHONY: build-win2k
-build-win2k:
+build-win2k: vendor
 	@echo "Building for Windows 2000..."
 	docker build -t artifactcollector-win2k -f build/win2k/Dockerfile .
 	docker run --rm -v $(shell pwd)/build/bin:/build artifactcollector-win2k
 
 .PHONY: build-winxp
-build-winxp:
+build-winxp: vendor
 	@echo "Building for Windows XP..."
 	docker build -t artifactcollector-winxp -f build/winxp/Dockerfile .
 	docker run --rm -v $(shell pwd)/build/bin:/build artifactcollector-winxp

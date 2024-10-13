@@ -34,9 +34,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-
 	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 // Collection is the output of a run that can be used to further process the output
@@ -80,7 +79,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 		config.OutputDir = "" // current directory
 	}
 
-	_ = os.MkdirAll(config.OutputDir, 0o700)
+	_ = os.MkdirAll(config.OutputDir, 0700)
 
 	// setup
 	hostname, err := os.Hostname()
@@ -99,7 +98,7 @@ func Run(config *collection.Configuration, artifactDefinitions []goartifacts.Art
 
 	logfilePath := filepath.Join(config.OutputDir, collectionName+".log")
 
-	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0o600)
+	logfile, logfileError := os.OpenFile(logfilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if logfileError != nil {
 		log.Printf("Could not open logfile %s\n", logfileError)
 	} else {
@@ -222,11 +221,11 @@ func unpack(embedded map[string][]byte) (tempDir string, err error) {
 	}
 
 	for path, content := range embedded {
-		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0o700); err != nil {
+		if err := os.MkdirAll(filepath.Join(tempDir, filepath.Dir(path)), 0700); err != nil {
 			return tempDir, err
 		}
 
-		if err := ioutil.WriteFile(filepath.Join(tempDir, path), content, 0o644); err != nil {
+		if err := ioutil.WriteFile(filepath.Join(tempDir, path), content, 0644); err != nil {
 			return tempDir, err
 		}
 

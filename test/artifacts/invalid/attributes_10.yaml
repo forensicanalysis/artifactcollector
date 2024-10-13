@@ -1,0 +1,6 @@
+# Test missing attributes
+
+name: Test
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND

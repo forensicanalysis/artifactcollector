@@ -13,9 +13,11 @@ linters:
     - errorlint
     - exhaustruct
     - forbidigo
+    - gochecknoglobals
     - godox
     - gomnd
     - gosec
+    - ireturn
     - lll
     - mnd
     - nilnil
@@ -38,7 +40,8 @@ linters-settings:
 issues:
   exclude:
     - block should not end with a whitespace
+    - strings.ReplaceAll
   exclude-files:
     - ".*\\.generated\\.*."
     - "store/aczip"
-    - "replace"
+    - "build/go"

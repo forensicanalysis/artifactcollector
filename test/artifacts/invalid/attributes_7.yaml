@@ -1,0 +1,16 @@
+# Test unnessesarry attributes
+
+name: Test
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: REGISTRY_VALUE
+  attributes:
+    names: [Member]
+    paths: ['/etc']
+    separator: '/'
+    cmd: hostname
+    args: ['-f']
+    keys: ['key']
+    query: query
+    base_object: '\baseobject'
+    key_value_pairs: [{key: 'key', value: 'value'}]

@@ -5,9 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-
 	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 	"github.com/forensicanalysis/artifactcollector/store"
 )
 

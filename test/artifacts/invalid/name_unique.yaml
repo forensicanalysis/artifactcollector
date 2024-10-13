@@ -1,0 +1,15 @@
+# Duplicate name
+
+name: Test
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname
+---
+name: Test
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname

@@ -29,8 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 	"github.com/forensicanalysis/artifactcollector/store"
 )
 

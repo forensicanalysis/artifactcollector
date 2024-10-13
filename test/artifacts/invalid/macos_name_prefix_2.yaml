@@ -1,0 +1,9 @@
+# Validate name prefix
+
+name: TestCommand
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname
+supported_os: [Darwin]

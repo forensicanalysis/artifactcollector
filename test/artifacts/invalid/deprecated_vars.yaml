@@ -1,0 +1,14 @@
+# Deprecated variables
+
+name: TestDirectory
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: DIRECTORY
+  attributes:
+    paths:
+      - "%%users.userprofile%%\\AppData\\Local"
+      # - "%%users.userprofile%%\\AppData\\Roaming"
+      # - "%%users.userprofile%%\\Application Data"
+      # - "%%users.userprofile%%\\Local Settings\\Application Data"
+    separator: '\'
+supported_os: [Windows]

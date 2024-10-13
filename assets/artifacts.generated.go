@@ -1,5 +1,5 @@
 package assets
 
-import "github.com/forensicanalysis/artifactlib/goartifacts"
+import "github.com/forensicanalysis/artifactcollector/goartifacts"
 
 var Artifacts = []goartifacts.ArtifactDefinition(nil)

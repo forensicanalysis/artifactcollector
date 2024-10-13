@@ -1,0 +1,8 @@
+# Validate name case
+
+name: testcommand
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname

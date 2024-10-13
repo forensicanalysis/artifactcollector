@@ -28,7 +28,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 // Resolve returns a list of values that can be used for the placeholder parameter.

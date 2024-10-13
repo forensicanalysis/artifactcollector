@@ -5,19 +5,25 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
+
+      - uses: golangci/golangci-lint-action@v6
+        with: { version: 'v1.61' }
 
   backwards-compatibility:
     name: Backwards Compatibility
     runs-on: windows-latest
     steps:
-      - name: Setup go 1.17
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.17.0
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: repo
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.17' }
+      - uses: actions/checkout@v4
+        with: { path: repo }
       - name: Load Modules
         run: |
           go mod download
@@ -31,16 +37,6 @@ jobs:
           mkdir -p path/src/github.com/forensicanalysis
           mv repo path/src/github.com/forensicanalysis/artifactcollector
           cp -r path/src/github.com/forensicanalysis/artifactcollector/build/go path/src
-          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
-
-          mkdir -p path/src/io path/src/internal
-          cp -r $(go env GOROOT)/src/io/fs path/src/io
-          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
-          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
-          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
         shell: bash
       - name: Build with go 1.9.7
         run: |
@@ -62,10 +58,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
-        with: { go-version: 1.17.0 }
+        with: { go-version: '1.17' }
       - uses: actions/checkout@v4
 
       - run: make build-win2k
+
       - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows 2000, 32bit)
@@ -76,40 +73,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
-        with:
-          go-version: 1.17.0
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: repo
-      - run: go mod vendor
-        working-directory: repo
-      - run: go generate -mod=readonly
-        working-directory: repo
-      - run: mv build/win/artifactcollector32.syso artifactcollector.syso
-        working-directory: repo
-      - name: Move packages
-        run: |
-          mkdir -p path
-          mv repo/vendor path/src
-          mkdir -p path/src/github.com/forensicanalysis
-          mv repo path/src/github.com/forensicanalysis/artifactcollector
+        with: { go-version: '1.17' }
+      - uses: actions/checkout@v4
+        with: { path: repo }
 
-          mkdir -p path/src/io path/src/internal
-          cp -r $(go env GOROOT)/src/io/fs path/src/io
-          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
-          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
-          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
-      - name: Setup go 1.9.7
-        uses: actions/setup-go@v4
-        with: { go-version: '1.9.7' }
-      - name: Build
-        run: |
-          sudo apt-get install mingw-w64
-          GOPATH=$GITHUB_WORKSPACE/path CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
+      - run: make build-winxp
+
       - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector (Windows XP, 32bit)
@@ -123,54 +92,22 @@ jobs:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
       fail-fast: false
     steps:
-      - name: Setup go 1.17
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.17.0
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Download dependencies
-        run: go mod download
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.17' }
+      - uses: actions/checkout@v4
 
-      - name: Install golangci-lint & go-acc
-        run: |
-          curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(go env GOPATH)/bin v1.25.0
-          go get github.com/ory/go-acc
+      - run: make test
         shell: bash
 
-      - name: Lint
-        run: golangci-lint run --verbose --config test/.golangci.yml --enable gofmt --enable goimports
-        if: matrix.os != 'windows-latest'
-      - name: Lint Windows
-        run: golangci-lint run --verbose --config test/.golangci.yml
-        if: matrix.os == 'windows-latest'
-      - name: Test
-        run: go-acc ./...
-        shell: bash
-      - name: Upload coverage
-        env:
-          CI: "true"
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        run: bash <(curl -s https://codecov.io/bash)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with: { node-version: '10.x' }
-      - name: Install bats
-        run: npm install -g bats@1.1.0
-
-      - name: Setup Build
-        run: go generate
       - name: Add Windows syso File
         run: mv build/win/artifactcollector.syso artifactcollector.syso
         if: matrix.os == 'windows-latest'
         shell: bash
-      - name: Build
-        run: |
-          go build .
-          go install .
+
+      - run: go build .
+        shell: bash
+      - run: go install .
+        shell: bash
 
       - name: Remove Windows syso File
         run: rm artifactcollector.syso

@@ -31,9 +31,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
 	"github.com/forensicanalysis/fslib/registryfs"
 	"github.com/forensicanalysis/fslib/systemfs"
+
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 // The LiveCollector can resolve and collect artifact on live systems.

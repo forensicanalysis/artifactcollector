@@ -1,0 +1,32 @@
+# Artifact definitions for testing
+
+name: GoVersionCommand
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: docker
+    args: [version]
+---
+name: GoInfoCommand
+doc: Full Dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: docker
+    args: [info]
+  conditions: [time_zone != Pacific/Galapagos]
+  supported_os: [Windows,Linux,Darwin]
+# conditions: [time_zone != Pacific/Galapagos]
+labels: [Docker]
+# provides: [environ_systemroot]
+supported_os: [Windows,Linux,Darwin]
+urls: ['https://docs.docker.com/engine/reference/commandline/info/']
+---
+name: MysteriousCommand
+doc: Mysterious command
+sources:
+- type: COMMAND
+  attributes:
+    cmd: env
+    args: []

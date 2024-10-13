@@ -26,9 +26,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
-
 	"github.com/forensicanalysis/artifactcollector/collection"
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 func TestRun(t *testing.T) {

@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"io"
+	"io/ioutil"
 )
 
 func isZip64(h *zip.FileHeader) bool {
@@ -71,7 +72,7 @@ func (w *Writer) readFile(h *header) ([]byte, error) {
 	flateReader := flate.NewReader(limitedReader)
 	defer flateReader.Close()
 
-	b, err := io.ReadAll(flateReader)
+	b, err := ioutil.ReadAll(flateReader)
 	if err != nil && err != io.EOF {
 		return nil, err
 	}

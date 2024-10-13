@@ -5,9 +5,7 @@ go 1.23.0
 replace github.com/forensicanalysis/artifactcollector => ./..
 
 require (
-	github.com/forensicanalysis/artifactcollector v0.16.4
-	github.com/forensicanalysis/artifactlib v0.17.1
-	github.com/forensicanalysis/artifactsgo v0.6.7
+	github.com/forensicanalysis/artifactcollector v0.0.0-00010101000000-000000000000
 	gopkg.in/yaml.v2 v2.4.0
 )
 

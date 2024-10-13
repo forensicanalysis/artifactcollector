@@ -32,7 +32,7 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/forensicanalysis/artifactlib/goartifacts"
+	"github.com/forensicanalysis/artifactcollector/goartifacts"
 )
 
 type TestCollector struct {

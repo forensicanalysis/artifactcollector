@@ -1,0 +1,17 @@
+# No cyclic artifact groups
+
+name: TestA
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - TestB
+---
+name: TestB
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - TestA

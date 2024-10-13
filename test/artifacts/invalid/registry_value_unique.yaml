@@ -1,0 +1,13 @@
+# Duplicate registry value
+
+name: TestA
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_VALUE
+  attributes: {key_value_pairs: [{key: 'foo', value: 'bar'}]}
+---
+name: Test
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_VALUE
+  attributes: {key_value_pairs: [{key: 'foo', value: 'bar'}]}
