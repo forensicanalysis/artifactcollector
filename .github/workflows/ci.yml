@@ -30,7 +30,7 @@ jobs:
       - run: make test
 
   backwards-compatibility:
-    name: Backwards Compatibility
+    name: backwards-compatibility
     runs-on: windows-latest
     defaults: { run: { shell: bash } }
     steps:
@@ -45,8 +45,8 @@ jobs:
           mkdir -p path
           mv repo/vendor path/src
           mkdir -p path/src/github.com/forensicanalysis
+          mv repo/go path/src
           mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/artifactcollector/build/go path/src
       - name: Build with go 1.9.7
         run: |
           mkdir -p go1.9.7
@@ -61,7 +61,7 @@ jobs:
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
 
   unix:
-    name: unix
+    name: artifactcollector
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -74,7 +74,7 @@ jobs:
 
       - run: go build .
 
-      - run: ./artifactcollector
+      - run: sudo ./artifactcollector
 
       - name: Move Binary
         run: |
@@ -92,7 +92,7 @@ jobs:
           path: output
 
   win:
-    name: win
+    name: artifactcollector (win)
     runs-on: windows-latest
     defaults:
       run:
