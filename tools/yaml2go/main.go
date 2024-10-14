@@ -60,6 +60,10 @@ func artifacts2go(artifactDefinitionFiles []string) ([]artifacts.ArtifactDefinit
 				return nil, fmt.Errorf("decode of %s failed: %w", artifactDefinitionFile, err)
 			}
 
+			for i := range artifactDefinition.Sources {
+				artifactDefinition.Sources[i].Parent = artifactDefinition.Name
+			}
+
 			artifactDefinitions = append(artifactDefinitions, artifactDefinition)
 		}
 	}

@@ -93,7 +93,7 @@ func (c *Collector) createFile(definitionName string, collectContents bool, srcp
 				hostname = ""
 			}
 
-			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+			dstpath, storeFile, err := c.Store.StoreFile(filepath.Join("files", hostname, strings.TrimLeft(srcpath, "")))
 			if err != nil {
 				return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 			}
@@ -130,7 +130,7 @@ func (c *Collector) createFile(definitionName string, collectContents bool, srcp
 
 						// reset file or open a new store file
 						if !resetFile(storeFile) {
-							dstpath, storeFile, err = c.Store.StoreFile(filepath.Join(hostname, strings.TrimLeft(srcpath, "")))
+							dstpath, storeFile, err = c.Store.StoreFile(filepath.Join("files", hostname, strings.TrimLeft(srcpath, "")))
 							if err != nil {
 								return file.AddError(fmt.Errorf("error storing file: %w", err).Error())
 							}

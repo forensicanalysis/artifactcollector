@@ -118,7 +118,7 @@ func getProvide(source artifacts.Source, parameter string) (artifacts.Provide, e
 func (c *Collector) resolveCommand(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// COMMAND The lines of the stdout of the command.
-	process, err := c.collectCommand("", source)
+	process, err := c.collectCommand(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func (c *Collector) resolveCommand(source artifacts.Source, provide artifacts.Pr
 
 func (c *Collector) resolveFile(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	// FILE The lines of the file content.
-	files, err := c.collectFile("", source)
+	files, err := c.collectFile(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func (c *Collector) resolveFile(source artifacts.Source, provide artifacts.Provi
 func (c *Collector) resolvePath(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// PATH The defined paths.
-	directories, err := c.collectPath("", source)
+	directories, err := c.collectPath(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +209,7 @@ func (c *Collector) resolvePath(source artifacts.Source, provide artifacts.Provi
 func (c *Collector) resolveRegistryKey(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_KEY The key paths.
-	keys, err := c.collectRegistryKey("", source)
+	keys, err := c.collectRegistryKey(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (c *Collector) resolveRegistryKey(source artifacts.Source, provide artifact
 func (c *Collector) resolveRegistryValue(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// REGISTRY_VALUE The registry values.
-	keys, err := c.collectRegistryValue("", source)
+	keys, err := c.collectRegistryValue(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}
@@ -257,7 +257,7 @@ func (c *Collector) resolveRegistryValue(source artifacts.Source, provide artifa
 func (c *Collector) resolveWMI(source artifacts.Source, provide artifacts.Provide, regex *regexp.Regexp) ([]string, error) {
 	var resolves []string
 	// WMI The values selected using the wmi_key.
-	wmi, err := c.collectWMI("", source)
+	wmi, err := c.collectWMI(source.Parent, source)
 	if err != nil {
 		return nil, err
 	}

@@ -69,6 +69,8 @@ type Provide struct {
 // C:\\Windows\\System32\\winevt\\Logs\\AppEvent.evt a file artifact definition,
 // pointing to the Application Event Log file.
 type Source struct {
+	Parent string
+
 	Type        string     `yaml:"type,omitempty"`
 	Attributes  Attributes `yaml:"attributes,omitempty"`
 	Conditions  []string   `yaml:"conditions,omitempty"`
