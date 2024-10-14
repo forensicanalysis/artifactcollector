@@ -23,13 +23,13 @@ func NewSimpleStore(f *os.File) *ZipStore {
 	}
 }
 
-func (k *ZipStore) InsertStruct(id string, element interface{}) error {
+func (k *ZipStore) InsertStruct(artifact, id string, element interface{}) error {
 	b, err := json.Marshal(element)
 	if err != nil {
 		return err
 	}
 
-	_, err = k.w.WriteFile("artifacts/"+id+".json", b)
+	_, err = k.w.WriteFile(fmt.Sprintf("artifacts/%s/%s.json", artifact, id), b)
 
 	return err
 }

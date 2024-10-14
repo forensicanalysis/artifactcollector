@@ -24,11 +24,11 @@ func createStore(storePath string, config *collector.Configuration, definitions 
 		return f.Close()
 	}
 
-	if err := store.InsertStruct("definitions", definitions); err != nil {
+	if err := store.InsertStruct("_config", "definitions", definitions); err != nil {
 		return nil, nil, err
 	}
 
-	if err := store.InsertStruct("artifacts", config.Artifacts); err != nil {
+	if err := store.InsertStruct("_config", "artifacts", config.Artifacts); err != nil {
 		return nil, nil, err
 	}
 

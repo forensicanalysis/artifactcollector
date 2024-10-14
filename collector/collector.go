@@ -50,7 +50,7 @@ type Collector struct {
 }
 
 type Store interface {
-	InsertStruct(id string, element interface{}) error
+	InsertStruct(artifact, id string, data interface{}) error
 	StoreFile(filePath string) (storePath string, file io.Writer, err error)
 	LoadFile(filePath string) (file io.Reader, err error)
 }
@@ -117,7 +117,7 @@ func (c *Collector) Registry() fs.FS {
 	return c.registryfs
 }
 
-// AddPartitions returns if partitions should be added to Windows paths.
+// Prefixes returns the prefixes of the source filesystem.
 func (c *Collector) Prefixes() []string {
 	return c.prefixes
 }
@@ -171,7 +171,7 @@ func (c *Collector) collectCommand(name string, source artifacts.Source) (*Proce
 	log.Printf("Collect Command %s %s", source.Attributes.Cmd, source.Attributes.Args)
 	process := c.createProcess(name, source.Attributes.Cmd, source.Attributes.Args)
 
-	err := c.Store.InsertStruct(process.ID, process)
+	err := c.Store.InsertStruct(process.Artifact, process.ID, process)
 	if err != nil {
 		return nil, fmt.Errorf("could not insert struct: %w", err)
 	}
@@ -204,7 +204,7 @@ func (c *Collector) collectFile(name string, osource artifacts.Source) ([]*File,
 		files = append(files, file)
 
 		if file != nil {
-			err := c.Store.InsertStruct(file.ID, file)
+			err := c.Store.InsertStruct(file.Artifact, file.ID, file)
 			if err != nil {
 				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
@@ -230,7 +230,7 @@ func (c *Collector) collectDirectory(name string, source artifacts.Source) ([]*F
 		files = append(files, file)
 
 		if file != nil {
-			err := c.Store.InsertStruct(file.ID, file)
+			err := c.Store.InsertStruct(file.Artifact, file.ID, file)
 			if err != nil {
 				return files, fmt.Errorf("could not insert struct: %w", err)
 			}
@@ -258,7 +258,7 @@ func (c *Collector) collectPath(name string, source artifacts.Source) ([]*Direct
 		directory.Path = fsPath(path)
 		directories = append(directories, directory)
 
-		err := c.Store.InsertStruct(directory.ID, directory)
+		err := c.Store.InsertStruct(directory.Artifact, directory.ID, directory)
 		if err != nil {
 			return directories, fmt.Errorf("could not insert struct: %w", err)
 		}
@@ -282,7 +282,7 @@ func (c *Collector) collectRegistryKey(name string, source artifacts.Source) ([]
 		k := c.createRegistryKey(name, fsPath(key))
 		keys = append(keys, k)
 
-		err := c.Store.InsertStruct(k.ID, k)
+		err := c.Store.InsertStruct(k.Artifact, k.ID, k)
 		if err != nil {
 			return keys, err
 		}
@@ -306,7 +306,7 @@ func (c *Collector) collectRegistryValue(name string, source artifacts.Source) (
 		key := c.createRegistryValue(name, fsPath(kvpair.Key), kvpair.Value)
 		keys = append(keys, key)
 
-		err := c.Store.InsertStruct(key.ID, key)
+		err := c.Store.InsertStruct(key.Artifact, key.ID, key)
 		if err != nil {
 			return keys, err
 		}
@@ -328,7 +328,7 @@ func (c *Collector) collectWMI(name string, source artifacts.Source) (*Process, 
 	log.Printf("Collect WMI %s", source.Attributes.Query)
 	process := c.createWMI(name, source.Attributes.Query)
 
-	err := c.Store.InsertStruct(process.ID, process)
+	err := c.Store.InsertStruct(process.Artifact, process.ID, process)
 	if err != nil {
 		return nil, fmt.Errorf("could not insert struct: %w", err)
 	}
