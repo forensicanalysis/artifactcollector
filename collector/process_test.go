@@ -24,7 +24,6 @@ package collector
 import (
 	"os"
 	"reflect"
-	"runtime"
 	"testing"
 
 	"github.com/forensicanalysis/artifactcollector/store"
@@ -57,8 +56,8 @@ func TestLiveCollector_createProcess(t *testing.T) {
 				Name:        "hostname",
 				Artifact:    "test",
 				Type:        "process",
-				StdoutPath:  "files/test/stdout",
-				StderrPath:  "files/test/stderr",
+				StdoutPath:  "process/test/stdout",
+				StderrPath:  "process/test/stderr",
 				CommandLine: "hostname",
 				ReturnCode:  0,
 				Errors:      []interface{}{"hostname is not bundled into artifactcollector, try execution from path"},
@@ -67,10 +66,6 @@ func TestLiveCollector_createProcess(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if runtime.GOOS != "windows" {
-				t.Skip()
-			}
-
 			c := &Collector{Store: store}
 			got := c.createProcess(tt.args.definitionName, tt.args.cmd, tt.args.args)
 			got.ID = ""          // unset ID

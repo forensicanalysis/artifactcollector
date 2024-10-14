@@ -43,7 +43,7 @@ func (c *Collector) createProcess(definitionName, cmd string, args []string) *Pr
 	}
 
 	// setup output destinations
-	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join(definitionName, "stdout"))
+	stdoutPath, stdoutFile, err := c.Store.StoreFile(path.Join("process", definitionName, "stdout"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
@@ -68,7 +68,7 @@ func (c *Collector) createProcess(definitionName, cmd string, args []string) *Pr
 	}
 
 	// write to stderr
-	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join(definitionName, "stderr"))
+	stderrPath, stderrFile, err := c.Store.StoreFile(path.Join("process", definitionName, "stderr"))
 	if err != nil {
 		return process.AddError(err.Error())
 	}
