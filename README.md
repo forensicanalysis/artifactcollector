@@ -63,3 +63,10 @@ files are not collected.
 
 For feedback, questions and discussions you can use
 the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
+
+## License
+
+Most of the artifactcollector is licensed under the MIT License. See [MIT license](LICENSE) for the full license text.
+
+The directories [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library
+which is licensed under the [BSD-3-Clause license](LICENSE-BSD).
