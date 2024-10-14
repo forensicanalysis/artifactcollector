@@ -1,0 +1,9 @@
+# Unknown name in artifact group
+
+name: Test
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: ARTIFACT_GROUP
+  attributes:
+    names:
+      - Unknown

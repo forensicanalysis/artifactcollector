@@ -1,0 +1,10 @@
+# No empty line in docstring
+
+name: TestCommand
+doc: |
+  Minimal dummy artifact definition for tests
+  Without an empty line in the doc string
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname

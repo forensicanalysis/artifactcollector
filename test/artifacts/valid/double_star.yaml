@@ -1,0 +1,9 @@
+# Double star in path
+
+name: TestFile
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: FILE
+  attributes:
+    paths:
+      - "/**/"

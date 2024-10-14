@@ -4,83 +4,92 @@
  <a href="https://godocs.io/github.com/forensicanalysis/artifactcollector"><img src="https://godocs.io/github.com/forensicanalysis/artifactcollector?status.svg" alt="doc" /></a>
 </p>
 
+The artifactcollector is a tool to collect forensic artifacts on a system. 
+It can be used in forensic investigations to extract specific data instead of creating full disk images. 
+The artifactextractor can collect low-level (like $MFT) 
+and high-level file artifacts as well as registry keys (e.g. run keys) 
+which can then be used in forensic investigations.
 
-The artifactcollector project provides a software that collects forensic artifacts
-on systems. These artifacts can be used in forensic investigations to understand
-attacker behavior on compromised computers.
+![Running the artifactextractor on Windows.](docs/ac.png)
+_Running the artifactextractor on Windows._
+
+The artifactcollector is a single binary that can be transferred to computers 
+which are part of a forensic investigation.
 
 ## Features
+
 The artifactcollector offers the following features
 
-- ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
-- 🛍️ Can extract files, directories, registry entries, command and WMI output
-- ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
-- 💾 Creates a forensicstore as [structured output](https://github.com/forensicanalysis/forensicstore)
-- 🕊️ It's open source
-- 🆓 Free for everyone (including commercial use)
+- ️🖥️ Runs on **Windows**, **Linux** and **macOS**
+  - 🏛️ Supports also old Windows versions like **Windows 2000** or **Windows XP**
+- 🛍️ Can extract **files**, **directories**, **registry entries**, **command output**, and **WMI output**
+- ⭐ Uses the configurable and extensible [**Forensics Artifacts**](https://github.com/forensicanalysis/artifacts)
+- 🧩 Can run additional **embedded executables**
+- 🕊️ **Open source**
 
-### Installation
+## Download
 
-Download from https://github.com/forensicanalysis/artifactcollector/releases or
+All releases of the artifactcollector can be downloaded from [Releases](https://github.com/forensicanalysis/artifactcollector/releases). 
+Prebuild artifactcollectors for Windows, Linux and macOS are available. 
+Those artifactcollectors collect a predefined set of artifacts which are mostly taken from the Sans FOR500 training. 
+Sans provides a comprehensive [poster](https://www.sans.org/security-resources/posters/windows-forensic-analysis/170/download)
+explaining those artifacts.
 
-```bash
-git clone https://github.com/forensicanalysis/artifactcollector
-cd artifactcollector
-go install .
-```
+## Usage
 
-### Get artifacts & process forensicstores
+> [!WARNING]
+> The artifactcollector behaves similar to malware as it collects critical system files
+> and might be detected as a virus or malware.
 
-If you want to extract the raw artifacts or process the collected data have a look at
+On Windows the `artifactcollector.exe` can be executed by double-clicking it on the investigated machine. 
+The user will be provided with a [UAC prompt](https://en.wikipedia.org/wiki/User_Account_Control) because the
+artifactcollector required administrator rights to run. 
+The collection takes some minutes, depending on processing power and contained artifacts.
 
-### [🕵️ elementary](https://github.com/forensicanalysis/elementary)
+On Linux and macOS the `artifactcollector` needs to be executed as root, e.g. `sudo artifactcollector`. 
+macOS can still prevent the execution, in this case right-click the artifactcollector, 
+select "Open", confirm "Open" and then try again with `sudo artifactcollector`.
 
-### Build your own artifactcollector
+## Output
+
+The artifactcollecor will create a zip file and a log file. 
+The log file serves two purposes: 
+inform an investigator about errors during the collection but
+also give the user a way to know what elements were extracted. 
+The zip file contains the results of the extraction and needs to be transferred back to the investigator.
+
+## Build your own artifactcollector
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
-2. Run `go generate` to download all artifacts.
-3. Add artifact definition yaml files as needed in `pack/artifacts`. Do not edit the
-artifact definitions, as they will be overwritten.
-4. Edit `pack/ac.yaml` and add the artifacts you want to collect.
-5. Run `go generate`. This might yield some errors or problems in your artifacts.
-6. On windows you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
-to enable the icon for the executable and the UAC popup.
-7. Run `go build .` to generates an executable.
+2. Add artifact definition yaml files as needed in `config/artifacts`. Do not edit the
+   artifact definitions, as they will be overwritten.
+3. Edit `config/ac.yaml` and add the artifacts you want to collect.
+4. On windows, you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
+   to enable the icon for the executable and the UAC popup.
+5. Run `make build` to generate the artifactcollector binary.
 
-### Embed binaries
+## Embed binaries
 
-Binaries can be added to `pack/bin` and than included into the artifactcollector
-in the `go generate` step. Additionally a corresponding COMMAND artifact like
+Binaries can be added to `config/bin` and then included into the artifactcollector
+in the `make build` step. Additionally, a corresponding COMMAND artifact like
 the following is required.
 
 ```yaml
 name: Autoruns
 sources:
-- type: COMMAND
-  attributes:
-    cmd: autorunsc.exe
-    args: ["-x"]
-supported_os: [Windows]
+  - type: COMMAND
+    attributes:
+      cmd: autorunsc.exe
+      args: [ "-x" ]
+supported_os: [ Windows ]
 ```
 
-Currently the output to stdout and stderr is saved, but generated
+The command output to stdout and stderr is saved, but generated
 files are not collected.
 
-### Cross compilation
+## License
 
-Cross compilation is a bit more difficult, as a cross compiler like MinGW is required by CGO.
+Most of the artifactcollector is licensed under the MIT License. See [MIT license](LICENSE) for the full license text.
 
-Example cross compilation for Windows:
-
-```sh
-CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build .
-CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build .
-```
-
-## Limitations
-
-- Currently only files that are smaller than 1GB when compressed can be collected. This can be circumvented by [using a zip archive](https://github.com/forensicanalysis/custom-collector#zip-collector) for artifact collection.
-
-## Contact
-
-For feedback, questions and discussions you can use the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
+The directories [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library
+which is licensed under the [BSD-3-Clause license](LICENSE-BSD).

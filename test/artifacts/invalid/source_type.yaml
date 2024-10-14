@@ -1,0 +1,6 @@
+# Source type unknown
+
+name: TestUnknown
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: UNKNOWN

@@ -1,0 +1,7 @@
+# Not provided
+
+name: TestProvided
+doc: Dummy artifact definition for testing.
+sources:
+  - type: REGISTRY_KEY
+    attributes: {keys: ['%%CURRENT_CONTROL_SET%%\foo']}

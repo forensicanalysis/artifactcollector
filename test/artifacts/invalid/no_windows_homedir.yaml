@@ -1,0 +1,8 @@
+# No homedir in windows
+
+name: WindowsTestDirectory
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: DIRECTORY
+  attributes: {paths: ['%%users.homedir%%'], separator: '\'}
+supported_os: [Windows]

@@ -1,0 +1,7 @@
+# No HKEY_CURRENT_USER
+
+name: Test
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_KEY
+  attributes: {keys: ['HKEY_CURRENT_USER\\foo']}

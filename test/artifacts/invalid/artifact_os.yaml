@@ -1,0 +1,9 @@
+# Unknown supported_os
+
+name: UnknownTestCommand
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: hostname
+supported_os: [Unknown]

@@ -1,8 +1,5 @@
 package assets
 
-import (
-	"github.com/forensicanalysis/artifactcollector/collection"
-	"github.com/spf13/afero"
-)
+import "github.com/forensicanalysis/artifactcollector/collector"
 
-var Config = &collection.Configuration{Artifacts: []string{"DefaultCollection1"}, User: false, Case: "", OutputDir: "", FS: afero.Fs(nil)}
+var Config = &collector.Configuration{Artifacts: []string{"DefaultCollection1"}, User: false, Case: "", OutputDir: ""}

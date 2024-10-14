@@ -1,0 +1,13 @@
+# Duplicate registry key
+
+name: TestA
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_KEY
+  attributes: {keys: ['foo']}
+---
+name: Test
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_KEY
+  attributes: {keys: ['foo']}

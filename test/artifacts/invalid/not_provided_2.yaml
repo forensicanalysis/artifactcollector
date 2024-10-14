@@ -1,0 +1,13 @@
+# Not provided
+
+name: TestProvided2
+doc: Dummy artifact definition for testing.
+sources:
+  - type: REGISTRY_KEY
+    attributes: {keys: ['%%CURRENT_CONTROL_SET%%\foo']}
+  - type: REGISTRY_KEY
+    attributes:
+      keys: ['foo']
+    provides:
+       - key: "CURRENT_CONTROL_SET"
+    supported_os: [Linux, Darwin]

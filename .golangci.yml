@@ -1,0 +1,47 @@
+run:
+  timeout: 3m
+  tests: false
+
+linters:
+  enable-all: true
+  disable:
+    - depguard
+    - err113
+    - errcheck
+    - errorlint
+    - exhaustruct
+    - forbidigo
+    - gochecknoglobals
+    - godox
+    - gofumpt
+    - gomnd
+    - gosec
+    - ireturn
+    - lll
+    - mnd
+    - nilnil
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - staticcheck
+    - tagliatelle
+    - varnamelen
+    - wrapcheck
+
+linters-settings:
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/forensicanalysis/artifactcollector)
+
+issues:
+  exclude:
+    - block should not end with a whitespace
+    - strings.ReplaceAll
+    - error strings should not be capitalized
+  exclude-dirs:
+    - build/go
+    - store/aczip
+  exclude-files:
+    - ".*\\.generated\\.*."

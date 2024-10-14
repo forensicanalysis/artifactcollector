@@ -1,0 +1,7 @@
+# No CURRENT_CONTROL_SET
+
+name: Test
+doc: Dummy artifact definition for testing.
+sources:
+- type: REGISTRY_VALUE
+  attributes: {key_value_pairs: [{key: '%%CURRENT_CONTROL_SET%%\foo', value: 'foo'}]}

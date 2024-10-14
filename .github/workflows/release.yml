@@ -11,37 +11,30 @@ jobs:
     strategy:
       matrix:
         os: [ macos-latest, windows-latest, ubuntu-latest ]
+    defaults: { run: { shell: bash } }
     steps:
-      - name: Setup go 1.16
-        uses: actions/setup-go@v4
-        with: { go-version: '1.16' }
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
 
-      - name: Setup Build
-        run: go generate
+
       - name: Add Windows syso File
-        run: mv resources/artifactcollector.syso artifactcollector.syso
+        run: mv build/win/artifactcollector.syso artifactcollector.syso
         if: matrix.os == 'windows-latest'
-        shell: bash
-      - name: Build
-        run: go build .
+
+      - run: make build
 
       - name: Pack UNIX
         run: zip -r ${{ matrix.os }}.zip artifactcollector
-        shell: bash
         if: matrix.os != 'windows-latest'
       - name: Pack Windows
         run: 7z a windows.zip artifactcollector.exe
-        shell: bash
         if: matrix.os == 'windows-latest'
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
-        shell: bash
         id: release
 
-      - name: Upload Windows
-        id: upload-windows-release-asset
+      - id: upload-windows-release-asset
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,8 +44,7 @@ jobs:
           asset_name: windows.zip
           asset_content_type: application/zip
         if: matrix.os == 'windows-latest'
-      - name: Upload macOS
-        id: upload-macos-release-asset
+      - id: upload-macos-release-asset
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,8 +54,7 @@ jobs:
           asset_name: macos.zip
           asset_content_type: application/zip
         if: matrix.os == 'macos-latest'
-      - name: Upload Linux
-        id: upload-linux-release-asset
+      - id: upload-linux-release-asset
         uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,55 +69,18 @@ jobs:
     name: artifactcollector (win2k)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.16
-        uses: actions/setup-go@v4
-        with: { go-version: 1.16 }
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: repo
-      - name: Setup Build
-        run: |
-          go mod download
-          go mod vendor
-          go generate
-          mv resources/artifactcollector32.syso artifactcollector.syso
-        working-directory: repo
-      - name: Build
-        run: |
-          mkdir -p path
-          mv repo/vendor path/src
-          mkdir -p path/src/github.com/forensicanalysis
-          mv repo path/src/github.com/forensicanalysis/artifactcollector
-          cp -r path/src/github.com/forensicanalysis/artifactcollector/replace/context path/src
-          echo "package afero" > path/src/github.com/spf13/afero/memmap.go
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
 
-          mkdir -p path/src/io path/src/internal
-          cp -r $(go env GOROOT)/src/io/fs path/src/io
-          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
-          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
-          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
-
-          docker build -t xgo path/src/github.com/forensicanalysis/artifactcollector
-          docker run --rm \
-            -v $PWD/path/src:/go/src \
-            -w /go/src/github.com/forensicanalysis/artifactcollector \
-            xgo \
-            go build -v -o artifactcollector2k.exe .
-
-      - name: Pack
-        run: zip -r artifactcollector2k.zip artifactcollector2k.exe
+      - run: make build-win2k
+      - run: zip -r artifactcollector2k.zip artifactcollector2k.exe
         working-directory: path/src/github.com/forensicanalysis/artifactcollector
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
-        shell: bash
         id: release
 
-      - name: Upload
-        uses: actions/upload-release-asset@v1.0.2
+      - uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -139,53 +93,17 @@ jobs:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
     steps:
-      - name: Setup go 1.16
-        uses: actions/setup-go@v4
-        with: { go-version: '1.16' }
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          path: repo
-      - name: Setup Build
-        run: |
-          go mod download
-          go mod vendor
-          go generate
-          mv resources/artifactcollector32.syso artifactcollector.syso
-        working-directory: repo
-      - name: Move packages
-        run: |
-          mkdir -p path
-          mv repo/vendor path/src
-          mkdir -p path/src/github.com/forensicanalysis
-          mv repo path/src/github.com/forensicanalysis/artifactcollector
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
 
-          mkdir -p path/src/io path/src/internal
-          cp -r $(go env GOROOT)/src/io/fs path/src/io
-          cp -r $(go env GOROOT)/src/internal/oserror path/src/internal
-          sed -i 's#sort\.Slice(list, func(i, j int) bool { return list\[i]\.Name() < list\[j]\.Name() })#sort.Sort(SortedDir(list))#g' path/src/io/fs/readdir.go
-          echo "type SortedDir []DirEntry" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Len() int           { return len(a) }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Less(i, j int) bool { return a[i].Name() < a[j].Name() }" >> path/src/io/fs/readdir.go
-          echo "func (a SortedDir) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }" >> path/src/io/fs/readdir.go
-      - name: Setup go 1.9.7
-        uses: actions/setup-go@v4
-        with: { go-version: '1.9.7' }
-
-      - name: Build
-        run: |
-          sudo apt-get install mingw-w64
-          GOPATH=$GITHUB_WORKSPACE/path CGO_ENABLED=1 CC=i686-w64-mingw32-gcc GOOS=windows GOARCH=386 go build -o artifactcollectorxp.exe github.com/forensicanalysis/artifactcollector
-
-      - name: Pack
-        run: zip -r artifactcollectorxp.zip artifactcollectorxp.exe
+      - run: make build-winxp
+      - run: zip -r artifactcollectorxp.zip artifactcollectorxp.exe
 
       - run: echo "::set-output name=upload_url::https://uploads.github.com/repos/$GITHUB_REPOSITORY/releases/$(jq --raw-output '.release.id' $GITHUB_EVENT_PATH)/assets{?name,label}"
-        shell: bash
         id: release
 
-      - name: Upload
-        uses: actions/upload-release-asset@v1.0.2
+      - uses: actions/upload-release-asset@v1.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

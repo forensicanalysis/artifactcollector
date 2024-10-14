@@ -1,0 +1,9 @@
+# Artifact definitions for testing
+
+noname: GoVersionCommand
+doc: Minimal dummy artifact definition for tests
+sources:
+- type: COMMAND
+  attributes:
+    cmd: docker
+    args: [version]
