@@ -3,6 +3,7 @@ on:
   push:
     branches: [ master ]
   pull_request:
+  release: { types: [ published ] }
 
 jobs:
   fmt:
@@ -87,18 +88,27 @@ jobs:
 
       - run: go build .
 
-      - run: sudo ./artifactcollector
-
-      - name: Move Binary
-        run: |
-          mkdir bin output
-          mv artifactcollector bin
-          mv *.zip output
-
       - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector ${{ matrix.os }}
-          path: bin
+          path: artifactcollector
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: bin
+        if: matrix.os == 'macos-latest' && github.event_name == 'release'
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: bin
+        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
+
+      - run: sudo ./artifactcollector
+
+      - name: move files
+        run: |
+          mkdir output
+          mv *.zip output
+
       - uses: actions/upload-artifact@v4
         with:
           name: output ${{ matrix.os }}
@@ -117,19 +127,23 @@ jobs:
 
       - run: make build-win
 
-      - run: ./build/bin/artifactcollector.exe
-
-      - name: Move Binary
-        run: |
-          mkdir bin output
-          mv ./build/bin/artifactcollector.exe bin
-          mv *.zip output
-
-      - name: Upload artifactcollector
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: artifactcollector windows-latest
-          path: bin
+          path: ./build/bin/artifactcollector.exe
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: bin
+        if: github.event_name == 'release'
+
+      - run: ./build/bin/artifactcollector.exe
+
+      - name: move files
+        run: |
+          mkdir output
+          mv *.zip output
+
       - uses: actions/upload-artifact@v4
         with:
           name: output windows-latest
@@ -148,6 +162,11 @@ jobs:
           name: artifactcollector (Windows 2000, 32bit)
           path: build/bin/artifactcollector2k.exe
 
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/bin/artifactcollector2k.exe
+        if: github.event_name == 'release'
+
   winxp:
     name: artifactcollector (winxp)
     runs-on: ubuntu-latest
@@ -160,3 +179,8 @@ jobs:
         with:
           name: artifactcollector (Windows XP, 32bit)
           path: build/bin/artifactcollectorxp.exe
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/bin/artifactcollectorxp.exe
+        if: github.event_name == 'release'
