@@ -93,6 +93,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: linux.zip
+        if: github.event_name == 'release'
 
       - run: sudo ./artifactcollector
 
@@ -124,6 +125,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           files: macos.zip
+        if: github.event_name == 'release'
 
       - run: sudo ./artifactcollector
 
