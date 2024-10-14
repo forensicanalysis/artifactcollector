@@ -184,7 +184,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: make build-win2k
-      - run: zip -r win2k.zip ./build/bin/artifactcollector2k.exe
+      - run: mv ./build/bin/artifactcollector2k.exe ./artifactcollector2k.exe
+      - run: zip -r win2k.zip ./artifactcollector2k.exe
 
       - uses: actions/upload-artifact@v4
         with:
@@ -205,7 +206,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: make build-winxp
-      - run: zip -r winxp.zip ./build/bin/artifactcollectorxp.exe
+      - run: mv ./build/bin/artifactcollectorxp.exe ./artifactcollectorxp.exe
+      - run: zip -r winxp.zip ./artifactcollectorxp.exe
 
       - uses: actions/upload-artifact@v4
         with:
