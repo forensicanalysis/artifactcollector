@@ -1,8 +1,5 @@
 run:
-  # timeout for analysis, e.g. 30s, 5m, default is 1m
   timeout: 3m
-
-  # include test files or not, default is true
   tests: false
 
 linters:
@@ -31,7 +28,6 @@ linters:
     - varnamelen
     - wrapcheck
 
-# all available settings of specific linters
 linters-settings:
   gci:
     sections:

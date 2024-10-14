@@ -12,8 +12,8 @@ attacker behavior on compromised computers.
 
 The artifactcollector offers the following features
 
-- ️🖥️ Runs on 🖼️ Windows, 🐧 Linux and 🍏 macOS
-  - Supports Windows 2000 and Windows XP
+- ️🖥️ Runs on Windows, Linux and macOS
+    - Supports Windows 2000, Windows XP, and newer
 - 🛍️ Can extract files, directories, registry entries, command and WMI output
 - ⭐ Uses the configurable and extensible [Forensics Artifacts](https://github.com/forensicanalysis/artifacts)
 - 🕊️ Open source
@@ -58,11 +58,6 @@ supported_os: [ Windows ]
 
 The command output to stdout and stderr is saved, but generated
 files are not collected.
-
-## Contact
-
-For feedback, questions and discussions you can use
-the [Open Source DFIR Slack](https://github.com/open-source-dfir/slack).
 
 ## License
 
