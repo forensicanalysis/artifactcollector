@@ -74,33 +74,25 @@ jobs:
           unzip -q go1.2.2.windows-amd64.zip -d go1.2.2
           GOPATH=$GITHUB_WORKSPACE/path GOROOT=$GITHUB_WORKSPACE/go1.2.2/go go1.2.2/go/bin/go build -o artifactcollector2k.exe github.com/forensicanalysis/artifactcollector
 
-  unix:
-    name: artifactcollector
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ macos-latest, ubuntu-latest ]
-      fail-fast: false
+
+  linux:
+    name: artifactcollector (linux)
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v5
-        with: { go-version: '1.17' }
+        with: { go-version: '1.23' }
       - uses: actions/checkout@v4
 
       - run: go build .
 
+      - run: zip -r linux.zip artifactcollector
       - uses: actions/upload-artifact@v4
         with:
-          name: artifactcollector ${{ matrix.os }}
-          path: artifactcollector
-
+          name: artifactcollector (linux)
+          path: linux.zip
       - uses: softprops/action-gh-release@v2
         with:
-          files: artifactcollector
-        if: matrix.os == 'macos-latest' && github.event_name == 'release'
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: artifactcollector
-        if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
+          files: linux.zip
 
       - run: sudo ./artifactcollector
 
@@ -111,7 +103,38 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: output ${{ matrix.os }}
+          name: output linux
+          path: output
+
+  macos:
+    name: artifactcollector (macos)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/setup-go@v5
+        with: { go-version: '1.23' }
+      - uses: actions/checkout@v4
+
+      - run: go build .
+
+      - run: zip -r macos.zip artifactcollector
+      - uses: actions/upload-artifact@v4
+        with:
+          name: artifactcollector (macos)
+          path: macos.zip
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: macos.zip
+
+      - run: sudo ./artifactcollector
+
+      - name: move files
+        run: |
+          mkdir output
+          mv *.zip output
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output macos
           path: output
 
   win:
@@ -127,14 +150,16 @@ jobs:
 
       - run: make build-win
 
+      - run: 7z a windows.zip ./build/bin/artifactcollector.exe
+
       - uses: actions/upload-artifact@v4
         with:
-          name: artifactcollector windows-latest
-          path: ./build/bin/artifactcollector.exe
+          name: artifactcollector (windows)
+          path: windows.zip
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: ./build/bin/artifactcollector.exe
+          files: windows.zip
         if: github.event_name == 'release'
 
       - run: ./build/bin/artifactcollector.exe
@@ -146,7 +171,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: output windows-latest
+          name: output windows
           path: output
 
   win2k:
