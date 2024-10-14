@@ -95,11 +95,11 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: bin
+          files: artifactcollector
         if: matrix.os == 'macos-latest' && github.event_name == 'release'
       - uses: softprops/action-gh-release@v2
         with:
-          files: bin
+          files: artifactcollector
         if: matrix.os == 'ubuntu-latest' && github.event_name == 'release'
 
       - run: sudo ./artifactcollector
@@ -134,7 +134,7 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: bin
+          files: ./build/bin/artifactcollector.exe
         if: github.event_name == 'release'
 
       - run: ./build/bin/artifactcollector.exe
