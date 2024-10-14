@@ -7,7 +7,9 @@ WORKDIR /repo
 RUN go install golang.org/x/tools/cmd/goimports@v0.1.7
 RUN go install github.com/forensicanalysis/go-resources/cmd/resources@v0.4.0
 RUN go install github.com/akavel/rsrc@v0.10.2
-RUN go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*
+RUN rm -rf config/artifacts
+RUN git clone https://github.com/forensicanalysis/artifacts.git config/artifacts
+RUN go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*.yaml
 RUN resources -package assets -output assets/bin.generated.go config/bin/*
 RUN rsrc -arch amd64 -manifest build/win/artifactcollector.exe.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector.syso
 RUN rsrc -arch 386 -manifest build/win/artifactcollector32.exe.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.syso
