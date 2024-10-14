@@ -122,7 +122,7 @@ jobs:
       - name: Move Binary
         run: |
           mkdir bin output
-          mv artifactcollector.exe bin
+          mv ./build/bin/artifactcollector.exe bin
           mv *.zip output
 
       - name: Upload artifactcollector
