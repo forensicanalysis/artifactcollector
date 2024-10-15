@@ -33,8 +33,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/forensicanalysis/artifactcollector/artifacts"
 	"github.com/looplab/tarjan"
+
+	"github.com/forensicanalysis/artifactcollector/artifacts"
 )
 
 // Severity level of a flaw.
@@ -71,15 +72,19 @@ func (r *validator) addFlawf(filename, artifactDefiniton string, severity Severi
 		Flaw{Severity: severity, Message: fmt.Sprintf(format, a...), ArtifactDefinition: artifactDefiniton, File: filename},
 	)
 }
+
 func (r *validator) addCommonf(filename, artifactDefiniton, format string, a ...interface{}) {
 	r.addFlawf(filename, artifactDefiniton, Common, format, a...)
 }
+
 func (r *validator) addInfof(filename, artifactDefiniton, format string, a ...interface{}) {
 	r.addFlawf(filename, artifactDefiniton, Info, format, a...)
 }
+
 func (r *validator) addWarningf(filename, artifactDefiniton, format string, a ...interface{}) {
 	r.addFlawf(filename, artifactDefiniton, Warning, format, a...)
 }
+
 func (r *validator) addErrorf(filename, artifactDefiniton, format string, a ...interface{}) {
 	r.addFlawf(filename, artifactDefiniton, Error, format, a...)
 }
@@ -215,7 +220,7 @@ func (r *validator) validateSyntax(filename string) {
 // global
 
 func (r *validator) validateNameUnique(artifactDefinitions []artifacts.ArtifactDefinition) {
-	var knownNames = map[string]bool{}
+	knownNames := map[string]bool{}
 	for _, artifactDefinition := range artifactDefinitions {
 		if _, ok := knownNames[artifactDefinition.Name]; ok {
 			r.addWarningf("", artifactDefinition.Name, "Duplicate artifact name %s", artifactDefinition.Name)
@@ -226,7 +231,7 @@ func (r *validator) validateNameUnique(artifactDefinitions []artifacts.ArtifactD
 }
 
 func (r *validator) validateRegistryKeyUnique(artifactDefinitions []artifacts.ArtifactDefinition) {
-	var knownKeys = map[string]bool{}
+	knownKeys := map[string]bool{}
 	for _, artifactDefinition := range artifactDefinitions {
 		for _, source := range artifactDefinition.Sources {
 			for _, key := range source.Attributes.Keys {
@@ -241,7 +246,7 @@ func (r *validator) validateRegistryKeyUnique(artifactDefinitions []artifacts.Ar
 }
 
 func (r *validator) validateRegistryValueUnique(artifactDefinitions []artifacts.ArtifactDefinition) {
-	var knownKeys = map[string]bool{}
+	knownKeys := map[string]bool{}
 	for _, artifactDefinition := range artifactDefinitions {
 		for _, source := range artifactDefinition.Sources {
 			for _, keyvalue := range source.Attributes.KeyValuePairs {
@@ -288,7 +293,7 @@ func (r *validator) validateNoCycles(artifactDefinitions []artifacts.ArtifactDef
 }
 
 func (r *validator) validateGroupMemberExist(artifactDefinitions []artifacts.ArtifactDefinition) {
-	var knownNames = map[string]bool{}
+	knownNames := map[string]bool{}
 	for _, artifactDefinition := range artifactDefinitions {
 		knownNames[artifactDefinition.Name] = true
 	}
@@ -314,7 +319,7 @@ func (r *validator) validateParametersProvided(artifactDefinitions []artifacts.A
 		"Linux":   {},
 		"ESXi":    {},
 	}
-	var regex = regexp.MustCompile(`%?%(.*?)%?%`)
+	regex := regexp.MustCompile(`%?%(.*?)%?%`)
 
 	for _, artifactDefinition := range artifactDefinitions {
 		for _, source := range artifactDefinition.Sources {
@@ -336,7 +341,7 @@ func (r *validator) validateParametersProvided(artifactDefinitions []artifacts.A
 		}
 	}
 
-	var knownProvides = map[string]map[string]string{
+	knownProvides := map[string]map[string]string{
 		"Windows": {},
 		"Darwin":  {},
 		"Linux":   {},
@@ -645,6 +650,7 @@ func (r *validator) validateUnnessesarryAttributes(filename, artifactDefinition 
 		}
 	}
 }
+
 func (r *validator) validateRequiredAttributes(filename, artifactDefinition string, source artifacts.Source) {
 	switch source.Type {
 	case artifacts.SourceType.ArtifactGroup:

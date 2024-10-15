@@ -130,7 +130,7 @@ func main() { // nolint:gocyclo,gocognit,funlen
 		fmt.Printf("\nFound %d artifacts\n", len(artifactDefinitions))
 
 		if len(artifactDefinitions) > 0 {
-			var sourcetypes, oss = map[string]int{}, map[string]int{}
+			sourcetypes, oss := map[string]int{}, map[string]int{}
 			for _, artifactDefinition := range artifactDefinitions {
 				for _, source := range artifactDefinition.Sources {
 					inc(sourcetypes, source.Type)
