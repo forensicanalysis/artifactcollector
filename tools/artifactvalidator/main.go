@@ -190,7 +190,7 @@ func printFlaws(ctx context.Context, flaws []Flaw) {
 		case Warning:
 			slog.WarnContext(ctx, fmt.Sprintf("%-60s %-30s %s", flaw.File, flaw.ArtifactDefinition, flaw.Message))
 		case Error:
-			slog.DebugContext(ctx, fmt.Sprintf("%-60s %-30s %s", flaw.File, flaw.ArtifactDefinition, flaw.Message))
+			slog.ErrorContext(ctx, fmt.Sprintf("%-60s %-30s %s", flaw.File, flaw.ArtifactDefinition, flaw.Message))
 		}
 	}
 }
