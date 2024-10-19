@@ -1,6 +1,3 @@
-# config
-config/artifacts/
-
 # go
 vendor
 

@@ -41,6 +41,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"sort"
+	"strings"
 
 	"github.com/olekukonko/tablewriter"
 
@@ -52,6 +53,7 @@ func main() { // nolint:gocyclo,gocognit,funlen
 
 	exitcode := 0
 	// parse flags
+	var entrypoints string
 	var verbose, summary, quite, nofail bool
 	flag.BoolVar(&verbose, "verbose", false, "show common flaws as well")
 	flag.BoolVar(&verbose, "v", false, "show common flaws as well"+" (shorthand)")
@@ -60,6 +62,7 @@ func main() { // nolint:gocyclo,gocognit,funlen
 	flag.BoolVar(&summary, "summary", false, "show summary")
 	flag.BoolVar(&summary, "s", false, "show summary"+" (shorthand)")
 	flag.BoolVar(&nofail, "no-fail", false, "do not fail on flaws")
+	flag.StringVar(&entrypoints, "entrypoints", "", "entrypoint for the artifact collection which are not marked as unused, e.g. 'DefaultCollection1', can be a comma separated list")
 	flag.Parse()
 
 	// setup logging
@@ -88,7 +91,7 @@ func main() { // nolint:gocyclo,gocognit,funlen
 	}
 
 	// parse artifacts
-	flaws, err := ValidateFiles(args)
+	flaws, err := ValidateFiles(args, strings.Split(entrypoints, ","))
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 

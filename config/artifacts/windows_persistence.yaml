@@ -1,0 +1,190 @@
+# Arifacts used for persistence on Windows.
+
+name: WindowsPersistence
+doc: Windows persistence mechanisms.
+sources:
+  - type: ARTIFACT_GROUP
+    attributes:
+      names:
+        - 'WindowsEnvironmentVariableSystemRoot'
+        - 'WindowsRegistryProfiles'
+        - 'WindowsPersistenceMechanisms'
+        - 'WindowsApplicationCompatibilityShims'
+        - 'WindowsAppCertDLLsAlt'
+        - 'WindowsCOMProperties'
+        - 'WindowsBrowserPersistenceKeys'
+        - 'InternetExplorerBrowserHelperObjectsRegistryKeys'
+        - 'WindowsBrowserPersistenceFiles'
+        - 'WindowsFileAssociation'
+        - 'WindowsScheduledTasks'
+        - 'WindowsTimeProviders'
+        - 'WindowsSIPandTrustProviderHijacking'
+        - 'WindowsKnownDLLs'
+        - 'WindowsOfficeApplicationStartup'
+        - 'WindowsImageHijacks'
+        - 'WindowsCommandProcessorAutoRun'
+        - 'WindowsDebugger'
+        - 'WindowsCodecs'
+        - 'WindowsFontDriversAlt'
+        - 'WindowsStartupFolders'
+        - 'WindowsStartupScript'
+        - 'WindowsGroupPolicyScripts'
+        - 'WindowsLogonScript'
+        - 'WindowsLogoffScript'
+supported_os: [ Windows ]
+---
+name: WindowsBrowserPersistenceKeys
+doc: Registry keys for various browser extensions or wrapper objects.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        # - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*'
+        # - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Windows\CurrentVersion\Explorer\Browser Helper Objects\*'
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Internet Explorer\Extensions\*'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Internet Explorer\Extensions\*'
+supported_os: [ Windows ]
+---
+name: WindowsBrowserPersistenceFiles
+doc: Windows Scheduled Tasks.
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '%%users.appdata%%\Mozilla\Firefox\Profiles\*\extensions.json'
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsFileAssociation
+doc: User file association preferences
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\*\OpenWithList'
+        - 'HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\*\OpenWithList'
+supported_os: [ Windows ]
+---
+name: WindowsImageHijacks
+doc: Various image hijack mechanisms used for persistence.
+sources:
+  - type: REGISTRY_VALUE
+    attributes:
+      key_value_pairs:
+        # - {key: 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*', value: 'Debugger'}
+        # - {key: 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*', value: 'Debugger'}
+        # - {key: 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*', value: 'Debugger'}
+        # - {key: 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\*', value: 'Debugger'}
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SilentProcessExit\*', value: 'MonitorProcess' }
+        # - {key: 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Command Processor', value: 'AutoRun'}
+        # - {key: 'HKEY_LOCAL_MACHINE\Software\Microsoft\Command Processor', value: 'AutoRun'}
+        # - {key: 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Command Processor', value: 'AutoRun'}
+        # - {key: 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Command Processor', value: 'AutoRun'}
+        # - {key: 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Microsoft\Command Processor', value: 'AutoRun'}
+        - { key: 'HKEY_LOCAL_MACHINE\Software\Classes\Exefile\Shell\Open\Command', value: '' }
+        - { key: 'HKEY_USERS\%%users.sid%%\Software\Classes\Exefile\Shell\Open\Command', value: '' }
+        - { key: 'HKEY_LOCAL_MACHINE\Software\Classes\Htmlfile\Shell\Open\Command', value: '' }
+        - { key: 'HKEY_USERS\%%users.sid%%\Software\Classes\Htmlfile\Shell\Open\Command', value: '' }
+        - { key: 'HKEY_LOCAL_MACHINE\Software\Classes\.cmd', value: '' }
+        - { key: 'HKEY_USERS\%%users.sid%%\Software\Classes\.cmd', value: '' }
+        - { key: 'HKEY_LOCAL_MACHINE\Software\Classes\.exe', value: '' }
+        - { key: 'HKEY_USERS\%%users.sid%%\Software\Classes\.exe', value: '' }
+supported_os: [ Windows ]
+---
+name: WindowsTimeProviders
+doc: Windows time provider services.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\W32Time\TimeProviders\*'
+supported_os: [ Windows ]
+---
+name: WindowsSIPandTrustProviderHijacking
+doc: SIP are responsible for signature procession and can be abused by adversaries.
+sources:
+  - type: REGISTRY_VALUE
+    attributes:
+      key_value_pairs:
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\*', value: 'Dll' }
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\*', value: 'Dll' }
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Providers\Trust\FinalPolicy\*', value: '`$DLL' }
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllGetSignedDataMsg\*', value: 'Dll' }
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Cryptography\OID\EncodingType 0\CryptSIPDllVerifyIndirectData\*', value: 'Dll' }
+        - { key: 'HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Cryptography\Providers\Trust\FinalPolicy\*', value: '`$DLL' }
+supported_os: [ Windows ]
+---
+name: WindowsKnownDLLs
+doc: DLLs that can be abused by search order hijacking.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs'
+supported_os: [ Windows ]
+---
+name: WindowsOfficeApplicationStartup
+doc: Add-ins and plug-ins registered to hook into office apps.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Office test\Special\Perf'
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Office test\Special\Perf'
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Office\*\Addins\*'
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Office\*\Addins\*'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Office\*\Addins\*'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Microsoft\Office\*\Addins\*'
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Office\*\Outlook\WebView\Calendar\URL'
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Office\*\Outlook\WebView\Calendar\URL'
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Office\*\Outlook\WebView\Inbox'
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Office\*\Outlook\WebView\Inbox'
+supported_os: [ Windows ]
+---
+name: WindowsCodecs
+doc: Codecs are executable software that can be loaded by media playback software. They could be abused for system persistence.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Classes\CLSID\{083863F1-70DE-11d0-BD40-00A0C911CE86}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Classes\CLSID\{083863F1-70DE-11d0-BD40-00A0C911CE86}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Classes\CLSID\{7ED96837-96F0-4812-B211-F13C24117ED3}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Classes\CLSID\{7ED96837-96F0-4812-B211-F13C24117ED3}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Classes\CLSID\{ABE3B9A4-257D-4B97-BD1A-294AF496222E}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Classes\CLSID\{ABE3B9A4-257D-4B97-BD1A-294AF496222E}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Classes\CLSID\{AC757296-3522-4E11-9862-C17BE5A1767E}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Classes\CLSID\{AC757296-3522-4E11-9862-C17BE5A1767E}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Drivers32'
+        - 'HKEY_USERS\%%users.sid%%\Software\Wow6432Node\Microsoft\Windows NT\CurrentVersion\Drivers32'
+        - 'HKEY_LOCAL_MACHINE\Software\Classes\CLSID\{083863F1-70DE-11d0-BD40-00A0C911CE86}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Classes\CLSID\{083863F1-70DE-11d0-BD40-00A0C911CE86}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Classes\CLSID\{7ED96837-96F0-4812-B211-F13C24117ED3}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Classes\CLSID\{7ED96837-96F0-4812-B211-F13C24117ED3}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Classes\CLSID\{ABE3B9A4-257D-4B97-BD1A-294AF496222E}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Classes\CLSID\{ABE3B9A4-257D-4B97-BD1A-294AF496222E}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Classes\CLSID\{AC757296-3522-4E11-9862-C17BE5A1767E}\Instance'
+        - 'HKEY_USERS\%%users.sid%%\Software\Classes\CLSID\{AC757296-3522-4E11-9862-C17BE5A1767E}\Instance'
+        - 'HKEY_LOCAL_MACHINE\Software\Classes\Filter'
+        - 'HKEY_USERS\%%users.sid%%\Software\Classes\Filter'
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Drivers32'
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Windows NT\CurrentVersion\Drivers32'
+supported_os: [ Windows ]
+---
+name: WindowsAppCertDLLsAlt
+doc: Windows AppCertDLLs persistence.
+sources:
+  - type: REGISTRY_VALUE
+    attributes:
+      key_value_pairs:
+        - { key: 'HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager', value: 'AppCertDLLs' }
+supported_os: [ Windows ]
+---
+name: WindowsFontDriversAlt
+doc: Windows font drivers from the Registry.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Font Drivers'
+supported_os: [ Windows ]

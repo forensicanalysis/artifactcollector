@@ -117,7 +117,7 @@ func TestValidator_ValidateFilesInvalid(t *testing.T) {
 				tt.yamlfile: ads,
 			}
 
-			r.validateArtifactDefinitions(artifactDefinitionMap)
+			r.validateArtifactDefinitions(artifactDefinitionMap, nil)
 
 			if len(flaws)+len(r.flaws) == 0 {
 				t.Errorf("Validator.ValidateFiles() %s has no flaws", tt.yamlfile)

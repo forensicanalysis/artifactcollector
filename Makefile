@@ -49,13 +49,17 @@ test-coverage:
 	go tool cover -func=coverage.out
 	go tool cover -html=coverage.out
 
+.PHONY: validate
+validate:
+	@echo "Validating..."
+	cd tools/artifactvalidator && go build -o ../../build/bin/artifactvalidator .
+	./build/bin/artifactvalidator -entrypoints=DefaultCollection1 config/artifacts/*.yaml
+
 .PHONY: generate
 generate:
 	@echo "Generating..."
 	go install golang.org/x/tools/cmd/goimports@v0.1.7
 	go install github.com/forensicanalysis/go-resources/cmd/resources@v0.4.0
-	rm -rf config/artifacts
-	git clone https://github.com/forensicanalysis/artifacts.git config/artifacts
 	go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*.yaml
 	resources -package assets -output assets/bin.generated.go config/bin/*
 
@@ -67,21 +71,6 @@ generate-win: generate
 	rsrc -arch 386 -manifest build/win/artifactcollector32.exe.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.syso
 	rsrc -arch amd64 -manifest build/win/artifactcollector.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector.user.syso
 	rsrc -arch 386 -manifest build/win/artifactcollector32.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.user.syso
-
-.PHONY: build
-build: generate
-	@echo "Building..."
-	go build -o build/bin/artifactcollector .
-
-.PHONY: build-linux
-build-linux: generate
-	@echo "Building for Linux..."
-	GOOS=linux GOARCH=amd64 go build -o build/bin/artifactcollector-linux .
-
-.PHONY: build-darwin
-build-darwin: generate
-	@echo "Building for macOS..."
-	GOOS=darwin GOARCH=amd64 go build -o build/bin/artifactcollector-darwin .
 
 .PHONY: build-win
 build-win: generate-win

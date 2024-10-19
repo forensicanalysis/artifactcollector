@@ -1,1 +1,4 @@
 artifacts: ["DefaultCollection1"]  # artifact definitions to collect
+user: false # optional, if true, do not request admin permissions
+case: "" # optional case name
+output_dir: "" # optional output directory
