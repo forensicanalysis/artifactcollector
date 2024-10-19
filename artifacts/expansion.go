@@ -28,6 +28,8 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
+
+	"github.com/forensicanalysis/artifactcollector/doublestar"
 )
 
 const windows = "windows"
