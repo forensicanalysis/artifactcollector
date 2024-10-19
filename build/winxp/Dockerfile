@@ -4,14 +4,7 @@ COPY . /repo
 
 WORKDIR /repo
 
-RUN go install golang.org/x/tools/cmd/goimports@v0.1.7
-RUN go install github.com/akavel/rsrc@v0.10.2
-RUN go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*.yaml
-RUN go run tools/resources -package assets -output assets/bin.generated.go config/bin/*
-RUN rsrc -arch amd64 -manifest build/win/artifactcollector.exe.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector.syso
-RUN rsrc -arch 386 -manifest build/win/artifactcollector32.exe.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.syso
-RUN rsrc -arch amd64 -manifest build/win/artifactcollector.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector.user.syso
-RUN rsrc -arch 386 -manifest build/win/artifactcollector32.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.user.syso
+RUN make generate-win
 RUN mv build/win/artifactcollector32.syso artifactcollector.syso
 
 FROM golang:1.9.7

@@ -59,8 +59,10 @@ validate:
 generate:
 	@echo "Generating..."
 	go install golang.org/x/tools/cmd/goimports@v0.1.7
-	go run tools/yaml2go/main.go config/ac.yaml config/artifacts/*.yaml
-	go run tools/resources -package assets -output assets/bin.generated.go config/bin/*
+	cd tools/yaml2go && go build -o ../../build/bin/yaml2go .
+	./build/bin/yaml2go config/ac.yaml config/artifacts/*.yaml
+	cd tools/resources && go build -o ../../build/bin/resources .
+	./build/bin/resources -package assets -output assets/bin.generated.go config/bin/*
 
 .PHONY: generate-win
 generate-win: generate
