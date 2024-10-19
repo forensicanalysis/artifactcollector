@@ -28,8 +28,6 @@ import (
 	"regexp"
 	"runtime"
 	"strings"
-
-	"github.com/forensicanalysis/fsdoublestar"
 )
 
 const windows = "windows"
@@ -231,7 +229,7 @@ func expandPath(fs fs.FS, syspath string, prefixes []string, collector ArtifactC
 		expandedPath = strings.Replace(expandedPath, "{", `\{`, -1)
 		expandedPath = strings.Replace(expandedPath, "}", `\}`, -1)
 
-		unglobedPaths, err := fsdoublestar.Glob(fs, expandedPath)
+		unglobedPaths, err := doublestar.Glob(fs, expandedPath)
 		if err != nil {
 			log.Println(err)
 

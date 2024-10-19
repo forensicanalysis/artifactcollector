@@ -11,8 +11,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/djherbis/times v1.5.0 h1:79myA211VwPhFTqUk8xehWrsEO+zcIZj0zT8mXPVARU=
 github.com/djherbis/times v1.5.0/go.mod h1:5q7FDLvbNg1L/KaBmPcWlVR9NmoKo3+ucqUA3ijQhA0=
-github.com/forensicanalysis/fsdoublestar v0.1.0 h1:t0SuwumE5FQtrw1ZkkNhxQbaWn8LywqdnCpEBX0n/Fc=
-github.com/forensicanalysis/fsdoublestar v0.1.0/go.mod h1:UpG3oKY5UiFTnbxqp4/1h6WuaDtlPZcL6Hu5yI3DsL0=
 github.com/forensicanalysis/fslib v0.15.1 h1:mB30Tn2xwW6+nvV6FLbKqz1BYtHJpt3j3oyHpXGrJCQ=
 github.com/forensicanalysis/fslib v0.15.1/go.mod h1:cFsrRmnHRJkAE4Gbshk8N1myWx1BB7zT/u9+RnPH22M=
 github.com/go-ole/go-ole v1.2.4 h1:nNBDSCOigTSiarFpYE9J/KtEA1IOW4CNeqT9TQDqCxI=
