@@ -3,7 +3,6 @@ module github.com/forensicanalysis/artifactcollector
 go 1.16
 
 require (
-	github.com/forensicanalysis/fsdoublestar v0.1.0
 	github.com/forensicanalysis/fslib v0.15.1
 	github.com/go-ole/go-ole v1.2.4
 	github.com/google/uuid v1.3.0

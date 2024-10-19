@@ -5,14 +5,24 @@ install:
 	go install mvdan.cc/gofumpt@v0.6.0
 	go install github.com/daixiang0/gci@v0.13.4
 
-.PHONY: fmt
-fmt:
+.PHONY: fmt_darwin
+fmt_darwin:
 	@echo "Formatting..."
 	go mod tidy
 	go fmt ./...
 	gci write -s standard -s default -s "prefix(github.com/forensicanalysis/artifactcollector)" .
 	gofumpt -l -w .
-	find . -type f -name "*.go" -print0 | xargs -0 sed -i.bak -e 's/ 0o/ 0/g'
+	find . -type f -name "*.go" -print0 | xargs -0 sed -i '' -e 's/ 0o/ 0/g'
+	wsl -fix ./... || true
+
+.PHONY: fmt_linux
+fmt_linux:
+	@echo "Formatting..."
+	go mod tidy
+	go fmt ./...
+	gci write -s standard -s default -s "prefix(github.com/forensicanalysis/artifactcollector)" .
+	gofumpt -l -w .
+	find . -type f -name "*.go" -print0 | xargs -0 sed -i -e 's/ 0o/ 0/g'
 	wsl -fix ./... || true
 
 .PHONY: vendor
