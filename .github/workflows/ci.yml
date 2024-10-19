@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-go@v5
         with: { go-version: '1.23' }
       - uses: actions/checkout@v4
-      - run: make install generate-win fmt
+      - run: make install generate-win fmt_linux
       - run: git diff --exit-code
 
   lint:
