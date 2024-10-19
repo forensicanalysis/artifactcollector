@@ -61,18 +61,18 @@ The zip file contains the results of the extraction and needs to be transferred 
 ## Build your own artifactcollector
 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
-2. Add artifact definition yaml files as needed in `config/artifacts`. Do not edit the
-   artifact definitions, as they will be overwritten.
+2. Add and edit artifact definition yaml files as needed in `config/artifacts`.
 3. Edit `config/ac.yaml` and add the artifacts you want to collect.
 4. On windows, you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
    to enable the icon for the executable and the UAC popup.
-5. Run `make build` to generate the artifactcollector binary.
+5. Run `go build .` to generate the artifactcollector binary.
+   1. You can also use `GOOS=windows GOARCH=amd64 go build -o artifactcollector.exe .` to cross-compile for Windows.
 
 ## Embed binaries
 
 Binaries can be added to `config/bin` and then included into the artifactcollector
-in the `make build` step. Additionally, a corresponding COMMAND artifact like
-the following is required.
+in the `go build` step. Additionally, a corresponding COMMAND artifact like
+the following is required:
 
 ```yaml
 name: Autoruns
@@ -84,8 +84,15 @@ sources:
 supported_os: [ Windows ]
 ```
 
-The command output to stdout and stderr is saved, but generated
-files are not collected.
+The command output to stdout and stderr is saved, but generated files are not collected.
+
+## Acknowledgement
+
+The artifactcollector uses on the following great projects:
+
+- [config/artifacts](config/artifacts) is based on the awesome [Forensic Artifacts](https://github.com/ForensicArtifacts/artifacts) project.
+- [doublestar](doublestar) is based on [Bob Matcuk's](https://github.com/bmatcuk) great [doublestar](https://github.com/bmatcuk/doublestar) package.
+- [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library.
 
 ## License
 
