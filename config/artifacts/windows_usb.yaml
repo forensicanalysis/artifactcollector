@@ -1,0 +1,59 @@
+# USB Artifacts
+
+name: WindowsUSBInformation
+doc: Windows Event logs.
+sources:
+  - type: ARTIFACT_GROUP
+    attributes:
+      names:
+        - 'WindowsUSBDeviceInformations'
+        - 'WindowsUSBVolumeAndDriveMapping'
+        - 'WindowsUSBUserMountedDevices'
+        - 'WindowsDeviceSetupFile'
+supported_os: [ Windows ]
+---
+name: WindowsUSBDeviceInformations
+doc: |
+  Windows USB Device Informations.
+
+  USBSTOR subkey only exists when there ever was an USB device mounted.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\**'
+supported_os: [ Windows ]
+---
+name: WindowsUSBVolumeAndDriveMapping
+doc: |
+  Windows USB volume and drive mapping.
+
+  Displays the mapping of USB devices to drives and volumes.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices'
+supported_os: [ Windows ]
+---
+name: WindowsUSBUserMountedDevices
+doc: |
+  Windows USB user mounted devices.
+
+  Shows the GUIDs of all devices the user has ever mounted.
+sources:
+  - type: REGISTRY_KEY
+    attributes:
+      keys:
+        - 'HKEY_USERS\%%users.sid%%\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\**'
+supported_os: [ Windows ]
+---
+name: WindowsDeviceSetupFile
+doc: Logfiles for Windows PNP driver installation
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '%%environ_systemroot%%\inf\setupapi*.log'
+      separator: '\'
+supported_os: [ Windows ]

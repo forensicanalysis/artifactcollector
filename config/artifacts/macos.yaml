@@ -1,0 +1,96 @@
+# MacOS (Darwin) specific artifacts.
+
+name: MacOSAtJobsFile
+doc: MacOS at jobs
+sources:
+  - type: FILE
+    attributes: { paths: [ '/usr/lib/cron/jobs/*' ] }
+supported_os: [ Darwin ]
+---
+name: MacOSAuditLogFiles
+doc: Audit log files
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/private/var/audit/*'
+        - '/var/audit/*'
+supported_os: [ Darwin ]
+---
+name: MacOSBashHistoryFile
+doc: Terminal Commands History
+sources:
+  - type: FILE
+    attributes: { paths: [ '%%users.homedir%%/.bash_history' ] }
+supported_os: [ Darwin ]
+---
+name: MacOSCronTabFile
+doc: Cron tabs
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/etc/crontab'
+        - '/private/etc/crontab'
+        - '/usr/lib/cron/tabs/*'
+supported_os: [ Darwin ]
+---
+name: MacOSHostsFile
+doc: Hosts file
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/etc/hosts'
+        - '/private/etc/hosts'
+supported_os: [ Darwin ]
+---
+name: MacOSLastlogFile
+doc: Mac OS X lastlog file.
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/private/var/log/lastlog'
+        - '/var/log/lastlog'
+supported_os: [ Darwin ]
+---
+name: MacOSMiscLogFiles
+doc: Misc. Logs
+sources:
+  - type: FILE
+    attributes: { paths: [ '/Library/Logs/*' ] }
+supported_os: [ Darwin ]
+---
+name: MacOSRecentItemsFiles
+doc: Recent Items
+sources:
+  - type: FILE
+    attributes: { paths: [ '%%users.homedir%%/Library/Preferences/com.apple.recentitems.plist' ] }
+supported_os: [ Darwin ]
+---
+name: MacOSSystemLogFiles
+doc: System log files
+sources:
+  - type: FILE
+    attributes:
+      paths:
+        - '/private/var/log/*'
+        - '/var/log/*'
+supported_os: [ Darwin ]
+---
+name: MacOSUsersPath
+doc: Users directories in /Users
+sources:
+  - type: PATH
+    attributes: { paths: [ '/Users/*' ] }
+    provides:
+      - key: users.homedir
+supported_os: [ Darwin ]
+---
+name: MacOSUserTrashFiles
+doc: User Trash Folder
+sources:
+  - type: FILE
+    attributes: { paths: [ '%%users.homedir%%/.Trash/*' ] }
+supported_os: [ Darwin ]

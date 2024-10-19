@@ -24,10 +24,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"maps"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -90,7 +92,7 @@ func (r *validator) addErrorf(filename, artifactDefiniton, format string, a ...i
 }
 
 // ValidateFiles checks a list of files for various flaws.
-func ValidateFiles(filenames []string) (flaws []Flaw, err error) {
+func ValidateFiles(filenames []string, entrypoints []string) (flaws []Flaw, err error) {
 	artifactDefinitionMap := map[string][]artifacts.ArtifactDefinition{}
 
 	// decode file
@@ -106,19 +108,19 @@ func ValidateFiles(filenames []string) (flaws []Flaw, err error) {
 	}
 
 	// validate
-	flaws = append(flaws, ValidateArtifactDefinitions(artifactDefinitionMap)...)
+	flaws = append(flaws, ValidateArtifactDefinitions(artifactDefinitionMap, entrypoints)...)
 	return
 }
 
 // ValidateArtifactDefinitions validates a map of artifact definitions and returns any flaws found in those.
-func ValidateArtifactDefinitions(artifactDefinitionMap map[string][]artifacts.ArtifactDefinition) []Flaw {
+func ValidateArtifactDefinitions(artifactDefinitionMap map[string][]artifacts.ArtifactDefinition, entrypoints []string) []Flaw {
 	r := newValidator()
-	r.validateArtifactDefinitions(artifactDefinitionMap)
+	r.validateArtifactDefinitions(artifactDefinitionMap, entrypoints)
 	return r.flaws
 }
 
 // validateArtifactDefinitions validates single artifacts.
-func (r *validator) validateArtifactDefinitions(artifactDefinitionMap map[string][]artifacts.ArtifactDefinition) {
+func (r *validator) validateArtifactDefinitions(artifactDefinitionMap map[string][]artifacts.ArtifactDefinition, entrypoints []string) {
 	var globalArtifactDefinitions []artifacts.ArtifactDefinition
 
 	for filename, artifactDefinitions := range artifactDefinitionMap {
@@ -139,6 +141,7 @@ func (r *validator) validateArtifactDefinitions(artifactDefinitionMap map[string
 	r.validateGroupMemberExist(globalArtifactDefinitions)
 	r.validateNoCycles(globalArtifactDefinitions)
 	r.validateParametersProvided(globalArtifactDefinitions)
+	r.validateUnused(globalArtifactDefinitions, entrypoints)
 
 	r.validateArtifactURLs(artifactDefinitionMap)
 }
@@ -155,6 +158,7 @@ func (r *validator) validateArtifactDefinition(filename string, artifactDefiniti
 	r.validateNamePrefix(filename, artifactDefinition)
 	r.validateOSSpecific(filename, artifactDefinition)
 	r.validateArtifactOS(filename, artifactDefinition)
+	r.validateNoDefinitionLabels(filename, artifactDefinition)
 	r.validateNoDefinitionConditions(filename, artifactDefinition)
 	r.validateNoDefinitionProvides(filename, artifactDefinition)
 	if macosArtifact {
@@ -368,6 +372,48 @@ func (r *validator) validateParametersProvided(artifactDefinitions []artifacts.A
 			}
 		}
 	}
+
+	for operatingSystem := range knownProvides {
+		for key := range knownProvides[operatingSystem] {
+			if !slices.Contains(slices.Collect(maps.Keys(parametersRequired[operatingSystem])), key) {
+				r.addWarningf(
+					"", knownProvides[operatingSystem][key],
+					"Provided key %s is not used for %s", key, operatingSystem,
+				)
+			}
+		}
+	}
+}
+
+func (r *validator) validateUnused(artifactDefinitions []artifacts.ArtifactDefinition, entrypoints []string) {
+	used := map[string]bool{}
+
+	for _, entrypoint := range entrypoints {
+		used[entrypoint] = true
+	}
+
+	for _, artifactDefinition := range artifactDefinitions {
+		for _, source := range artifactDefinition.Sources {
+			for _, path := range source.Attributes.Names {
+				used[path] = true
+			}
+
+			for _, source := range artifactDefinition.Sources {
+				if len(source.Provides) > 0 {
+					used[artifactDefinition.Name] = true
+				}
+			}
+		}
+	}
+
+	for _, artifactDefinition := range artifactDefinitions {
+		if _, ok := used[artifactDefinition.Name]; !ok {
+			r.addInfof(
+				"", artifactDefinition.Name,
+				"Artifact %s is not used", artifactDefinition.Name,
+			)
+		}
+	}
 }
 
 func (r *validator) validateArtifactURLs(artifactDefinitionMap map[string][]artifacts.ArtifactDefinition) {
@@ -563,6 +609,12 @@ func (r *validator) validateArtifactOS(filename string, artifactDefinition artif
 		if !found {
 			r.addWarningf(filename, artifactDefinition.Name, "OS %s is not valid", supportedos)
 		}
+	}
+}
+
+func (r *validator) validateNoDefinitionLabels(filename string, artifactDefinition artifacts.ArtifactDefinition) {
+	if len(artifactDefinition.Labels) > 0 {
+		r.addInfof(filename, artifactDefinition.Name, "Definition labels are deprecated")
 	}
 }
 

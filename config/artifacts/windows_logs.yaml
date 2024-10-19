@@ -1,0 +1,101 @@
+# Windows event logs.
+
+name: WindowsEventLogs
+doc: Windows Event logs.
+sources:
+  - type: ARTIFACT_GROUP
+    attributes:
+      names:
+        - 'WindowsEventLogApplicationFile'
+        - 'WindowsEventLogSecurityFile'
+        - 'WindowsEventLogSystemFile'
+        - 'WindowsXMLEventLogApplicationFile'
+        - 'WindowsXMLEventLogSecurityFile'
+        - 'WindowsXMLEventLogSysmonFile'
+        - 'WindowsXMLEventLogSystemFile'
+        - 'WindowsXMLEventLogTerminalServicesFile'
+supported_os: [ Windows ]
+---
+name: WindowsEventLogPath
+doc: Windows Event log locations.
+sources:
+  - type: PATH
+    attributes:
+      paths:
+        - '%%environ_systemroot%%\System32\config'
+        - '%%environ_systemroot%%\System32\winevt\Logs'
+      separator: '\'
+    provides: [ { key: windows_event_logs } ]
+supported_os: [ Windows ]
+---
+name: WindowsEventLogApplicationFile
+doc: Application Windows Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\AppEvent.evt' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsEventLogSecurityFile
+doc: Security Windows Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\SecEvent.evt' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsEventLogSystemFile
+doc: System Windows Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\SysEvent.evt' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsXMLEventLogApplicationFile
+doc: Application Windows XML Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\Application.evtx' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsXMLEventLogSecurityFile
+doc: Security Windows XML Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\Security.evtx' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsXMLEventLogSysmonFile
+doc: Sysmon Windows XML Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\Microsoft-Windows-Sysmon%4Operational.evtx' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsXMLEventLogSystemFile
+doc: System Windows XML Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\System.evtx' ]
+      separator: '\'
+supported_os: [ Windows ]
+---
+name: WindowsXMLEventLogTerminalServicesFile
+doc: TerminalServices Windows XML Event Log.
+sources:
+  - type: FILE
+    attributes:
+      paths: [ '%%windows_event_logs%%\Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational.evtx' ]
+      separator: '\'
+supported_os: [ Windows ]
