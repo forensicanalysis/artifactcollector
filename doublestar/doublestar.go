@@ -45,6 +45,7 @@ var ErrBadPattern = path.ErrBadPattern
 // Split a path on the given separator, respecting escaping.
 func splitPathOnSeparator(path string, separator rune) (ret []string) {
 	idx := 0
+
 	if separator == '\\' {
 		// if the separator is '\\', then we can just split...
 		ret = strings.Split(path, string(separator))
@@ -60,6 +61,7 @@ func splitPathOnSeparator(path string, separator rune) (ret []string) {
 		pathlen := len(path)
 		separatorLen := utf8.RuneLen(separator)
 		emptyEnd := false
+
 		for start := 0; start < pathlen; {
 			end := indexRuneWithEscaping(path[start:], separator)
 			if end == -1 {
@@ -69,6 +71,7 @@ func splitPathOnSeparator(path string, separator rune) (ret []string) {
 				emptyEnd = true
 				end += start
 			}
+
 			ret[idx] = path[start:end]
 			start = end + separatorLen
 			idx++
@@ -92,13 +95,16 @@ func indexRuneWithEscaping(s string, r rune) int {
 	if end == -1 {
 		return -1
 	}
+
 	if end > 0 && s[end-1] == '\\' {
 		start := end + utf8.RuneLen(r)
 		end = indexRuneWithEscaping(s[start:], r)
+
 		if end != -1 {
 			end += start
 		}
 	}
+
 	return end
 }
 
@@ -172,6 +178,7 @@ func PathMatch(pattern, name string) (bool, error) {
 func matchWithSeparator(pattern, name string, separator rune) (bool, error) {
 	patternComponents := splitPathOnSeparator(pattern, separator)
 	nameComponents := splitPathOnSeparator(name, separator)
+
 	return doMatching(patternComponents, nameComponents)
 }
 
@@ -181,6 +188,7 @@ func doMatching(patternComponents, nameComponents []string) (matched bool, err e
 	if patternLen == 0 && nameLen == 0 {
 		return true, nil
 	}
+
 	if patternLen == 0 || nameLen == 0 {
 		return false, nil
 	}
@@ -202,10 +210,12 @@ func doMatching(patternComponents, nameComponents []string) (matched bool, err e
 				if nameIdx-patIdx == depth {
 					break
 				}
+
 				if m, _ := doMatching(patternComponents[patIdx:], nameComponents[nameIdx:]); m {
 					return true, nil
 				}
 			}
+
 			return false, nil
 		}
 
@@ -218,6 +228,7 @@ func doMatching(patternComponents, nameComponents []string) (matched bool, err e
 		patIdx++
 		nameIdx++
 	}
+
 	return patIdx >= patternLen && nameIdx >= nameLen, nil
 }
 
@@ -276,7 +287,9 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 	if err != nil {
 		return matches, err
 	}
+
 	lastComponent := (patIdx + 1) >= patLen
+
 	if doubleStarPattern.MatchString(components[patIdx]) {
 		depth = getDepth(components, patIdx, depth)
 
@@ -292,15 +305,18 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 				if lastComponent {
 					matches = append(matches, path.Join(basedir, entry.Name()))
 				}
+
 				matches, err = doGlob(fsys, path.Join(basedir, entry.Name()), components[patIdx:], matches, depth-1)
 			} else if lastComponent {
 				// if the pattern's last component is a doublestar, we match filenames, too
 				matches = append(matches, path.Join(basedir, entry.Name()))
 			}
 		}
+
 		if lastComponent {
 			return matches, err // we're done
 		}
+
 		patIdx++
 		lastComponent = (patIdx + 1) >= patLen
 	}
@@ -312,6 +328,7 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 		if err != nil {
 			return matches, err
 		}
+
 		if match {
 			if lastComponent {
 				matches = append(matches, path.Join(basedir, entry.Name()))
@@ -320,6 +337,7 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 			}
 		}
 	}
+
 	return matches, err
 }
 
@@ -333,17 +351,20 @@ func skipComponents(components []string) (patLen, patIdx int) {
 			break
 		}
 	}
+
 	return patLen, patIdx
 }
 
 func getDepth(components []string, patIdx int, depth int) int {
 	depthString := strings.TrimLeft(components[patIdx], "/*")
+
 	if depth < 0 {
 		depth = 3
 		if depthString != "" {
 			depth, _ = strconv.Atoi(depthString)
 		}
 	}
+
 	return depth
 }
 
@@ -354,9 +375,11 @@ func matchComponent(pattern, name string) (bool, error) { //nolint:gocyclo,gocog
 	if patternLen == 0 && nameLen == 0 {
 		return true, nil
 	}
+
 	if patternLen == 0 {
 		return false, nil
 	}
+
 	if nameLen == 0 && pattern != "*" {
 		return false, nil
 	}
@@ -366,11 +389,13 @@ func matchComponent(pattern, name string) (bool, error) { //nolint:gocyclo,gocog
 	for patIdx < patternLen && nameIdx < nameLen {
 		patRune, patAdj := utf8.DecodeRuneInString(pattern[patIdx:])
 		nameRune, nameAdj := utf8.DecodeRuneInString(name[nameIdx:])
+
 		switch patRune {
 		case '\\':
 			// handle escaped runes
 			patIdx += patAdj
 			patRune, patAdj = utf8.DecodeRuneInString(pattern[patIdx:])
+
 			switch patRune {
 			case nameRune:
 				patIdx += patAdj
@@ -385,10 +410,12 @@ func matchComponent(pattern, name string) (bool, error) { //nolint:gocyclo,gocog
 		case '[':
 			// handle character sets
 			patIdx += patAdj
+
 			endClass, err, done := handleCharacterSet(pattern, patIdx, nameRune)
 			if done {
 				return false, err
 			}
+
 			patIdx = endClass + 1
 			nameIdx += nameAdj
 		case '{':
@@ -401,12 +428,15 @@ func matchComponent(pattern, name string) (bool, error) { //nolint:gocyclo,gocog
 			return false, nil
 		}
 	}
+
 	if patIdx >= patternLen && nameIdx >= nameLen {
 		return true, nil
 	}
+
 	if nameIdx >= nameLen && pattern[patIdx:] == "*" || pattern[patIdx:] == "**" {
 		return true, nil
 	}
+
 	return false, nil
 }
 
@@ -424,6 +454,7 @@ func handleStars(patIdx int, patAdj int, patternLen int, nameIdx int, nameLen in
 			return true, nil
 		}
 	}
+
 	return false, nil
 }
 
@@ -432,20 +463,25 @@ func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, 
 	if endClass == -1 {
 		return 0, ErrBadPattern, true
 	}
+
 	endClass += patIdx
 	classRunes := []rune(pattern[patIdx:endClass])
+
 	classRunesLen := len(classRunes)
 	if classRunesLen > 0 {
 		classIdx := 0
 		matchClass := false
+
 		if classRunes[0] == '^' {
 			classIdx++
 		}
+
 		for classIdx < classRunesLen {
 			low := classRunes[classIdx]
 			if low == '-' {
 				return 0, ErrBadPattern, true
 			}
+
 			classIdx++
 			if low == '\\' {
 				if classIdx < classRunesLen {
@@ -455,16 +491,20 @@ func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, 
 					return 0, ErrBadPattern, true
 				}
 			}
+
 			high := low
+
 			if classIdx < classRunesLen && classRunes[classIdx] == '-' {
 				// we have a range of runes
 				if classIdx++; classIdx >= classRunesLen {
 					return 0, ErrBadPattern, true
 				}
+
 				high = classRunes[classIdx]
 				if high == '-' {
 					return 0, ErrBadPattern, true
 				}
+
 				classIdx++
 				if high == '\\' {
 					if classIdx < classRunesLen {
@@ -475,37 +515,45 @@ func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, 
 					}
 				}
 			}
+
 			if low <= nameRune && nameRune <= high {
 				matchClass = true
 			}
 		}
+
 		if matchClass == (classRunes[0] == '^') {
 			return 0, nil, true
 		}
 	} else {
 		return 0, ErrBadPattern, true
 	}
+
 	return endClass, nil, false
 }
 
 func handleAlternatives(patIdx int, patAdj int, pattern string, name string, nameIdx int) (bool, error) {
 	// handle alternatives such as {alt1,alt2,...}
 	patIdx += patAdj
+
 	endOptions := indexRuneWithEscaping(pattern[patIdx:], '}')
 	if endOptions == -1 {
 		return false, ErrBadPattern
 	}
+
 	endOptions += patIdx
 	options := splitPathOnSeparator(pattern[patIdx:endOptions], ',')
 	patIdx = endOptions + 1
+
 	for _, o := range options {
 		m, e := matchComponent(o+pattern[patIdx:], name[nameIdx:])
 		if e != nil {
 			return false, e
 		}
+
 		if m {
 			return true, nil
 		}
 	}
+
 	return false, nil
 }

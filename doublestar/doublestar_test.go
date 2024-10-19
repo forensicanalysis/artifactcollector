@@ -209,6 +209,7 @@ func testGlobWith(t *testing.T, idx int, tt MatchTest) {
 	pattern := path.Join(tt.pattern)
 	testPath := path.Join(tt.testPath)
 	matches, err := Glob(tfs, pattern)
+
 	if inSlice(testPath, matches) != tt.shouldMatch {
 		if tt.shouldMatch {
 			t.Errorf("#%v. Glob(%#q) = %#v - doesn't contain %v, but should", idx, pattern, matches, tt.testPath)
@@ -216,6 +217,7 @@ func testGlobWith(t *testing.T, idx int, tt MatchTest) {
 			t.Errorf("#%v. Glob(%#q) = %#v - contains %v, but shouldn't", idx, pattern, matches, tt.testPath)
 		}
 	}
+
 	if err != tt.expectedErr {
 		t.Errorf("#%v. Glob(%#q) has error %v, but should be %v", idx, pattern, err, tt.expectedErr)
 	}
@@ -229,6 +231,7 @@ func compareErrors(a, b error) bool {
 	if a == nil {
 		return b == nil
 	}
+
 	return b != nil
 }
 
@@ -238,6 +241,7 @@ func inSlice(s string, a []string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -256,6 +260,7 @@ func getTestFS() *fstest.MapFS {
 		if !fs.ValidPath(file) {
 			log.Fatal(file)
 		}
+
 		infs[file] = &fstest.MapFile{Data: []byte("")}
 	}
 
@@ -264,13 +269,16 @@ func getTestFS() *fstest.MapFS {
 
 func getInFS() fs.FS {
 	infs := fstest.MapFS{}
+
 	files := []string{"foo.bin", "dir/bar.bin", "dir/baz.bin", "dir/a/a/foo.bin", "dir/a/b/foo.bin", "dir/b/a/foo.bin", "dir/b/b/foo.bin"}
 	for _, file := range files {
 		if !fs.ValidPath(file) {
 			log.Fatal(file)
 		}
+
 		infs[file] = &fstest.MapFile{Data: []byte("")}
 	}
+
 	return infs
 }
 
@@ -279,6 +287,7 @@ func Test_expandPath(t *testing.T) {
 		fs fs.FS
 		in string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -298,8 +307,10 @@ func Test_expandPath(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+
 			sort.Strings(tt.want)
 			sort.Strings(got)
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("expandPath(%s) = %v, want %v", tt.args.in, got, tt.want)
 			}
@@ -312,6 +323,7 @@ func Test_splitPathOnSeparator(t *testing.T) {
 		path      string
 		separator rune
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -334,6 +346,7 @@ func Test_indexRuneWithEscaping(t *testing.T) {
 		s string
 		r rune
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -358,6 +371,7 @@ func Test_doMatching(t *testing.T) {
 		patternComponents []string
 		nameComponents    []string
 	}
+
 	tests := []struct {
 		name        string
 		args        args
@@ -374,6 +388,7 @@ func Test_doMatching(t *testing.T) {
 				t.Errorf("doMatching() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if gotMatched != tt.wantMatched {
 				t.Errorf("doMatching() gotMatched = %v, want %v", gotMatched, tt.wantMatched)
 			}
@@ -386,6 +401,7 @@ func Test_matchComponent(t *testing.T) {
 		pattern string
 		name    string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -402,6 +418,7 @@ func Test_matchComponent(t *testing.T) {
 				t.Errorf("matchComponent() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("matchComponent() got = %v, want %v", got, tt.want)
 			}
@@ -414,6 +431,7 @@ func Test_readDir(t *testing.T) {
 		fs      fs.FS
 		basedir string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -430,6 +448,7 @@ func Test_readDir(t *testing.T) {
 				t.Errorf("readDir() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("readDir() got = %#v, want %#v", got, tt.want)
 			}
