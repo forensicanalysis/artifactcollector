@@ -13,9 +13,9 @@ func Example() {
 	fsys := os.DirFS(wd)
 
 	// get all yml files
-	matches, _ := doublestar.Glob(fsys, "**/*.yml")
+	matches, _ := doublestar.Glob(fsys, "**/*.md")
 
 	// print matches
 	fmt.Println(matches)
-	// Output: [.github/workflows/ci.yml .github/.golangci.yml]
+	// Output: [README.md]
 }

@@ -46,7 +46,7 @@ var ErrBadPattern = path.ErrBadPattern
 func splitPathOnSeparator(path string, separator rune) (ret []string) {
 	idx := 0
 
-	if separator == '\\' {
+	if separator == '\\' { //nolint:nestif
 		// if the separator is '\\', then we can just split...
 		ret = strings.Split(path, string(separator))
 		idx = len(ret)
@@ -182,7 +182,7 @@ func matchWithSeparator(pattern, name string, separator rune) (bool, error) {
 	return doMatching(patternComponents, nameComponents)
 }
 
-func doMatching(patternComponents, nameComponents []string) (matched bool, err error) { //nolint:gocognit
+func doMatching(patternComponents, nameComponents []string) (matched bool, err error) { //nolint:cyclop
 	// check for some base-cases
 	patternLen, nameLen := len(patternComponents), len(nameComponents)
 	if patternLen == 0 && nameLen == 0 {
@@ -222,7 +222,7 @@ func doMatching(patternComponents, nameComponents []string) (matched bool, err e
 		// try matching components
 		matched, err = matchComponent(patternComponents[patIdx], nameComponents[nameIdx])
 		if !matched || err != nil {
-			return
+			return matched, err
 		}
 
 		patIdx++
@@ -256,7 +256,7 @@ func Glob(fsys fs.FS, pattern string) (matches []string, err error) {
 }
 
 // Perform a glob.
-func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int) ([]string, error) { //nolint:gocyclo,gocognit,funlen
+func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int) ([]string, error) { //nolint:gocognit,funlen,cyclop
 	if depth == 0 && len(components) < 2 || depth == -1 {
 		return matches, nil
 	}
@@ -269,12 +269,13 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 	// Stat will return an error if the file/directory doesn't exist
 	fi, err := fs.Stat(fsys, basedir)
 	if err != nil {
-		return matches, nil
+		return matches, nil //nolint:nilerr
 	}
 
 	// if there are no more components, we've found a match
 	if patIdx >= patLen {
 		matches = append(matches, basedir)
+
 		return matches, nil
 	}
 
@@ -290,7 +291,7 @@ func doGlob(fsys fs.FS, basedir string, components, matches []string, depth int)
 
 	lastComponent := (patIdx + 1) >= patLen
 
-	if doubleStarPattern.MatchString(components[patIdx]) {
+	if doubleStarPattern.MatchString(components[patIdx]) { //nolint:nestif
 		depth = getDepth(components, patIdx, depth)
 
 		// if the current component is a doublestar, we'll try depth-first
@@ -369,7 +370,7 @@ func getDepth(components []string, patIdx int, depth int) int {
 }
 
 // Attempt to match a single pattern component with a path component.
-func matchComponent(pattern, name string) (bool, error) { //nolint:gocyclo,gocognit,funlen
+func matchComponent(pattern, name string) (bool, error) { //nolint:funlen,cyclop
 	// check some base cases
 	patternLen, nameLen := len(pattern), len(name)
 	if patternLen == 0 && nameLen == 0 {
@@ -458,7 +459,7 @@ func handleStars(patIdx int, patAdj int, patternLen int, nameIdx int, nameLen in
 	return false, nil
 }
 
-func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, bool) { //nolint:gocyclo,golint,gocognit,stylecheck
+func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, bool) { //nolint:golint,gocognit,funlen,revive,cyclop
 	endClass := indexRuneWithEscaping(pattern[patIdx:], ']')
 	if endClass == -1 {
 		return 0, ErrBadPattern, true
@@ -468,7 +469,7 @@ func handleCharacterSet(pattern string, patIdx int, nameRune rune) (int, error, 
 	classRunes := []rune(pattern[patIdx:endClass])
 
 	classRunesLen := len(classRunes)
-	if classRunesLen > 0 {
+	if classRunesLen > 0 { //nolint:nestif
 		classIdx := 0
 		matchClass := false
 
