@@ -93,6 +93,7 @@ The artifactcollector uses on the following great projects:
 - [config/artifacts](config/artifacts) is based on the awesome [Forensic Artifacts](https://github.com/ForensicArtifacts/artifacts) project.
 - [doublestar](doublestar) is based on [Bob Matcuk's](https://github.com/bmatcuk) great [doublestar](https://github.com/bmatcuk/doublestar) package.
 - [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library.
+- [tools/resources](tools/resources) is based on [go-resources](https://github.com/omeid/go-resources).
 
 ## License
 
