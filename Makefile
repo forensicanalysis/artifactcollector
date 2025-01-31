@@ -73,6 +73,11 @@ generate-win: generate
 	rsrc -arch amd64 -manifest build/win/artifactcollector.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector.user.syso
 	rsrc -arch 386 -manifest build/win/artifactcollector32.exe.user.manifest -ico build/win/artifactcollector.ico -o build/win/artifactcollector32.user.syso
 
+.PHONY: build
+build: generate
+	@echo "Building..."
+	go build -o build/bin/artifactcollector .
+
 .PHONY: build-win
 build-win: generate-win
 	@echo "Building for Windows..."
