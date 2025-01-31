@@ -63,10 +63,8 @@ The zip file contains the results of the extraction and needs to be transferred 
 1. Clone the repository: `git clone https://github.com/forensicanalysis/artifactcollector`.
 2. Add and edit artifact definition yaml files as needed in `config/artifacts`.
 3. Edit `config/ac.yaml` and add the artifacts you want to collect.
-4. On windows, you can move the syso into the root folder (e.g. `cp resources\artifactcollector.syso .`)
-   to enable the icon for the executable and the UAC popup.
-5. Run `go build .` to generate the artifactcollector binary.
-   1. You can also use `GOOS=windows GOARCH=amd64 go build -o artifactcollector.exe .` to cross-compile for Windows.
+4. Run `make build` to generate the artifactcollector binary.
+   1. You can also use `make build-win` to cross-compile for Windows.
 
 ## Embed binaries
 
