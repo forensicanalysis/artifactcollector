@@ -91,11 +91,9 @@ The artifactcollector uses on the following great projects:
 - [config/artifacts](config/artifacts) is based on the awesome [Forensic Artifacts](https://github.com/ForensicArtifacts/artifacts) project.
 - [doublestar](doublestar) is based on [Bob Matcuk's](https://github.com/bmatcuk) great [doublestar](https://github.com/bmatcuk/doublestar) package.
 - [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library.
-- [tools/resources](tools/resources) is based on [go-resources](https://github.com/omeid/go-resources).
 
 ## License
 
-Most of the artifactcollector is licensed under the MIT License. See [MIT license](LICENSE) for the full license text.
-
-The directories [store/aczip](store/aczip) and [build/go](build/go) contain code from the Go standard library
+The directories `store/aczip` and `build/go` contain code from the Go standard library
 which is licensed under the [BSD-3-Clause license](LICENSE-BSD).
+Everything else is licensed under the MIT License. The directories `doublestar` and `tools/resources` contain their own original MIT license files, [LICENSE](LICENSE) covers the other files.

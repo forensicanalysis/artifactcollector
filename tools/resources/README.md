@@ -75,7 +75,3 @@ func main() {
   // ...
 }
 ```
-
-## Credits
-
-This is a fork of https://github.com/omeid/go-resources
